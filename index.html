@@ -205,6 +205,23 @@ let publicGroup='ALL';
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function normalizeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,24);}
 function normalizePass(s){return String(s||'').trim().slice(0,32);}
+function hasUnsafeFirebaseChars(s){return /[.#$\/\[\]]/.test(String(s||''));}
+function normalizeUsersFromFirebase(value){
+  if(Array.isArray(value)) return value.filter(Boolean).map(normalizeName).filter(Boolean);
+  if(value && typeof value==='object') return Object.values(value).filter(Boolean).map(normalizeName).filter(Boolean);
+  return [];
+}
+function uniqueUsers(list){
+  const seen=new Set(), out=[];
+  list.forEach(u=>{const key=String(u).toLowerCase(); if(!seen.has(key)){seen.add(key); out.push(u);}});
+  return out;
+}
+function firebaseErrorMessage(err){
+  const msg=(err && err.message) ? err.message : String(err||'Unknown error');
+  if(msg.includes('PERMISSION_DENIED')) return 'Firebase blocked saving. Check Realtime Database rules.';
+  if(msg.includes('invalid key')) return 'This player name has unsupported characters. Use letters/numbers/spaces only.';
+  return 'Could not save: '+msg;
+}
 function geTime(utcStr){return new Date(utcStr+':00Z').toLocaleTimeString('en-GB',{timeZone:'Asia/Tbilisi',hour:'2-digit',minute:'2-digit'});}
 function geDate(utcStr){return new Date(utcStr+':00Z').toLocaleDateString('en-GB',{timeZone:'Asia/Tbilisi',month:'short',day:'numeric'});}
 function matchStarted(m){return new Date(m.utc+':00Z') <= new Date();}
@@ -212,14 +229,18 @@ function completePrediction(p){return p && p.h !== '' && p.a !== '' && Number.is
 function predictionCount(user){return MATCHES.filter(m=>completePrediction(state.predictions[user]?.[m.id])).length;}
 function championCount(){return state.users.filter(u=>state.champion[u]).length;}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400);}
-function pushState(){if(!db){toast('Database is not connected');return;} db.ref('wc2026').set(state).catch(err=>{console.error(err);toast('Could not save. Check Firebase rules.');});}
+function pushState(){
+  if(!db){toast('Database is not connected');return Promise.reject(new Error('Database is not connected'));}
+  state.users=uniqueUsers(state.users);
+  return db.ref('wc2026').set(state).catch(err=>{console.error(err);toast(firebaseErrorMessage(err));throw err;});
+}
 
 function initFirebase(){
   try{
     firebase.initializeApp(firebaseConfig); db=firebase.database();
     db.ref('wc2026').on('value',snap=>{
       const data=snap.val()||{};
-      state.users=Array.isArray(data.users)?data.users:[];
+      state.users=uniqueUsers(normalizeUsersFromFirebase(data.users));
       state.predictions=data.predictions||{};
       state.results=data.results||{};
       state.champion=data.champion||{};
@@ -244,20 +265,51 @@ document.getElementById('clear-empty-btn').onclick=()=>{predictGroup='ALL';rende
 function renderAll(){renderStats();renderCurrentUser();renderChampionPicker();renderPredictFilters();renderPredict();renderPublicFilters();renderPublicPredictions();renderLeaderboard();renderSchedule();renderAdmin();renderResults();}
 function renderStats(){const played=MATCHES.filter(m=>state.results[m.id]).length;const submitted=state.users.filter(u=>predictionCount(u)>0).length;document.getElementById('stats-row').innerHTML=`<div class="stat"><strong>${state.users.length}</strong><span>Players</span></div><div class="stat"><strong>${submitted}</strong><span>Submitted scores</span></div><div class="stat"><strong>${played}/${MATCHES.length}</strong><span>Results in</span></div>`;}
 
-function login(){
-  const name=normalizeName(document.getElementById('player-name').value); const pass=normalizePass(document.getElementById('player-password').value);
-  if(!name){toast('Enter your player name');return;} if(!pass){toast('Enter your password');return;}
-  const existing=state.users.find(u=>u.toLowerCase()===name.toLowerCase());
-  if(existing){
-    if(state.playerPasswords[existing] && state.playerPasswords[existing]!==pass){toast('Wrong password for this player');return;}
-    if(!state.playerPasswords[existing]) state.playerPasswords[existing]=pass;
-    currentUser=existing; currentPassword=pass;
-  }else{
-    state.users.push(name); state.playerPasswords[name]=pass; state.predictions[name]=state.predictions[name]||{}; currentUser=name; currentPassword=pass;
+async function login(){
+  const name=normalizeName(document.getElementById('player-name').value);
+  const pass=normalizePass(document.getElementById('player-password').value);
+  if(!name){toast('Enter your player name');return;}
+  if(!pass){toast('Enter your password');return;}
+  if(hasUnsafeFirebaseChars(name)){toast('Use only letters, numbers and spaces in player name');return;}
+
+  const loginBtn=document.getElementById('login-btn');
+  loginBtn.disabled=true; loginBtn.textContent='Saving...';
+  try{
+    const latestSnap = await db.ref('wc2026').once('value');
+    const data = latestSnap.val() || {};
+    state.users = uniqueUsers(normalizeUsersFromFirebase(data.users));
+    state.predictions = data.predictions || {};
+    state.results = data.results || {};
+    state.champion = data.champion || {};
+    state.playerPasswords = data.playerPasswords || data.playerPins || {};
+
+    const existing=state.users.find(u=>u.toLowerCase()===name.toLowerCase());
+    if(existing){
+      if(state.playerPasswords[existing] && state.playerPasswords[existing]!==pass){toast('Wrong password for this player');return;}
+      if(!state.playerPasswords[existing]) state.playerPasswords[existing]=pass;
+      currentUser=existing; currentPassword=pass;
+      state.predictions[existing]=state.predictions[existing]||{};
+    }else{
+      state.users.push(name);
+      state.users=uniqueUsers(state.users);
+      state.playerPasswords[name]=pass;
+      state.predictions[name]=state.predictions[name]||{};
+      currentUser=name; currentPassword=pass;
+    }
+
+    localStorage.setItem('wc2026_currentUser',currentUser);
+    sessionStorage.setItem('wc2026_playerPassword',currentPassword);
+    document.getElementById('player-name').value='';
+    document.getElementById('player-password').value='';
+    await pushState();
+    renderAll();
+    toast(`Logged in as ${currentUser}`);
+  }catch(err){
+    console.error(err);
+    toast(firebaseErrorMessage(err));
+  }finally{
+    loginBtn.disabled=false; loginBtn.textContent='Join / Login';
   }
-  localStorage.setItem('wc2026_currentUser',currentUser); sessionStorage.setItem('wc2026_playerPassword',currentPassword);
-  document.getElementById('player-name').value=''; document.getElementById('player-password').value='';
-  pushState(); renderAll(); toast(`Logged in as ${currentUser}`);
 }
 function logout(show=true){currentUser='';currentPassword='';localStorage.removeItem('wc2026_currentUser');sessionStorage.removeItem('wc2026_playerPassword');if(show)toast('Logged out');renderAll();}
 function renderCurrentUser(){
