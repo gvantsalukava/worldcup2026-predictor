@@ -48,12 +48,14 @@
   <div class="tabs">
     <button class="tab active" data-tab="schedule">📅 Schedule</button>
     <button class="tab" data-tab="predict">✏️ Predict</button>
+    <button class="tab" data-tab="allpredictions">📋 Predictions</button>
     <button class="tab" data-tab="champion">🏆 Champion</button>
     <button class="tab" data-tab="results">✅ Results</button>
     <button class="tab" data-tab="leaderboard">🏅 Leaderboard</button>
   </div>
   <div id="schedule" class="section active"><div class="note"><b>Match times are shown in Georgia local time (UTC+4).</b></div><div id="schedule-content"></div></div>
   <div id="predict" class="section"><div class="user-section"><label>Enter your name and player password</label><div class="note">New players create a password the first time. Existing players must use the same password to edit predictions.</div><div class="user-row" id="user-pills"><input class="name-input" type="text" id="new-name" placeholder="Your name" maxlength="24" /><input class="pin-input" type="password" id="new-pin" placeholder="Password" maxlength="24" /><button class="add-btn" id="join-btn">Join / Login</button></div></div><div id="predict-content"></div></div>
+  <div id="allpredictions" class="section"><div class="note"><b>Saved predictions are visible to everyone.</b> This page shows submitted score predictions by player.</div><div id="all-predictions-content"></div></div>
   <div id="champion" class="section"><div class="user-section"><label>Login to edit champion prediction</label><div class="note">Use the same player password used for score predictions.</div><div class="user-row" id="champ-user-pills"><input class="name-input" type="text" id="champ-new-name" placeholder="Your name" maxlength="24" /><input class="pin-input" type="password" id="champ-new-pin" placeholder="Password" maxlength="24" /><button class="add-btn" id="champ-join-btn">Join / Login</button></div></div><div id="champ-section"></div></div>
   <div id="results" class="section"><div class="admin-card" id="admin-login"><label>Admin area</label><div class="note">Official match results should only be entered by the game administrator.</div><input class="admin-input" type="password" id="admin-pin" placeholder="Admin PIN" /><button class="secondary-btn" id="unlock-admin">Unlock</button><div class="admin-status">Default demo PIN: change <strong>ADMIN_PIN</strong> in the code before sharing.</div></div><div id="admin-panel" class="hidden"><div class="warning">Admin mode is unlocked in this browser. For real security, protect Firebase with Authentication and Database Rules; client-side PINs only hide the UI.</div><div id="results-content"></div><button class="save-btn" id="save-results">💾 Save official results</button></div></div>
   <div id="leaderboard" class="section"><div class="stats-row" id="stats-row"></div><div class="card" id="lb-content"></div></div>
@@ -171,7 +173,7 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 function switchTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');renderAll();}
 document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b) switchTab(b.dataset.tab);});
 document.getElementById('join-btn').addEventListener('click',()=>addUser('new-name','new-pin'));document.getElementById('new-name').addEventListener('keydown',e=>{if(e.key==='Enter')addUser('new-name','new-pin');});document.getElementById('new-pin').addEventListener('keydown',e=>{if(e.key==='Enter')addUser('new-name','new-pin');});document.getElementById('unlock-admin').addEventListener('click',unlockAdmin);document.getElementById('save-results').addEventListener('click',saveResults);
-function renderAll(){renderSchedule();renderUserPills();renderChampion();renderPredict();renderAdmin();renderResults();renderLeaderboard();}
+function renderAll(){renderSchedule();renderUserPills();renderChampion();renderPredict();renderPublicPredictions();renderAdmin();renderResults();renderLeaderboard();}
 function renderSchedule(){const groups=Object.keys(GROUPS);let html='';groups.forEach(g=>{html+=`<div class="group-label">Group ${g}</div><div class="card">`;MATCHES.filter(m=>m.group===g).forEach(m=>{const r=state.results[m.id];html+=`<div class="match-row"><div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0"><div style="flex:1;min-width:0"><div class="teams">${esc(m.home)} <span class="vs">vs</span> ${esc(m.away)}</div></div></div><div class="match-right">${r?`<span class="score-badge">${r.h} – ${r.a}</span>`:''}<div class="match-meta">${matchDate(m.utc)}<br><span class="kickoff-label">Group stage · Time: ${geTime(m.utc)} Georgia</span><br>${esc(m.venue)}</div></div></div>`;});html+='</div>';});document.getElementById('schedule-content').innerHTML=html;}
 function toggleWatched(id){state.watched[id]=!state.watched[id];pushState();}
 function cleanName(name){return name.trim().replace(/\s+/g,' ').slice(0,24);}
@@ -213,6 +215,29 @@ function renderUserControl(containerId,inputId,pinId,buttonId){
   c.querySelector('#'+buttonId).onclick=()=>addUser(inputId,pinId);
   c.querySelector('#'+inputId).onkeydown=e=>{if(e.key==='Enter')addUser(inputId,pinId);};
   c.querySelector('#'+pinId).onkeydown=e=>{if(e.key==='Enter')addUser(inputId,pinId);};
+}
+function renderPublicPredictions(){
+  const el=document.getElementById('all-predictions-content');
+  if(!el)return;
+  const submittedUsers=state.users.filter(u=>predictionCount(u)>0);
+  if(!submittedUsers.length){
+    el.innerHTML='<div class="empty">No score predictions have been submitted yet.</div>';
+    return;
+  }
+  let html=`<div class="card"><div class="group-label" style="margin-top:0">Players with saved predictions</div><div style="font-size:13px;color:#666;line-height:1.7">${submittedUsers.map(u=>esc(u)).join(' · ')}</div></div>`;
+  Object.keys(GROUPS).forEach(g=>{
+    html+=`<div class="group-label">Group ${g}</div><div class="card">`;
+    MATCHES.filter(m=>m.group===g).forEach(m=>{
+      const playerPreds=submittedUsers.map(u=>{
+        const p=state.predictions[u]?.[m.id];
+        if(!p || p.h==='' || p.a==='')return '';
+        return `<span class="champ-pick-badge" style="margin:3px 4px 3px 0">${esc(u)}: <b>${esc(p.h)} – ${esc(p.a)}</b></span>`;
+      }).filter(Boolean).join('');
+      html+=`<div class="result-row"><div class="pred-teams">${esc(m.home)} vs ${esc(m.away)}<div class="pred-date">${matchDate(m.utc)} · Group stage · Time: ${geTime(m.utc)} Georgia · ${esc(m.venue)}</div></div><div style="text-align:right;max-width:55%">${playerPreds || '<span style="font-size:12px;color:#aaa">No predictions yet</span>'}</div></div>`;
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html;
 }
 function renderChampion(){const el=document.getElementById('champ-section');if(!el)return;let html='';if(!currentUser){html+='<div class="empty">Login with your name and player password, then choose your overall World Cup champion.</div>';}else{const pick=state.champion[currentUser]||'';html+=`<div class="champ-card"><h3>🏆 Overall champion prediction</h3><div class="note">Select one team as ${esc(currentUser)}\'s predicted World Cup winner. Click the selected team again to clear it.</div><div class="champ-grid">`;TEAMS.forEach(t=>html+=`<button class="champ-btn ${pick===t?'selected':''}" data-team="${esc(t)}">${esc(t)}</button>`);html+='</div></div>';}const withPicks=state.users.filter(u=>state.champion[u]);const withoutPicks=state.users.filter(u=>!state.champion[u]);html+='<div class="champ-card"><h3>📋 Champion predictions submitted</h3>';if(withPicks.length){html+=withPicks.map(u=>`<div class="lb-row"><div style="flex:1"><div class="lb-name">${esc(u)}</div><div class="champ-pick-badge">🏆 ${esc(state.champion[u])}</div></div></div>`).join('');}else{html+='<div class="empty">No champion predictions submitted yet.</div>';}if(withoutPicks.length){html+='<div class="group-label">Not selected yet</div>'+withoutPicks.map(u=>`<div class="lb-row" style="opacity:.65"><div style="flex:1"><div class="lb-name">${esc(u)}</div><div class="champ-pick-badge">🏆 —</div></div></div>`).join('');}html+='</div>';el.innerHTML=html;el.querySelectorAll('[data-team]').forEach(b=>b.onclick=()=>pickChampion(b.dataset.team));}
 function pickChampion(team){if(!currentUser)return;state.champion[currentUser]=state.champion[currentUser]===team?'':team;pushState();toast(state.champion[currentUser]?`Champion pick: ${team}`:'Champion pick cleared');}
