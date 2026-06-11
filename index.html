@@ -219,12 +219,27 @@ function renderUserControl(containerId,inputId,pinId,buttonId){
 function renderPublicPredictions(){
   const el=document.getElementById('all-predictions-content');
   if(!el)return;
+
   const submittedUsers=state.users.filter(u=>predictionCount(u)>0);
   if(!submittedUsers.length){
-    el.innerHTML='<div class="empty">No score predictions have been submitted yet.</div>';
+    el.innerHTML='<div class="empty">No score predictions have been submitted yet. After a player saves at least one full score, it will appear here.</div>';
     return;
   }
-  let html=`<div class="card"><div class="group-label" style="margin-top:0">Players with saved predictions</div><div style="font-size:13px;color:#666;line-height:1.7">${submittedUsers.map(u=>esc(u)).join(' · ')}</div></div>`;
+
+  let html='<div class="card"><div class="group-label" style="margin-top:0">All submitted predictions by player</div>';
+  submittedUsers.forEach(u=>{
+    html+=`<div class="lb-row" style="align-items:flex-start"><div style="flex:1"><div class="lb-name">${esc(u)}</div><div class="lb-detail">${predictionCount(u)} saved score predictions</div>`;
+    const rows=MATCHES.map(m=>{
+      const p=state.predictions[u]?.[m.id];
+      if(!p || p.h==='' || p.a==='')return '';
+      return `<div style="font-size:12px;line-height:1.65;border-top:1px solid #f8d9e4;padding:5px 0"><b>${esc(m.home)} vs ${esc(m.away)}</b> — ${esc(p.h)}–${esc(p.a)} <span style="color:#999">(${matchDate(m.utc)}, Group ${esc(m.group)})</span></div>`;
+    }).filter(Boolean).join('');
+    html+=rows || '<div class="empty">No saved score predictions.</div>';
+    html+='</div></div>';
+  });
+  html+='</div>';
+
+  html+='<div class="group-label">Predictions by match</div>';
   Object.keys(GROUPS).forEach(g=>{
     html+=`<div class="group-label">Group ${g}</div><div class="card">`;
     MATCHES.filter(m=>m.group===g).forEach(m=>{
@@ -242,7 +257,7 @@ function renderPublicPredictions(){
 function renderChampion(){const el=document.getElementById('champ-section');if(!el)return;let html='';if(!currentUser){html+='<div class="empty">Login with your name and player password, then choose your overall World Cup champion.</div>';}else{const pick=state.champion[currentUser]||'';html+=`<div class="champ-card"><h3>🏆 Overall champion prediction</h3><div class="note">Select one team as ${esc(currentUser)}\'s predicted World Cup winner. Click the selected team again to clear it.</div><div class="champ-grid">`;TEAMS.forEach(t=>html+=`<button class="champ-btn ${pick===t?'selected':''}" data-team="${esc(t)}">${esc(t)}</button>`);html+='</div></div>';}const withPicks=state.users.filter(u=>state.champion[u]);const withoutPicks=state.users.filter(u=>!state.champion[u]);html+='<div class="champ-card"><h3>📋 Champion predictions submitted</h3>';if(withPicks.length){html+=withPicks.map(u=>`<div class="lb-row"><div style="flex:1"><div class="lb-name">${esc(u)}</div><div class="champ-pick-badge">🏆 ${esc(state.champion[u])}</div></div></div>`).join('');}else{html+='<div class="empty">No champion predictions submitted yet.</div>';}if(withoutPicks.length){html+='<div class="group-label">Not selected yet</div>'+withoutPicks.map(u=>`<div class="lb-row" style="opacity:.65"><div style="flex:1"><div class="lb-name">${esc(u)}</div><div class="champ-pick-badge">🏆 —</div></div></div>`).join('');}html+='</div>';el.innerHTML=html;el.querySelectorAll('[data-team]').forEach(b=>b.onclick=()=>pickChampion(b.dataset.team));}
 function pickChampion(team){if(!currentUser)return;state.champion[currentUser]=state.champion[currentUser]===team?'':team;pushState();toast(state.champion[currentUser]?`Champion pick: ${team}`:'Champion pick cleared');}
 function renderPredict(){const el=document.getElementById('predict-content');if(!currentUser){el.innerHTML='<div class="empty">Login with your name and player password to start predicting.</div>';return;}const available=MATCHES.filter(m=>!state.results[m.id]);if(!available.length){el.innerHTML='<div class="empty">All matches have results — check the leaderboard.</div>';return;}const preds=state.predictions[currentUser]||{};let html='<div class="note">Scoring: 3 points for exact score, 1 point for correct outcome. Predictions lock after the match start time.</div>';Object.keys(GROUPS).forEach(g=>{const ms=available.filter(m=>m.group===g);if(!ms.length)return;html+=`<div class="group-label">Group ${g}</div><div class="card">`;ms.forEach(m=>{const p=preds[m.id]||{h:'',a:''};const locked=matchStarted(m);html+=`<div class="pred-row"><div class="pred-top"><div class="pred-teams">${esc(m.home)} vs ${esc(m.away)}<div class="pred-date">${matchDate(m.utc)} · Group stage · Time: ${geTime(m.utc)} Georgia · ${esc(m.venue)}</div>${locked?'<div class="locked">Locked — match has started.</div>':''}</div><div class="score-inputs"><input type="number" min="0" max="20" value="${esc(p.h)}" id="ph_${m.id}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" value="${esc(p.a)}" id="pa_${m.id}" ${locked?'disabled':''}/></div></div></div>`;});html+='</div>';});html+=`<button class="save-btn" onclick="savePredictions()">💾 Save ${esc(currentUser)}'s predictions</button>`;el.innerHTML=html;}
-function savePredictions(){if(!currentUser)return;state.predictions[currentUser]=state.predictions[currentUser]||{};MATCHES.forEach(m=>{if(matchStarted(m))return;const h=document.getElementById(`ph_${m.id}`),a=document.getElementById(`pa_${m.id}`);if(h&&a){if(h.value===''&&a.value==='')return;state.predictions[currentUser][m.id]={h:h.value!==''?parseInt(h.value,10):'',a:a.value!==''?parseInt(a.value,10):''};}});pushState();toast(`${currentUser}'s predictions saved ✓`);}
+function savePredictions(){if(!currentUser)return;state.predictions[currentUser]=state.predictions[currentUser]||{};MATCHES.forEach(m=>{if(matchStarted(m))return;const h=document.getElementById(`ph_${m.id}`),a=document.getElementById(`pa_${m.id}`);if(h&&a){if(h.value===''&&a.value==='')return;state.predictions[currentUser][m.id]={h:h.value!==''?parseInt(h.value,10):'',a:a.value!==''?parseInt(a.value,10):''};}});pushState();renderPublicPredictions();renderLeaderboard();toast(`${currentUser}'s predictions saved ✓`);}
 function unlockAdmin(){const pin=document.getElementById('admin-pin').value;if(pin===ADMIN_PIN){adminUnlocked=true;sessionStorage.setItem('wc2026_admin','1');renderAdmin();renderResults();toast('Admin unlocked');}else{toast('Wrong admin PIN');}}
 function renderAdmin(){document.getElementById('admin-login').classList.toggle('hidden',adminUnlocked);document.getElementById('admin-panel').classList.toggle('hidden',!adminUnlocked);}
 function renderResults(){const el=document.getElementById('results-content');if(!el||!adminUnlocked)return;let html='';Object.keys(GROUPS).forEach(g=>{html+=`<div class="group-label">Group ${g}</div><div class="card">`;MATCHES.filter(m=>m.group===g).forEach(m=>{const r=state.results[m.id]||{h:'',a:''};html+=`<div class="result-row"><div class="pred-teams">${esc(m.home)} vs ${esc(m.away)}<div class="pred-date">${matchDate(m.utc)} · Group stage · Time: ${geTime(m.utc)} Georgia · ${esc(m.venue)}</div></div><div class="score-inputs"><input type="number" min="0" max="20" value="${esc(r.h)}" id="rh_${m.id}" /><span class="dash">–</span><input type="number" min="0" max="20" value="${esc(r.a)}" id="ra_${m.id}" /></div></div>`;});html+='</div>';});el.innerHTML=html;}
