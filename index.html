@@ -35,6 +35,9 @@
   details.group{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-bottom:12px;overflow:hidden;box-shadow:0 8px 18px rgba(194,24,91,.04)}details.group summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:900;color:var(--brand);display:flex;justify-content:space-between;gap:12px}details.group summary::-webkit-details-marker{display:none}.group-body{padding:0 16px 10px}
   .match{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 0;border-top:1px solid var(--soft)}.teams{font-weight:900;font-size:14px;line-height:1.35}.meta{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.time{display:inline-block;color:var(--brand);font-weight:900;background:var(--soft);padding:2px 8px;border-radius:999px;margin-right:4px}.score-inputs{display:flex;align-items:center;gap:6px}.score-inputs input{width:48px;height:40px;text-align:center;border:1.5px solid var(--line);border-radius:12px;font-weight:900;background:#fff8fb;outline:none}.score-inputs input:focus{border-color:var(--brand)}.score-inputs input:disabled{opacity:.5}.dash{color:#b8aeb6}.result-badge{background:var(--brand);color:white;border-radius:10px;padding:6px 10px;font-weight:900;font-size:13px}.locked{color:var(--warn);font-size:12px;margin-top:5px}.empty{padding:28px 12px;text-align:center;color:#9a8e99}.warning{background:#fffde8;border:1px solid #fff200;color:#5a4300;border-radius:14px;padding:12px;font-size:13px;line-height:1.45;margin-bottom:12px}
   .leader-row,.pred-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border-top:1px solid var(--soft);padding:13px 0}.rank{font-size:24px;min-width:34px;text-align:center}.name{font-weight:900}.detail{font-size:12px;color:var(--muted);margin-top:3px}.points{text-align:right;color:var(--brand);font-weight:900;font-size:22px}.mini{font-size:11px;color:var(--muted);font-weight:600}.prediction-card{border-top:1px solid var(--soft);padding:12px 0}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.chip{border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;color:#463f48;box-shadow:0 4px 10px rgba(120,60,95,.08)}.chip b{font-weight:950}.chip.exact,.chip.outcome{background:#39ff14;border-color:#24e600;color:#062b00;box-shadow:none}.chip.exact b,.chip.outcome b{color:#062b00}.chip.upcoming{background:#fff200;border-color:#f4df00;color:#4b3f00;box-shadow:none}.chip.upcoming b{color:#4b3f00}.chip.miss{background:#d8dce3;border-color:#bfc4cc;color:#555b66;box-shadow:none}.chip.miss b{color:#343941}.result-note{display:inline-flex;align-items:center;gap:4px;margin-left:5px;font-weight:950;color:inherit}.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.legend .chip{font-size:11px;padding:6px 9px}.segmented{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px}.view-btn{border:0;border-radius:999px;background:transparent;color:#6f6874;font-size:12px;font-weight:900;padding:8px 12px;cursor:pointer}.view-btn.active{background:var(--brand);color:#fff}.view-btn:not(.active):hover{background:#fff0f6}.predictions-toolbar{align-items:center}.bar-wrap{margin-top:8px}.bar-label{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);font-weight:800;margin:6px 0 3px}.scorebar{height:8px;border-radius:99px;background:#fff0f6;border:1px solid var(--line);overflow:hidden}.scorebar span{display:block;height:100%;border-radius:99px}.scorebar.points span{background:#39ff14}.scorebar.submitted span{background:#ec008c}.scorebar.submitted{background:#ffe3f3}
+
+  .schedule-switch{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.schedule-view-btn{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:950;color:#5f5562;cursor:pointer}.schedule-view-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}.schedule-view-btn:not(.active):hover{background:#fff0f6;border-color:var(--brand);color:var(--brand)}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--line);background:#fff}.group-table{width:100%;border-collapse:collapse;min-width:520px}.group-table th,.group-table td{padding:10px 9px;border-bottom:1px solid var(--soft);font-size:12px;text-align:center;white-space:nowrap}.group-table th{background:#fff0f6;color:var(--brand);font-weight:950}.group-table td.team-cell{text-align:left;font-weight:950;color:#201920}.group-table tr:last-child td{border-bottom:none}.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:999px;background:var(--soft);color:var(--brand);font-weight:950;margin-right:7px}.qualify-note{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.4}
   .admin-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--brand);color:white;border-radius:12px;padding:11px 18px;font-weight:900;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:200}.toast.show{opacity:1}.error{color:#b00020;font-weight:800}.success{color:var(--good);font-weight:800}
   @media(max-width:720px){.topbar{padding:16px 12px 22px}.topbar-inner,.hero{display:block}.title h1{font-size:21px}.timezone{text-align:left;margin-top:8px}.container{padding:0 10px 84px}.hero{padding:14px;border-radius:18px}.hero h2{font-size:18px}.hero p{font-size:13px}.rules{justify-content:flex-start;margin-top:12px}.tabs{display:flex;overflow-x:auto;gap:0;border-radius:15px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}.tab{min-width:104px;font-size:12px;white-space:nowrap;scroll-snap-align:start;padding:12px 10px}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat{padding:10px 6px;border-radius:14px}.stat strong{font-size:20px}.stat span{font-size:11px}.card{padding:13px;border-radius:16px}.section-title{display:block}.section-title .tag{margin-top:8px}.login-panel{grid-template-columns:1fr}.input,.btn{min-height:46px}.toolbar,.predictions-toolbar{display:block}.group-filter{margin-top:10px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter-btn{flex:0 0 auto}.segmented{width:100%;display:grid;grid-template-columns:1fr 1fr;border-radius:14px}.view-btn{padding:10px 8px}.match{display:block;padding:14px 0}.teams{font-size:14px}.meta{font-size:12px}.score-inputs{justify-content:flex-start;margin-top:10px}.score-inputs input{width:56px;height:44px;font-size:16px}.leader-row,.pred-row{grid-template-columns:auto 1fr;align-items:start}.points{grid-column:2;text-align:left;font-size:18px}.chips{display:grid;grid-template-columns:1fr}.chip{border-radius:12px;line-height:1.35}.champ-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.champ-btn{border-radius:14px;padding:10px 8px}.toast{width:calc(100% - 28px);text-align:center;bottom:14px}}@media(max-width:430px){.tab{min-width:96px}.title p,.timezone{font-size:12px}.grid-3{grid-template-columns:1fr}.stat strong{font-size:22px}.champ-grid{grid-template-columns:1fr}.pill{font-size:11px}.group-body{padding:0 12px 10px}details.group summary{padding:13px 12px}.match{padding:13px 0}}
 </style>
@@ -87,7 +90,7 @@
   </section>
 
   <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
-  <section id="schedule" class="section active"><div class="card"><div class="section-title"><h3>Group-stage schedule</h3></div><p class="help">All matches are listed chronologically in Georgia local time. The Predict tab follows the same order.</p></div><div id="schedule-content"></div></section>
+  <section id="schedule" class="section active"><div id="schedule-content"></div></section>
   <section id="results" class="section">
     <div class="card" id="admin-login"><div class="section-title"><h3>Admin results</h3></div><p class="help">Only the game admin should enter official scores. This PIN only hides the page in the browser; Firebase rules are still important for real security.</p><div class="admin-grid"><input class="input" id="admin-pin" type="password" placeholder="Admin PIN" /><button class="btn" id="unlock-admin">Unlock</button></div></div>
     <div id="admin-panel" class="hidden"><div class="warning">Admin mode is unlocked in this browser. Enter official results carefully; they update the leaderboard for everyone.</div><div id="results-content"></div><button class="btn full" id="save-results">💾 Save official results</button></div>
@@ -206,6 +209,7 @@ let adminUnlocked=sessionStorage.getItem('wc2026_admin')==='1';
 let predictGroup='ALL';
 let publicGroup='ALL';
 let publicView='games';
+let scheduleView='fixtures';
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function normalizeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,24);}
@@ -460,17 +464,55 @@ function renderLeaderboard(){
 function calcPts(pred,result){if(!completePrediction(pred)||!result)return 0; if(pred.h===result.h&&pred.a===result.a)return 3; const po=pred.h>pred.a?'H':pred.h<pred.a?'A':'D'; const ro=result.h>result.a?'H':result.h<result.a?'A':'D'; return po===ro?1:0;}
 function predictionClass(pred,result){if(!result)return 'upcoming'; const pts=calcPts(pred,result); return pts===3?'exact':pts===1?'outcome':'miss';}
 function predictionLabel(pred,result){const pts=calcPts(pred,result); if(pts===3)return '✓ exact'; if(pts===1)return '✓ outcome'; if(result)return '0 pts'; return ''; }
-function renderSchedule(){
-  const el=document.getElementById('schedule-content'); let html='';
-  matchesByDate('ALL').forEach(day=>{
-    html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · Georgia time</span></summary><div class="group-body">`;
-    day.matches.forEach(m=>{
-      const r=state.results[m.id];
-      html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}</div></div>${r?`<span class="result-badge">${r.h}–${r.a}</span>`:''}</div>`;
-    });
-    html+='</div></details>';
+function groupTableData(group){
+  const teams=GROUPS[group]||[];
+  const rows=teams.map((team,idx)=>({team,idx,p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0}));
+  const byTeam=Object.fromEntries(rows.map(r=>[r.team,r]));
+  MATCHES.filter(m=>m.group===group).forEach(m=>{
+    const r=state.results[m.id];
+    if(!r || r.h==='' || r.a==='' || r.h==null || r.a==null) return;
+    const home=byTeam[m.home], away=byTeam[m.away];
+    if(!home || !away) return;
+    const hg=Number(r.h), ag=Number(r.a);
+    home.p++; away.p++;
+    home.gf+=hg; home.ga+=ag; home.gd=home.gf-home.ga;
+    away.gf+=ag; away.ga+=hg; away.gd=away.gf-away.ga;
+    if(hg>ag){home.w++; away.l++; home.pts+=3;}
+    else if(hg<ag){away.w++; home.l++; away.pts+=3;}
+    else{home.d++; away.d++; home.pts++; away.pts++;}
   });
+  return rows.sort((a,b)=>b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.idx-b.idx);
+}
+function renderGroupTables(){
+  let html='';
+  Object.keys(GROUPS).forEach(g=>{
+    const rows=groupTableData(g);
+    const played=rows.reduce((a,r)=>a+r.p,0);
+    html+=`<details class="group" open><summary>Group ${esc(g)}<span class="small">${played/2} result${played/2===1?'':'s'} entered</span></summary><div class="group-body"><div class="table-scroll"><table class="group-table"><thead><tr><th>#</th><th style="text-align:left">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>`;
+    rows.forEach((r,i)=>{
+      html+=`<tr><td><span class="rank-badge">${i+1}</span></td><td class="team-cell">${esc(r.team)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gd>0?'+':''}${r.gd}</td><td><b>${r.pts}</b></td></tr>`;
+    });
+    html+=`</tbody></table></div><div class="qualify-note">Table updates automatically when official results are entered in Admin.</div></div></details>`;
+  });
+  return html;
+}
+function renderSchedule(){
+  const el=document.getElementById('schedule-content');
+  let html=`<div class="card"><div class="section-title"><h3>Group-stage schedule</h3><span class="tag">Georgia time</span></div><p class="help">Check fixtures chronologically or switch to group tables. Group tables update after official results are entered.</p><div class="schedule-switch"><button type="button" class="schedule-view-btn ${scheduleView==='fixtures'?'active':''}" data-schedule-view="fixtures">📅 Fixtures</button><button type="button" class="schedule-view-btn ${scheduleView==='tables'?'active':''}" data-schedule-view="tables">📊 Group tables</button></div></div>`;
+  if(scheduleView==='tables'){
+    html+=renderGroupTables();
+  }else{
+    matchesByDate('ALL').forEach(day=>{
+      html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · Georgia time</span></summary><div class="group-body">`;
+      day.matches.forEach(m=>{
+        const r=state.results[m.id];
+        html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}</div></div>${r?`<span class="result-badge">${r.h}–${r.a}</span>`:''}</div>`;
+      });
+      html+='</div></details>';
+    });
+  }
   el.innerHTML=html;
+  el.querySelectorAll('[data-schedule-view]').forEach(b=>b.onclick=()=>{scheduleView=b.dataset.scheduleView;renderSchedule();});
 }
 function unlockAdmin(){const pin=document.getElementById('admin-pin').value;if(pin===ADMIN_PIN){adminUnlocked=true;sessionStorage.setItem('wc2026_admin','1');renderAdmin();renderResults();toast('Admin unlocked');}else toast('Wrong admin PIN');}
 function renderAdmin(){document.getElementById('admin-login').classList.toggle('hidden',adminUnlocked);document.getElementById('admin-panel').classList.toggle('hidden',!adminUnlocked);}
