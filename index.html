@@ -28,7 +28,7 @@
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center;box-shadow:0 8px 18px rgba(194,24,91,.05)}.stat strong{display:block;color:var(--brand);font-size:27px}.stat span{font-size:12px;color:var(--muted)}
   .section{display:none}.section.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 8px 18px rgba(194,24,91,.04)}
   .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-title h3{color:var(--brand);font-size:17px}.help{color:var(--muted);font-size:13px;line-height:1.45}.small{font-size:12px;color:var(--muted);line-height:1.4}.divider{height:1px;background:var(--soft);margin:14px 0}
-  .login-panel{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-top:12px}.input{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff;color:var(--text)}.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(194,24,91,.1)}.btn{border:1.5px solid var(--brand);background:var(--brand);color:white;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer}.btn:hover{filter:brightness(.96)}.btn.secondary{background:white;color:var(--brand);border-color:var(--line)}.btn.secondary:hover{border-color:var(--brand);background:#fff0f6}.btn.full{width:100%;margin-top:14px}.btn:disabled{opacity:.45;cursor:not-allowed}
+  .login-panel{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-top:12px}.remember-row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--muted)}.remember-row input{accent-color:var(--brand);width:16px;height:16px}.input{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff;color:var(--text)}.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(194,24,91,.1)}.btn{border:1.5px solid var(--brand);background:var(--brand);color:white;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer}.btn:hover{filter:brightness(.96)}.btn.secondary{background:white;color:var(--brand);border-color:var(--line)}.btn.secondary:hover{border-color:var(--brand);background:#fff0f6}.btn.full{width:100%;margin-top:14px}.btn:disabled{opacity:.45;cursor:not-allowed}
   .current-user{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.tag{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--brand);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--line)}
   .champ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:12px}.champ-btn{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 10px;font-weight:800;cursor:pointer;color:#3a333d}.champ-btn:hover{border-color:var(--brand);color:var(--brand)}.champ-btn.selected{background:var(--brand);border-color:var(--brand);color:white}
   .toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}.group-filter{display:flex;gap:6px;flex-wrap:wrap}.filter-btn{border:1px solid var(--line);background:white;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;cursor:pointer;color:#635c65}.filter-btn.active{background:var(--brand);color:white;border-color:var(--brand)}
@@ -63,12 +63,13 @@
   <section id="predict" class="section">
     <div class="card">
       <div class="section-title"><h3>1. Login / create player</h3><span class="tag" id="save-state">Not logged in</span></div>
-      <p class="help">New player: enter a name and choose a password. Returning player: use the same name and password. This prevents friends from editing each other’s predictions.</p>
+      <p class="help">New player: enter a name and choose a password. Returning player: use the same name and password. Tick “Remember me” only on your own device.</p>
       <div class="login-panel">
         <input class="input" id="player-name" maxlength="24" autocomplete="username" placeholder="Player name" />
         <input class="input" id="player-password" maxlength="32" type="password" autocomplete="current-password" placeholder="Player password" />
         <button class="btn" id="login-btn">Join / Login</button>
       </div>
+      <label class="remember-row"><input type="checkbox" id="remember-login" /> Remember me on this device</label>
       <div class="current-user" id="current-user-row"></div>
     </div>
     <div class="card" id="champion-card"></div>
@@ -197,8 +198,10 @@ const TEAMS = Object.values(GROUPS).flat();
 const ADMIN_PIN = "1363";
 let state={users:[],predictions:{},results:{},champion:{},playerPasswords:{}};
 let db=null;
-let currentUser=localStorage.getItem('wc2026_currentUser')||'';
-let currentPassword=sessionStorage.getItem('wc2026_playerPassword')||'';
+function getSavedLogin(){try{return JSON.parse(localStorage.getItem('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
+const savedLogin=getSavedLogin();
+let currentUser=savedLogin.user || localStorage.getItem('wc2026_currentUser') || '';
+let currentPassword=savedLogin.pass || sessionStorage.getItem('wc2026_playerPassword') || '';
 let adminUnlocked=sessionStorage.getItem('wc2026_admin')==='1';
 let predictGroup='ALL';
 let publicGroup='ALL';
@@ -259,6 +262,7 @@ document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.cl
 document.getElementById('login-btn').onclick=login;
 document.getElementById('player-name').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 document.getElementById('player-password').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+(function initSavedLoginForm(){const saved=getSavedLogin(); if(saved.user){document.getElementById('player-name').value=saved.user; document.getElementById('player-password').value=saved.pass||''; const cb=document.getElementById('remember-login'); if(cb) cb.checked=true;}})();
 document.getElementById('save-predictions').onclick=savePredictions;
 document.getElementById('unlock-admin').onclick=unlockAdmin;
 document.getElementById('save-results').onclick=saveResults;
@@ -302,8 +306,11 @@ async function login(){
 
     localStorage.setItem('wc2026_currentUser',currentUser);
     sessionStorage.setItem('wc2026_playerPassword',currentPassword);
-    document.getElementById('player-name').value='';
-    document.getElementById('player-password').value='';
+    const remember=document.getElementById('remember-login')?.checked;
+    if(remember){localStorage.setItem('wc2026_savedLogin', JSON.stringify({user:currentUser, pass:currentPassword}));}
+    else{localStorage.removeItem('wc2026_savedLogin');}
+    if(!remember){document.getElementById('player-name').value='';document.getElementById('player-password').value='';}
+    else{document.getElementById('player-name').value=currentUser;document.getElementById('player-password').value=currentPassword;}
     await pushState();
     renderAll();
     toast(`Logged in as ${currentUser}`);
@@ -314,7 +321,7 @@ async function login(){
     loginBtn.disabled=false; loginBtn.textContent='Join / Login';
   }
 }
-function logout(show=true){currentUser='';currentPassword='';localStorage.removeItem('wc2026_currentUser');sessionStorage.removeItem('wc2026_playerPassword');if(show)toast('Logged out');renderAll();}
+function logout(show=true){currentUser='';currentPassword='';localStorage.removeItem('wc2026_currentUser');sessionStorage.removeItem('wc2026_playerPassword');localStorage.removeItem('wc2026_savedLogin');const cb=document.getElementById('remember-login'); if(cb) cb.checked=false; const n=document.getElementById('player-name'), p=document.getElementById('player-password'); if(n)n.value=''; if(p)p.value=''; if(show)toast('Logged out');renderAll();}
 function renderCurrentUser(){
   const row=document.getElementById('current-user-row'); const tag=document.getElementById('save-state');
   if(currentUser){tag.textContent=`Logged in: ${currentUser}`;row.innerHTML=`<span class="tag">✅ ${esc(currentUser)}</span><span class="small">${predictionCount(currentUser)} scores saved · Champion: ${esc(state.champion[currentUser]||'not selected')}</span><button class="btn secondary" type="button" onclick="logout()">Log out</button>`;}
