@@ -78,7 +78,7 @@
     <div class="card" id="champion-card"></div>
     <div class="card">
       <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 72 saved</span></div>
-      <p class="help">Matches are listed in the same chronological order as the Schedule page. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. Press Save when finished.</p>
+      <p class="help">By default, this list shows only upcoming/editable matches. Use “Show full schedule” if you need to review older or locked matches. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. Press Save when finished.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
       <button class="btn full" id="save-predictions">💾 Save champion and scores</button>
@@ -210,6 +210,7 @@ let predictGroup='ALL';
 let publicGroup='ALL';
 let publicView='games';
 let scheduleView='fixtures';
+let predictMode='upcoming';
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function normalizeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,24);}
@@ -271,7 +272,7 @@ document.getElementById('player-password').addEventListener('keydown',e=>{if(e.k
 document.getElementById('save-predictions').onclick=savePredictions;
 document.getElementById('unlock-admin').onclick=unlockAdmin;
 document.getElementById('save-results').onclick=saveResults;
-document.getElementById('clear-empty-btn').onclick=()=>{predictGroup='ALL';renderPredictFilters();renderPredict();};
+document.getElementById('clear-empty-btn').onclick=()=>{predictMode = predictMode==='upcoming' ? 'all' : 'upcoming'; renderPredict();};
 document.getElementById('prediction-view-toggle').addEventListener('click',e=>{const b=e.target.closest('[data-view]'); if(!b)return; publicView=b.dataset.view; document.querySelectorAll('#prediction-view-toggle .view-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===publicView)); renderPublicPredictions();});
 
 function renderAll(){renderStats();renderCurrentUser();renderChampionPicker();renderPredictFilters();renderPredict();renderPublicFilters();renderPublicPredictions();renderLeaderboard();renderSchedule();renderAdmin();renderResults();}
@@ -366,15 +367,38 @@ function matchesByDate(active='ALL'){
 
 function renderPredict(){
   const el=document.getElementById('predict-content'); const btn=document.getElementById('save-predictions');
+  const toggleBtn=document.getElementById('clear-empty-btn');
+  if(toggleBtn){
+    toggleBtn.textContent = predictMode==='upcoming' ? 'Show full schedule' : 'Show upcoming only';
+  }
   if(!currentUser){el.innerHTML='<div class="empty">Login above to enter score predictions.</div>'; btn.disabled=true; return;} btn.disabled=false;
   const preds=state.predictions[currentUser]||{}; document.getElementById('progress-tag').textContent=`${predictionCount(currentUser)} / ${MATCHES.length} saved`;
-  const days=matchesByDate(predictGroup);
+
+  const visibleMatches = sortedMatches(predictGroup).filter(m => predictMode==='all' || !matchStarted(m));
+  if(!visibleMatches.length){
+    el.innerHTML = '<div class="empty">No upcoming editable matches in this filter. Use “Show full schedule” to review locked matches.</div>';
+    return;
+  }
+
+  const days=[]; let current='';
+  visibleMatches.forEach(m=>{
+    const label=geDateLong(m.utc);
+    if(label!==current){days.push({label,matches:[]}); current=label;}
+    days[days.length-1].matches.push(m);
+  });
+
   let html='';
+  if(predictMode==='upcoming'){
+    html += '<div class="warning">Showing upcoming/editable matches only. Locked older matches are hidden here to keep the prediction list clean.</div>';
+  }else{
+    html += '<div class="warning">Showing full schedule. Locked matches can be reviewed but cannot be edited.</div>';
+  }
   days.forEach(day=>{
-    html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · schedule order</span></summary><div class="group-body">`;
+    html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · ${predictMode==='upcoming'?'upcoming':'schedule order'}</span></summary><div class="group-body">`;
     day.matches.forEach(m=>{
       const p=preds[m.id]||{h:'',a:''}; const locked=matchStarted(m);
-      html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
+      const saved=completePrediction(p);
+      html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
     });
     html+='</div></details>';
   });
