@@ -28,7 +28,7 @@
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center;box-shadow:0 8px 18px rgba(194,24,91,.05)}.stat strong{display:block;color:var(--brand);font-size:27px}.stat span{font-size:12px;color:var(--muted)}
   .section{display:none}.section.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 8px 18px rgba(194,24,91,.04)}
   .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-title h3{color:var(--brand);font-size:17px}.help{color:var(--muted);font-size:13px;line-height:1.45}.small{font-size:12px;color:var(--muted);line-height:1.4}.divider{height:1px;background:var(--soft);margin:14px 0}
-  .login-panel{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-top:12px}.remember-row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--muted)}.remember-row input{accent-color:var(--brand);width:16px;height:16px}.input{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff;color:var(--text)}.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(194,24,91,.1)}.btn{border:1.5px solid var(--brand);background:var(--brand);color:white;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer}.btn:hover{filter:brightness(.96)}.btn.secondary{background:white;color:var(--brand);border-color:var(--line)}.btn.secondary:hover{border-color:var(--brand);background:#fff0f6}.btn.full{width:100%;margin-top:14px}.btn:disabled{opacity:.45;cursor:not-allowed}
+  .login-panel{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-top:12px}.remember-row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--muted)}.remember-row input{accent-color:var(--brand);width:16px;height:16px}.input{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff;color:var(--text)}.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(194,24,91,.1)}.btn{border:1.5px solid var(--brand);background:var(--brand);color:white;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer}.btn:hover{filter:brightness(.96)}.btn.secondary{background:white;color:var(--brand);border-color:var(--line)}.btn.secondary:hover{border-color:var(--brand);background:#fff0f6}.btn.secondary.active{background:var(--yellow);color:#4b3f00;border-color:#f4df00}.btn.full{width:100%;margin-top:14px}.btn:disabled{opacity:.45;cursor:not-allowed}
   .current-user{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.tag{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--brand);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--line)}
   .champ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:12px}.champ-btn{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 10px;font-weight:800;cursor:pointer;color:#3a333d}.champ-btn:hover{border-color:var(--brand);color:var(--brand)}.champ-btn.selected{background:var(--brand);border-color:var(--brand);color:white}
   .toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}.group-filter{display:flex;gap:6px;flex-wrap:wrap}.filter-btn{border:1px solid var(--line);background:white;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;cursor:pointer;color:#635c65}.filter-btn.active{background:var(--brand);color:white;border-color:var(--brand)}
@@ -86,7 +86,7 @@
   </section>
 
   <section id="allpredictions" class="section">
-    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Visible after each match is locked. Predictions remain hidden before match start time. Switch between match view and player view.</p><div class="legend"><span class="chip exact">Exact score · 3 pts</span><span class="chip outcome">Outcome only · 1 pt</span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · 0 pts</span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
+    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">By default, predictions are visible only after each match is locked. Use the reveal button only if your game group agrees to see early predictions.</p><div class="legend"><span class="chip exact">Exact score · 3 pts</span><span class="chip outcome">Outcome only · 1 pt</span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · 0 pts</span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="reveal-hidden-btn">👁 Reveal hidden predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
   </section>
 
   <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
@@ -211,6 +211,7 @@ let publicGroup='ALL';
 let publicView='games';
 let scheduleView='fixtures';
 let predictMode='upcoming';
+let revealHiddenPredictions=false;
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function normalizeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,24);}
@@ -236,7 +237,7 @@ function geTime(utcStr){return new Date(utcStr+':00Z').toLocaleTimeString('en-GB
 function geDate(utcStr){return new Date(utcStr+':00Z').toLocaleDateString('en-GB',{timeZone:'Asia/Tbilisi',month:'short',day:'numeric'});}
 function matchStarted(m){return new Date(m.utc+':00Z') <= new Date();}
 function completePrediction(p){return p && p.h !== '' && p.a !== '' && Number.isFinite(Number(p.h)) && Number.isFinite(Number(p.a));}
-function canRevealPredictions(m){return matchStarted(m) || !!state.results[m.id];}
+function canRevealPredictions(m){return revealHiddenPredictions || matchStarted(m) || !!state.results[m.id];}
 function predictionCount(user){return MATCHES.filter(m=>completePrediction(state.predictions[user]?.[m.id])).length;}
 function championCount(){return state.users.filter(u=>state.champion[u]).length;}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400);}
@@ -274,6 +275,7 @@ document.getElementById('unlock-admin').onclick=unlockAdmin;
 document.getElementById('save-results').onclick=saveResults;
 document.getElementById('clear-empty-btn').onclick=()=>{predictMode = predictMode==='upcoming' ? 'all' : 'upcoming'; renderPredict();};
 document.getElementById('prediction-view-toggle').addEventListener('click',e=>{const b=e.target.closest('[data-view]'); if(!b)return; publicView=b.dataset.view; document.querySelectorAll('#prediction-view-toggle .view-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===publicView)); renderPublicPredictions();});
+document.getElementById('reveal-hidden-btn').addEventListener('click',()=>{revealHiddenPredictions=!revealHiddenPredictions;renderPublicPredictions();toast(revealHiddenPredictions?'Hidden predictions revealed on this device':'Hidden predictions are protected again');});
 
 function renderAll(){renderStats();renderCurrentUser();renderChampionPicker();renderPredictFilters();renderPredict();renderPublicFilters();renderPublicPredictions();renderLeaderboard();renderSchedule();renderAdmin();renderResults();}
 function renderStats(){const played=MATCHES.filter(m=>state.results[m.id]).length;const submitted=state.users.filter(u=>predictionCount(u)>0).length;document.getElementById('stats-row').innerHTML=`<div class="stat"><strong>${state.users.length}</strong><span>Players</span></div><div class="stat"><strong>${submitted}</strong><span>Submitted scores</span></div><div class="stat"><strong>${played}/${MATCHES.length}</strong><span>Results in</span></div>`;}
@@ -412,6 +414,11 @@ function savePredictions(){
 
 function renderPublicPredictions(){
   const el=document.getElementById('all-predictions-content');
+  const revealBtn=document.getElementById('reveal-hidden-btn');
+  if(revealBtn){
+    revealBtn.textContent = revealHiddenPredictions ? '🙈 Hide early predictions' : '👁 Reveal hidden predictions';
+    revealBtn.classList.toggle('active', revealHiddenPredictions);
+  }
   const submitted=state.users.filter(u=>predictionCount(u)>0 || state.champion[u]);
   if(!submitted.length){el.innerHTML='<div class="empty">No predictions have been submitted yet.</div>';return;}
   let html='';
@@ -434,7 +441,7 @@ function renderPublicPredictions(){
         chipsHtml+=`<span class="chip ${cls}">${geDate(m.utc)} · Group ${esc(m.group)} · ${esc(m.home)}–${esc(m.away)}: <b>${p.h}-${p.a}</b>${label?` <span class="result-note">${label}</span>`:''}</span>`;
       });
       if(hiddenCount){
-        chipsHtml+=`<span class="chip hiddenlocked">🔒 ${hiddenCount} prediction${hiddenCount===1?'':'s'} hidden until match time</span>`;
+        chipsHtml+=`<span class="chip hiddenlocked">🔒 ${hiddenCount} prediction${hiddenCount===1?'':'s'} hidden until match time · use reveal button to view</span>`;
       }
       html+=`<div class="prediction-card"><div class="name">${esc(u)}</div><div class="detail">${count} score predictions saved · Champion: <b>${esc(state.champion[u]||'—')}</b></div><div class="scorebar submitted"><span style="width:${pct}%"></span></div><div class="chips">${chipsHtml || '<span class="small">No visible predictions for this filter yet.</span>'}</div></div>`;
     });
@@ -448,7 +455,7 @@ function renderPublicPredictions(){
         let chips='';
         if(!canRevealPredictions(m)){
           chips = hiddenCount
-            ? `<span class="chip hiddenlocked">🔒 ${hiddenCount} submitted prediction${hiddenCount===1?'':'s'} hidden until match time</span>`
+            ? `<span class="chip hiddenlocked">🔒 ${hiddenCount} submitted prediction${hiddenCount===1?'':'s'} hidden until match time · use reveal button to view</span>`
             : '<span class="small">No score predictions yet</span>';
         }else{
           chips=submitted.map(u=>{
