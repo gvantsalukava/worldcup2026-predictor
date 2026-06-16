@@ -108,7 +108,7 @@
 <main class="container">
   <section class="hero">
     <div><h2>Schedule first, predictions in the same order.</h2><p>Matches are shown chronologically in Georgia time. The Predict page follows the same schedule order so players do not get confused.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt correct outcome</span><span class="pill">Predictions lock at match time</span></div>
+    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt correct outcome</span><span class="pill">Predictions close at match start</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="schedule">📅 Schedule</button>
@@ -134,7 +134,7 @@
     <div class="card" id="champion-card"></div>
     <div class="card">
       <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 72 saved</span></div>
-      <p class="help">By default, this list shows only upcoming/editable matches. Use “Show full schedule” if you need to review older or locked matches. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. Press Save when finished.</p>
+      <p class="help">By default, this list shows only upcoming/editable matches. Use “Show full schedule” if you need to review older or locked matches. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. After a match starts, that match is closed and cannot be changed.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
       <button class="btn full" id="save-predictions">💾 Save champion and scores</button>
@@ -254,7 +254,7 @@ const MATCHES = [
 ];
 const TEAMS = Object.values(GROUPS).flat();
 
-const ADMIN_PIN = "1363";
+const ADMIN_PIN = "1234";
 let state={users:[],predictions:{},results:{},champion:{},playerPasswords:{}};
 let db=null;
 function getSavedLogin(){try{return JSON.parse(localStorage.getItem('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
@@ -292,6 +292,12 @@ function firebaseErrorMessage(err){
 function geTime(utcStr){return new Date(utcStr+':00Z').toLocaleTimeString('en-GB',{timeZone:'Asia/Tbilisi',hour:'2-digit',minute:'2-digit'});}
 function geDate(utcStr){return new Date(utcStr+':00Z').toLocaleDateString('en-GB',{timeZone:'Asia/Tbilisi',month:'short',day:'numeric'});}
 function matchStarted(m){return new Date(m.utc+':00Z') <= new Date();}
+function matchClosed(m){return matchStarted(m) || !!state.results[m.id];}
+function matchLockText(m){
+  if(state.results[m.id]) return 'Closed — official result is entered.';
+  if(matchStarted(m)) return 'Closed — match has started.';
+  return '';
+}
 function completePrediction(p){return p && p.h !== '' && p.a !== '' && Number.isFinite(Number(p.h)) && Number.isFinite(Number(p.a));}
 function canRevealPredictions(m){return matchStarted(m) || !!state.results[m.id];}
 function isPreviousMatch(m){return matchStarted(m) || !!state.results[m.id];}
@@ -439,7 +445,7 @@ function renderPredict(){
   if(!currentUser){el.innerHTML='<div class="empty">Login above to enter score predictions.</div>'; btn.disabled=true; return;} btn.disabled=false;
   const preds=state.predictions[currentUser]||{}; document.getElementById('progress-tag').textContent=`${predictionCount(currentUser)} / ${MATCHES.length} saved`;
 
-  const visibleMatches = sortedMatches(predictGroup).filter(m => predictMode==='all' || !matchStarted(m));
+  const visibleMatches = sortedMatches(predictGroup).filter(m => predictMode==='all' || !matchClosed(m));
   if(!visibleMatches.length){
     el.innerHTML = '<div class="empty">No upcoming editable matches in this filter. Use “Show full schedule” to review locked matches.</div>';
     return;
@@ -461,18 +467,34 @@ function renderPredict(){
   days.forEach(day=>{
     html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · ${predictMode==='upcoming'?'upcoming':'schedule order'}</span></summary><div class="group-body">`;
     day.matches.forEach(m=>{
-      const p=preds[m.id]||{h:'',a:''}; const locked=matchStarted(m);
+      const p=preds[m.id]||{h:'',a:''}; const locked=matchClosed(m); const lockText=matchLockText(m);
       const saved=completePrediction(p);
-      html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
+      html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${lockText?`<div class="locked">${esc(lockText)}</div>`:''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
     });
     html+='</div></details>';
   });
   el.innerHTML=html || '<div class="empty">No matches found.</div>';
 }
 function savePredictions(){
-  if(!currentUser){toast('Login first');return;} const errors=[]; state.predictions[currentUser]=state.predictions[currentUser]||{};
-  MATCHES.forEach(m=>{if(matchStarted(m))return; const h=document.getElementById(`ph_${m.id}`), a=document.getElementById(`pa_${m.id}`); if(!h||!a)return; const hv=h.value.trim(), av=a.value.trim(); if(hv==='' && av==='')return; if(hv==='' || av===''){errors.push(`${m.home} vs ${m.away}`); return;} const hn=Number(hv), an=Number(av); if(!Number.isInteger(hn)||!Number.isInteger(an)||hn<0||an<0||hn>20||an>20){errors.push(`${m.home} vs ${m.away}`);return;} state.predictions[currentUser][m.id]={h:hn,a:an};});
-  if(errors.length){toast('Some scores are incomplete or invalid');return;} pushState(); renderAll(); toast(`${currentUser}'s predictions saved`);
+  if(!currentUser){toast('Login first');return;}
+  const errors=[];
+  let lockedSkipped=0;
+  state.predictions[currentUser]=state.predictions[currentUser]||{};
+  MATCHES.forEach(m=>{
+    const h=document.getElementById(`ph_${m.id}`), a=document.getElementById(`pa_${m.id}`);
+    if(!h||!a) return;
+    if(matchClosed(m)){lockedSkipped++; return;}
+    const hv=h.value.trim(), av=a.value.trim();
+    if(hv==='' && av==='') return;
+    if(hv==='' || av===''){errors.push(`${m.home} vs ${m.away}`); return;}
+    const hn=Number(hv), an=Number(av);
+    if(!Number.isInteger(hn)||!Number.isInteger(an)||hn<0||an<0||hn>20||an>20){errors.push(`${m.home} vs ${m.away}`);return;}
+    state.predictions[currentUser][m.id]={h:hn,a:an};
+  });
+  if(errors.length){toast('Some scores are incomplete or invalid');return;}
+  pushState();
+  renderAll();
+  toast(lockedSkipped ? `${currentUser}'s predictions saved. Closed matches were ignored.` : `${currentUser}'s predictions saved`);
 }
 
 function renderPublicPredictions(){
