@@ -212,7 +212,7 @@ const MATCHES = [
   {id:26,group:'B',home:'Switzerland',away:'Bosnia & Herzegovina',utc:'2026-06-18T19:00',venue:'Los Angeles Stadium'},
   {id:27,group:'B',home:'Canada',away:'Qatar',utc:'2026-06-18T22:00',venue:'BC Place Vancouver'},
   {id:28,group:'A',home:'Mexico',away:'Korea Republic',utc:'2026-06-19T01:00',venue:'Estadio Guadalajara'},
-  {id:29,group:'C',home:'Brazil',away:'Haiti',utc:'2026-06-19T00:30',venue:'Philadelphia Stadium'},
+  {id:29,group:'C',home:'Brazil',away:'Haiti',utc:'2026-06-20T00:30',venue:'Philadelphia Stadium'},
   {id:30,group:'C',home:'Scotland',away:'Morocco',utc:'2026-06-19T22:00',venue:'Boston Stadium'},
   {id:31,group:'D',home:'Türkiye',away:'Paraguay',utc:'2026-06-20T03:00',venue:'San Francisco Bay Area Stadium'},
   {id:32,group:'D',home:'United States',away:'Australia',utc:'2026-06-19T19:00',venue:'Seattle Stadium'},
@@ -259,7 +259,7 @@ const MATCHES = [
 ];
 const TEAMS = Object.values(GROUPS).flat();
 
-const ADMIN_PIN = "1363";
+const ADMIN_PIN = "1234";
 let state={users:[],predictions:{},results:{},champion:{},playerPasswords:{}};
 let db=null;
 function getSavedLogin(){try{return JSON.parse(localStorage.getItem('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
