@@ -69,6 +69,7 @@
   .submitted-pill{background:#fff5fa;border:1px solid var(--line);color:#6c4e60}
   .champion-pill{background:#dfffd8;border:1px solid #8ef27f;color:#174a10}
   .champion-pill.empty{background:#f4f0f3;border-color:#e4dbe1;color:#7b7077}
+  .champion-pill.hidden{background:#fff5fa;border:1px solid var(--line);color:#6c4e60}
   .submitted-muted{color:var(--muted);font-size:12px}
   .rank-note{font-size:11px;color:var(--muted);margin-top:4px}
   .leader-pending{margin-top:16px}
@@ -392,6 +393,12 @@ function togglePreviousPredictions(){
 }
 function predictionCount(user){return MATCHES.filter(m=>completePrediction(state.predictions[user]?.[m.id])).length;}
 function championCount(){return state.users.filter(u=>state.champion[u]).length;}
+function publicChampionDisplay(u){
+  const pick=state.champion[u]||'';
+  if(!pick) return {text:'—', cls:'champion-pill empty'};
+  if(currentUser && u===currentUser) return {text:pick, cls:'champion-pill'};
+  return {text:'Hidden pick', cls:'champion-pill hidden'};
+}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400);}
 function pushState(){
   if(!db){toast('Database is not connected');return Promise.reject(new Error('Database is not connected'));}
@@ -579,7 +586,7 @@ function renderPublicPredictions(){
   if(!submitted.length){el.innerHTML='<div class="empty">No predictions have been submitted yet.</div>';return;}
   let html='';
   if(publicView==='players'){
-    html='<div class="section-title"><h3>By players</h3><span class="tag">Champion + score predictions</span></div>' + (!showPreviousPredictions ? '<div class="warning">Previous/locked predictions are hidden. Future predictions stay hidden until match time.</div>' : '');
+    html='<div class="section-title"><h3>By players</h3><span class="tag">Score predictions</span></div><p class="help">Champion picks are hidden in public views. You can still see and edit your own pick in the Predict tab.</p>' + (!showPreviousPredictions ? '<div class="warning">Previous/locked predictions are hidden. Future predictions stay hidden until match time.</div>' : '');
     submitted.forEach(u=>{
       const count=predictionCount(u);
       const pct=Math.round((count/MATCHES.length)*100);
@@ -600,7 +607,8 @@ function renderPublicPredictions(){
       if(hiddenCount){
         chipsHtml+=`<span class="chip hiddenlocked">🔒 ${hiddenCount} prediction${hiddenCount===1?'':'s'} hidden until match time</span>`;
       }
-      html+=`<div class="prediction-card"><div class="name">${esc(u)}</div><div class="detail">${count} score predictions saved · Champion: <b>${esc(state.champion[u]||'—')}</b></div><div class="scorebar submitted"><span style="width:${pct}%"></span></div><div class="chips">${chipsHtml || '<span class="small">No visible predictions for this filter yet.</span>'}</div></div>`;
+      const champPublic=publicChampionDisplay(u);
+      html+=`<div class="prediction-card"><div class="name">${esc(u)}</div><div class="detail">${count} score predictions saved · Champion pick: <span class="${champPublic.cls}">${esc(champPublic.text)}</span></div><div class="scorebar submitted"><span style="width:${pct}%"></span></div><div class="chips">${chipsHtml || '<span class="small">No visible predictions for this filter yet.</span>'}</div></div>`;
     });
   } else {
     html='<div class="section-title"><h3>By games</h3><span class="tag">Schedule order · visible after lock</span></div>' + (!showPreviousPredictions ? '<div class="warning">Previous/locked matches are hidden. Future predictions remain hidden until match time.</div>' : '');
@@ -654,16 +662,16 @@ function renderLeaderboard(){
     a.name.localeCompare(b.name)
   );
 
-  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Exact-score count breaks ties first, then correct-outcome count. Submitted prediction count is shown only for context.</p>';
+  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Exact-score count breaks ties first, then correct-outcome count. Submitted prediction count is shown only for context. Champion picks are hidden in public views.</p>';
   html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${MATCHES.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span></div>`;
   if(rows.length){
-    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion</th></tr></thead><tbody>';
+    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
       const rowClass = i<3 ? `top-${i+1}` : '';
       const rankInner = i+1;
       const rankClass = i<3 ? `rank-chip top rank-${i+1}` : 'rank-chip';
-      const champClass = s.champ==='—' ? 'champion-pill empty' : 'champion-pill';
-      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points"><span class="points-badge">${s.pts}</span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion"><span class="${champClass}">${esc(s.champ)}</span></td></tr>`;
+      const champPublic=publicChampionDisplay(s.name);
+      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points"><span class="points-badge">${s.pts}</span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
     });
     html += '</tbody></table></div>';
   } else {
@@ -672,8 +680,8 @@ function renderLeaderboard(){
 
   const pending=state.users.filter(u=>predictionCount(u)===0);
   if(pending.length){
-    html+='<div class="leader-pending"><div class="divider"></div><div class="section-title"><h3>Joined, not submitted yet</h3><span class="tag">Not ranked</span></div><div class="leader-table-wrap"><table class="leader-table"><thead><tr><th>Player</th><th>Champion</th><th>Status</th></tr></thead><tbody>';
-    pending.forEach(u=>{const champ=state.champion[u]||'—'; html+=`<tr><td data-label="Player"><span class="leader-player">${esc(u)}</span></td><td data-label="Champion"><span class="${champ==='—'?'champion-pill empty':'champion-pill'}">${esc(champ)}</span></td><td data-label="Status"><span class="submitted-muted">No saved score predictions yet</span></td></tr>`;});
+    html+='<div class="leader-pending"><div class="divider"></div><div class="section-title"><h3>Joined, not submitted yet</h3><span class="tag">Not ranked</span></div><div class="leader-table-wrap"><table class="leader-table"><thead><tr><th>Player</th><th>Champion pick</th><th>Status</th></tr></thead><tbody>';
+    pending.forEach(u=>{const champPublic=publicChampionDisplay(u); html+=`<tr><td data-label="Player"><span class="leader-player">${esc(u)}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td><td data-label="Status"><span class="submitted-muted">No saved score predictions yet</span></td></tr>`;});
     html+='</tbody></table></div></div>';
   }
   html += '</div>';
