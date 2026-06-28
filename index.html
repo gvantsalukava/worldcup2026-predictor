@@ -269,6 +269,11 @@
 .bracket-lines circle.green{fill:#18d900}
 .knockout-card,.round-heading{z-index:3}
 .k-date{font-size:10px;color:#6f6874;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-match-no{display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(236,0,140,.22);color:var(--brand);border-radius:999px;padding:1px 5px;font-weight:950;margin-right:3px}
+.k-feed{display:inline-flex;align-items:center;width:max-content;max-width:100%;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:950;line-height:1;color:#201820;background:rgba(255,255,255,.78);border:1px solid rgba(0,0,0,.08);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-yellow .k-feed{border-color:#f0d900;color:#6d5900;background:#fffbe0}
+.side-green .k-feed{border-color:#39ff14;color:#126a00;background:#f1ffec}
+.final-card .k-feed{border-color:var(--line);color:var(--brand);background:#fff}
 .k-team{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;font-weight:900;color:#201820;line-height:1.15}
 .k-flag{width:18px;display:inline-flex;justify-content:center;flex:0 0 18px}
 .k-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
@@ -464,9 +469,9 @@ const MATCHES = [
   {id:72,group:'K',home:'Congo DR',away:'Uzbekistan',utc:'2026-06-27T23:30',venue:'Atlanta Stadium'},
   // Round of 32 fixtures. UTC values are converted to Georgia time in the UI.
   {id:73,group:'R32',stage:'Round of 32',home:'South Africa',away:'Canada',utc:'2026-06-28T19:00',venue:'Los Angeles Stadium'},
-  {id:74,group:'R32',stage:'Round of 32',home:'Brazil',away:'Japan',utc:'2026-06-29T17:00',venue:'Houston Stadium'},
-  {id:75,group:'R32',stage:'Round of 32',home:'Germany',away:'Paraguay',utc:'2026-06-29T20:30',venue:'Boston Stadium'},
-  {id:76,group:'R32',stage:'Round of 32',home:'Netherlands',away:'Morocco',utc:'2026-06-30T01:00',venue:'Estadio Monterrey'},
+  {id:74,group:'R32',stage:'Round of 32',home:'Germany',away:'Paraguay',utc:'2026-06-29T20:30',venue:'Boston Stadium'},
+  {id:75,group:'R32',stage:'Round of 32',home:'Netherlands',away:'Morocco',utc:'2026-06-30T01:00',venue:'Estadio Monterrey'},
+  {id:76,group:'R32',stage:'Round of 32',home:'Brazil',away:'Japan',utc:'2026-06-29T17:00',venue:'Houston Stadium'},
   {id:77,group:'R32',stage:'Round of 32',home:'France',away:'Sweden',utc:'2026-06-30T21:00',venue:'New York New Jersey Stadium'},
   {id:78,group:'R32',stage:'Round of 32',home:'Côte d’Ivoire',away:'Norway',utc:'2026-06-30T17:00',venue:'Dallas Stadium'},
   {id:79,group:'R32',stage:'Round of 32',home:'Mexico',away:'Ecuador',utc:'2026-07-01T01:00',venue:'Mexico City Stadium'},
@@ -483,25 +488,31 @@ const MATCHES = [
 const TEAMS = Object.values(GROUPS).flat();
 const ROUND_OF_32_IDS = Array.from({length:16},(_,i)=>73+i);
 const R32_PATHS = [
-  {r16:89,left:74,right:77},
   {r16:90,left:73,right:75},
+  {r16:89,left:74,right:77},
+  {r16:94,left:82,right:81},
+  {r16:93,left:84,right:83},
   {r16:91,left:76,right:78},
   {r16:92,left:79,right:80},
-  {r16:93,left:83,right:84},
-  {r16:94,left:81,right:82},
-  {r16:95,left:86,right:88},
-  {r16:96,left:85,right:87}
+  {r16:96,left:85,right:87},
+  {r16:95,left:88,right:86}
 ];
 
+// Visual route-to-final order follows the reference bracket layout shared by the user.
+// The bracket is grouped by path, not by chronological fixture time:
+// M90 (W73/W75) + M89 (W74/W77) => M97;
+// M94 (W82/W81) + M93 (W84/W83) => M98;
+// M91 (W76/W78) + M92 (W79/W80) => M99;
+// M96 (W85/W87) + M95 (W88/W86) => M100.
 const KNOCKOUT_PATHS = [
-  {r16:89,left:74,right:77,qf:97,sf:101,final:104},
   {r16:90,left:73,right:75,qf:97,sf:101,final:104},
-  {r16:93,left:83,right:84,qf:98,sf:101,final:104},
-  {r16:94,left:81,right:82,qf:98,sf:101,final:104},
+  {r16:89,left:74,right:77,qf:97,sf:101,final:104},
+  {r16:94,left:82,right:81,qf:98,sf:101,final:104},
+  {r16:93,left:84,right:83,qf:98,sf:101,final:104},
   {r16:91,left:76,right:78,qf:99,sf:102,final:104},
   {r16:92,left:79,right:80,qf:99,sf:102,final:104},
-  {r16:95,left:86,right:88,qf:100,sf:102,final:104},
-  {r16:96,left:85,right:87,qf:100,sf:102,final:104}
+  {r16:96,left:85,right:87,qf:100,sf:102,final:104},
+  {r16:95,left:88,right:86,qf:100,sf:102,final:104}
 ];
 const TEAM_FLAGS = {
   'Argentina':'🇦🇷','Australia':'🇦🇺','Austria':'🇦🇹','Belgium':'🇧🇪','Bosnia & Herzegovina':'🇧🇦','Brazil':'🇧🇷','Cabo Verde':'🇨🇻','Canada':'🇨🇦','Colombia':'🇨🇴','Congo DR':'🇨🇩','Côte d’Ivoire':'🇨🇮','Ecuador':'🇪🇨','Egypt':'🇪🇬','England':'🏴','France':'🇫🇷','Germany':'🇩🇪','Ghana':'🇬🇭','Japan':'🇯🇵','Mexico':'🇲🇽','Morocco':'🇲🇦','Netherlands':'🇳🇱','Norway':'🇳🇴','Paraguay':'🇵🇾','Portugal':'🇵🇹','Senegal':'🇸🇳','South Africa':'🇿🇦','Spain':'🇪🇸','Sweden':'🇸🇪','Switzerland':'🇨🇭','United States':'🇺🇸','Croatia':'🇭🇷','Algeria':'🇩🇿'
@@ -1131,18 +1142,23 @@ function knockoutTeamLine(team, score){
 function bracketSideClass(side){
   return side==='green' ? 'side-green' : 'side-yellow';
 }
-function knockoutCardFromMatch(m, gridColumn, gridRow, side='yellow'){
+function feedLabel(feedTo){
+  if(!feedTo) return '';
+  return `<div class="k-feed">↳ Feeds to M${esc(feedTo)}</div>`;
+}
+function knockoutCardFromMatch(m, gridColumn, gridRow, side='yellow', feedTo=null){
   const r=state.results[m.id];
   const rowStyle = String(gridRow).includes('/') ? gridRow : `${gridRow}`;
   const style=`grid-column:${gridColumn};grid-row:${rowStyle};`;
   const status=r ? `Adv: ${validAdvanceTeam(m,r.advance)?r.advance:'TBD'}${validPenaltyPick(penaltyValue(r))?' · Pens: '+penaltyLabel(penaltyValue(r)):''}` : (matchStarted(m)?'Started / locked':'Open for predictions');
-  return `<div class="knockout-card ${bracketSideClass(side)} ${r?'has-result':''}" style="${style}" title="M${m.id} · ${esc(m.venue)}"><div class="k-date">M${m.id} · ${geDate(m.utc)} · ${geTime(m.utc)} GEO</div>${knockoutTeamLine(m.home,r?r.h:null)}${knockoutTeamLine(m.away,r?r.a:null)}<div class="k-round-note">${esc(status)}</div></div>`;
+  return `<div class="knockout-card ${bracketSideClass(side)} ${r?'has-result':''}" style="${style}" title="M${m.id} · ${esc(m.venue)}"><div class="k-date"><span class="k-match-no">M${m.id}</span>${geDate(m.utc)} · ${geTime(m.utc)} GEO</div>${knockoutTeamLine(m.home,r?r.h:null)}${knockoutTeamLine(m.away,r?r.a:null)}${feedLabel(feedTo)}<div class="k-round-note">${esc(status)}</div></div>`;
 }
-function placeholderCard(matchId, homeLabel, awayLabel, roundName, gridColumn, gridRow, side='yellow', finalCard=false){
+function placeholderCard(matchId, homeLabel, awayLabel, roundName, gridColumn, gridRow, side='yellow', finalCard=false, feedTo=null){
   const cls = `knockout-card k-placeholder ${finalCard?'final-card':bracketSideClass(side)}`;
   const rowStyle = String(gridRow).includes('/') ? gridRow : `${gridRow}`;
   const style=`grid-column:${gridColumn};grid-row:${rowStyle};`;
-  return `<div class="${cls}" style="${style}"><div class="k-date">M${matchId} · ${esc(roundName)}</div>${knockoutTeamLine(homeLabel,null)}${knockoutTeamLine(awayLabel,null)}<div class="k-round-note">TBD after previous round</div></div>`;
+  const note = finalCard ? 'Tournament winner decided here' : 'TBD after previous round';
+  return `<div class="${cls}" style="${style}"><div class="k-date"><span class="k-match-no">M${matchId}</span>${esc(roundName)}</div>${knockoutTeamLine(homeLabel,null)}${knockoutTeamLine(awayLabel,null)}${feedLabel(feedTo)}<div class="k-round-note">${esc(note)}</div></div>`;
 }
 function renderBracketLinesSvg(){
   const L={1:10,2:248,3:466,4:684,5:902};
@@ -1177,7 +1193,7 @@ function renderBracketLinesSvg(){
 }
 function renderRound32Map(){
   const byId=Object.fromEntries(MATCHES.map(m=>[m.id,m]));
-  let html='<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><span class="tag">Round of 32 → Final</span></div><p class="help">Horizontal bracket view in route-to-final order, not chronological order. Scroll sideways on mobile. The upper side is highlighted in yellow and the lower side in green; full connector lines show each path toward the final.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">GEO = Georgia time</span></div><div class="knockout-scroll"><div class="knockout-map">';
+  let html='<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><span class="tag">Round of 32 → Final</span></div><p class="help">Bracket order now follows the shared reference layout, grouped by route to the final rather than by chronological fixture time. Scroll sideways on mobile. Each card shows which next match it feeds into.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">↳ Feeds to = next match</span><span class="tag">GEO = Georgia time</span></div><div class="knockout-scroll"><div class="knockout-map">';
   html += renderBracketLinesSvg();
   html += '<div class="round-heading" style="grid-column:1;grid-row:1">Round of 32</div>';
   html += '<div class="round-heading" style="grid-column:2;grid-row:1">Round of 16</div>';
@@ -1185,24 +1201,26 @@ function renderRound32Map(){
   html += '<div class="round-heading" style="grid-column:4;grid-row:1">Semi-finals</div>';
   html += '<div class="round-heading" style="grid-column:5;grid-row:1">Final</div>';
 
+  const feedMap={};
+  KNOCKOUT_PATHS.forEach(path=>{feedMap[path.left]=path.r16; feedMap[path.right]=path.r16;});
   const r32Order=[];
   KNOCKOUT_PATHS.forEach(path=>{r32Order.push(path.left,path.right);});
-  r32Order.forEach((id,i)=>{html += knockoutCardFromMatch(byId[id],1,i+2,i<8?'yellow':'green');});
+  r32Order.forEach((id,i)=>{html += knockoutCardFromMatch(byId[id],1,i+2,i<8?'yellow':'green',feedMap[id]);});
 
   KNOCKOUT_PATHS.forEach((path,i)=>{
     const rowStart=i*2+2;
     const side=i<4?'yellow':'green';
-    html += placeholderCard(path.r16,`Winner M${path.left}`,`Winner M${path.right}`,'Round of 16',2,`${rowStart} / span 2`,side);
+    html += placeholderCard(path.r16,`Winner M${path.left}`,`Winner M${path.right}`,'Round of 16',2,`${rowStart} / span 2`,side,false,path.qf);
   });
   [
-    {id:97,home:'Winner M89',away:'Winner M90',row:'2 / span 4',side:'yellow'},
-    {id:98,home:'Winner M93',away:'Winner M94',row:'6 / span 4',side:'yellow'},
-    {id:99,home:'Winner M91',away:'Winner M92',row:'10 / span 4',side:'green'},
-    {id:100,home:'Winner M95',away:'Winner M96',row:'14 / span 4',side:'green'}
-  ].forEach(q=>{html += placeholderCard(q.id,q.home,q.away,'Quarter-final',3,q.row,q.side);});
-  html += placeholderCard(101,'Winner M97','Winner M98','Semi-final',4,'2 / span 8','yellow');
-  html += placeholderCard(102,'Winner M99','Winner M100','Semi-final',4,'10 / span 8','green');
-  html += placeholderCard(104,'Winner M101','Winner M102','Final',5,'6 / span 8','yellow',true);
+    {id:97,home:'Winner M89',away:'Winner M90',row:'2 / span 4',side:'yellow',feed:101},
+    {id:98,home:'Winner M93',away:'Winner M94',row:'6 / span 4',side:'yellow',feed:101},
+    {id:99,home:'Winner M91',away:'Winner M92',row:'10 / span 4',side:'green',feed:102},
+    {id:100,home:'Winner M95',away:'Winner M96',row:'14 / span 4',side:'green',feed:102}
+  ].forEach(q=>{html += placeholderCard(q.id,q.home,q.away,'Quarter-final',3,q.row,q.side,false,q.feed);});
+  html += placeholderCard(101,'Winner M97','Winner M98','Semi-final',4,'2 / span 8','yellow',false,104);
+  html += placeholderCard(102,'Winner M99','Winner M100','Semi-final',4,'10 / span 8','green',false,104);
+  html += placeholderCard(104,'Winner M101','Winner M102','Final',5,'6 / span 8','yellow',true,null);
   html += '</div></div></div>';
   return html;
 }
