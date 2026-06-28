@@ -66,6 +66,10 @@
   .points-badge{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:38px;padding:0 12px;border-radius:999px;background:var(--brand);color:#fff;font-weight:950;font-size:18px;letter-spacing:-.02em}
   .points-accuracy{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap}
   .accuracy-badge{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 10px;border-radius:999px;background:#fff200;border:1px solid #e4cf00;color:#4b3f00;font-weight:950;font-size:13px}
+
+  .leaderboard-stage-toggle{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:12px 0 10px}
+  .leaderboard-stage-toggle .view-btn{border:1px solid var(--line);background:#fff}
+  .leaderboard-stage-toggle .view-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
   .stat-badge{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:32px;padding:0 10px;border-radius:999px;background:#fff8fc;border:1px solid var(--line);font-weight:850;font-size:13px;color:#4d3b47}
   .submitted-pill,.champion-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:850;line-height:1}
   .submitted-pill{background:#fff5fa;border:1px solid var(--line);color:#6c4e60}
@@ -107,6 +111,8 @@
     .leader-player{max-width:none;text-align:right;font-size:14px}
     .points-badge,.stat-badge,.submitted-pill,.champion-pill,.rank-chip{margin-left:auto}
     .points-accuracy{margin-left:auto;justify-content:flex-end}
+    .leaderboard-stage-toggle{display:grid;grid-template-columns:1fr;gap:7px}
+    .leaderboard-stage-toggle .view-btn{width:100%;min-height:42px;border-radius:13px}
     .rank-chip{width:36px;height:36px;font-size:15px}
     .points-badge{min-width:44px;height:34px;font-size:17px}
   }
@@ -496,6 +502,7 @@ let predictMode='upcoming';
 let championEditorVisible=false;
 let adminResultsMode = (function(){try{return localStorage.getItem('wc2026_adminResultsMode') || 'unfilled';}catch(e){return 'unfilled';}})();
 let showPreviousPredictions = (function(){try{return localStorage.getItem('wc2026_showPreviousPredictions')!=='0';}catch(e){return true;}})();
+let leaderboardStage = (function(){try{return localStorage.getItem('wc2026_leaderboardStage') || 'r32';}catch(e){return 'r32';}})();
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
@@ -816,17 +823,40 @@ function renderPublicPredictions(){
   }
   el.innerHTML=html;
 }
+function leaderboardStageConfig(stage){
+  const configs={
+    overall:{key:'overall',label:'Main',title:'Main leaderboard',description:'all saved matches across the tournament', empty:'No score predictions submitted yet.', joinedStatus:'No saved score predictions yet'},
+    group:{key:'group',label:'Group stage',title:'Group-stage leaderboard',description:'group-stage matches only', empty:'No group-stage score predictions submitted yet.', joinedStatus:'No saved group-stage predictions'},
+    r32:{key:'r32',label:'Round of 32',title:'Round of 32 leaderboard',description:'Round of 32 matches only', empty:'No Round of 32 score predictions submitted yet.', joinedStatus:'No saved Round of 32 predictions'}
+  };
+  return configs[stage] || configs.r32;
+}
+function leaderboardMatches(stage){
+  if(stage==='group') return MATCHES.filter(m=>!m.stage);
+  if(stage==='r32') return MATCHES.filter(m=>m.stage==='Round of 32');
+  return MATCHES;
+}
+function predictionCountForMatches(user,matches){
+  return matches.filter(m=>completePrediction(state.predictions[user]?.[m.id])).length;
+}
+function setLeaderboardStage(stage){
+  leaderboardStage=leaderboardStageConfig(stage).key;
+  try{localStorage.setItem('wc2026_leaderboardStage',leaderboardStage);}catch(e){}
+  renderLeaderboard();
+}
 function renderLeaderboard(){
   const el=document.getElementById('leaderboard-content');
-  const played=MATCHES.filter(m=>state.results[m.id]);
-  const ranked=state.users.filter(u=>predictionCount(u)>0);
+  const cfg=leaderboardStageConfig(leaderboardStage);
+  const stageMatches=leaderboardMatches(cfg.key);
+  const played=stageMatches.filter(m=>state.results[m.id]);
+  const ranked=state.users.filter(u=>predictionCountForMatches(u,stageMatches)>0);
   if(!state.users.length){el.innerHTML='<div class="empty">No players yet. Players join from the Predict tab.</div>';return;}
 
   const rows=ranked.map(u=>{
     const pts=played.reduce((a,m)=>a+calcPts(state.predictions[u]?.[m.id],state.results[m.id]),0);
     const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&p.h===r.h&&p.a===r.a;}).length;
     const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcPts(p,r)===1;}).length;
-    const predicted=predictionCount(u);
+    const predicted=predictionCountForMatches(u,stageMatches);
     const resultedPredicted=played.filter(m=>completePrediction(state.predictions[u]?.[m.id])).length;
     const correctOutcomes=exact+outcome;
     const accuracy=resultedPredicted ? Math.round((correctOutcomes/resultedPredicted)*100) : 0;
@@ -835,12 +865,19 @@ function renderLeaderboard(){
     b.pts-a.pts ||
     b.exact-a.exact ||
     b.outcome-a.outcome ||
+    b.accuracy-a.accuracy ||
+    b.predicted-a.predicted ||
     a.name.localeCompare(b.name)
   );
 
-  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Accuracy now shows outcome accuracy: correct outcomes, including exact scores, divided by the player’s predicted matches with official results. Exact-score count breaks ties first, then correct-outcome count.</p>';
+  const stageButtons=['overall','group','r32'].map(key=>{
+    const c=leaderboardStageConfig(key);
+    return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
+  }).join('');
+
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. The Round of 32 leaderboard counts only R32 matches, so new players joining from this stage can compete fairly. Outcome accuracy means correct outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
-  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${MATCHES.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
+  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
     html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Outcome accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
@@ -848,17 +885,18 @@ function renderLeaderboard(){
       const rankInner = i+1;
       const rankClass = i<3 ? `rank-chip top rank-${i+1}` : 'rank-chip';
       const champPublic=publicChampionDisplay(s.name);
-      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Outcome accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge" title="Outcome accuracy: ${s.correctOutcomes}/${s.resultedPredicted} correct outcomes">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
+      const accuracyTitle = s.resultedPredicted ? `Outcome accuracy: ${s.correctOutcomes}/${s.resultedPredicted} correct outcomes in ${cfg.label}` : `No official results counted yet in ${cfg.label}`;
+      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Outcome accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge" title="${esc(accuracyTitle)}">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${stageMatches.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
     });
     html += '</tbody></table></div>';
   } else {
-    html += '<div class="empty">No score predictions submitted yet.</div>';
+    html += `<div class="empty">${esc(cfg.empty)}</div>`;
   }
 
-  const pending=state.users.filter(u=>predictionCount(u)===0);
+  const pending=state.users.filter(u=>predictionCountForMatches(u,stageMatches)===0);
   if(pending.length){
-    html+='<div class="leader-pending"><div class="divider"></div><div class="section-title"><h3>Joined, not submitted yet</h3><span class="tag">Not ranked</span></div><div class="leader-table-wrap"><table class="leader-table"><thead><tr><th>Player</th><th>Champion pick</th><th>Status</th></tr></thead><tbody>';
-    pending.forEach(u=>{const champPublic=publicChampionDisplay(u); html+=`<tr><td data-label="Player"><span class="leader-player">${esc(u)}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td><td data-label="Status"><span class="submitted-muted">No saved score predictions yet</span></td></tr>`;});
+    html+='<div class="leader-pending"><div class="divider"></div><div class="section-title"><h3>Joined, not submitted for this leaderboard</h3><span class="tag">Not ranked here</span></div><div class="leader-table-wrap"><table class="leader-table"><thead><tr><th>Player</th><th>Champion pick</th><th>Status</th></tr></thead><tbody>';
+    pending.forEach(u=>{const champPublic=publicChampionDisplay(u); html+=`<tr><td data-label="Player"><span class="leader-player">${esc(u)}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td><td data-label="Status"><span class="submitted-muted">${esc(cfg.joinedStatus)}</span></td></tr>`;});
     html+='</tbody></table></div></div>';
   }
   html += '</div>';
