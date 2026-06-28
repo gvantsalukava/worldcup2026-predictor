@@ -317,7 +317,7 @@
 <main class="container">
   <section class="hero">
     <div><h2>Round of 32 first, predictions in the same order.</h2><p>Round of 32 fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">+1 penalties</span><span class="pill">+1 advancing team</span></div>
+    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">+1 penalties</span><span class="pill">+1 draw advance</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="schedule">🗺️ Round of 32</button>
@@ -616,6 +616,9 @@ function calcScorePts(pred,result){
 }
 function calcAdvancePts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
+  // Advancement is scored only for matches that are draw after 90 minutes,
+  // and only for players who also predicted a 90-minute draw and selected who advances.
+  if(!scoreIsDraw(pred) || !scoreIsDraw(result)) return 0;
   const predAdv=inferredAdvanceTeam(m,pred);
   const resultAdv=inferredAdvanceTeam(m,result);
   if(!validAdvanceTeam(m,predAdv)||!validAdvanceTeam(m,resultAdv)) return 0;
@@ -623,7 +626,8 @@ function calcAdvancePts(pred,result,m){
 }
 function calcPenaltyPts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
-  if(!scoreIsDraw(pred)) return 0;
+  // Penalties are scored only when both the player and official result are draw after 90 minutes.
+  if(!scoreIsDraw(pred) || !scoreIsDraw(result)) return 0;
   const pp=penaltyValue(pred), rp=actualPenaltyValue(result);
   if(!validPenaltyPick(pp)||!validPenaltyPick(rp)) return 0;
   return pp===rp?1:0;
@@ -1047,9 +1051,9 @@ function renderLeaderboard(){
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
 
-  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Knockout scoring uses 90-minute score prediction plus separate penalties and advancing-team points. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Knockout scoring uses 90-minute score prediction. Penalties and advancing-team bonus points are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
-  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Advancing picks counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
+  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Draw advances counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
     html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Outcome accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Advance</th><th class="num">Penalties</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
