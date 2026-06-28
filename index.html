@@ -216,7 +216,9 @@
   box-shadow:0 8px 18px rgba(194,24,91,.04);
 }
 .knockout-map{
-  min-width:1040px;
+  width:1112px;
+  min-width:1112px;
+  min-height:1364px;
   display:grid;
   grid-template-columns:220px 200px 200px 200px 200px;
   grid-template-rows:34px repeat(16,74px);
@@ -254,16 +256,18 @@
   gap:5px;
   box-shadow:0 5px 12px rgba(40,25,35,.055);
 }
-.knockout-card.has-result{border-color:var(--brand);background:#fff2f9}
-.knockout-card:after{
-  content:'';
-  position:absolute;
-  top:50%;
-  right:-19px;
-  width:18px;
-  border-top:1.5px solid #cfc8cf;
-}
-.knockout-card.final-card:after{display:none}
+.knockout-card.has-result{border-color:var(--brand)}
+.knockout-card:after{display:none}
+.knockout-card.side-yellow{background:#fffde8;border-color:#f0d900;box-shadow:0 0 0 1px rgba(255,242,0,.24),0 5px 12px rgba(40,25,35,.055)}
+.knockout-card.side-green{background:#efffe9;border-color:#39ff14;box-shadow:0 0 0 1px rgba(57,255,20,.22),0 5px 12px rgba(40,25,35,.055)}
+.knockout-card.final-card{background:linear-gradient(180deg,#fffde8 0 50%,#efffe9 50% 100%);border-color:#d8d1d8}
+.bracket-lines{position:absolute;inset:0;width:1112px;height:1364px;z-index:1;pointer-events:none;overflow:visible}
+.bracket-lines path{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.bracket-lines path.yellow{stroke:#f0d900}
+.bracket-lines path.green{stroke:#18d900}
+.bracket-lines circle.yellow{fill:#f0d900}
+.bracket-lines circle.green{fill:#18d900}
+.knockout-card,.round-heading{z-index:3}
 .k-date{font-size:10px;color:#6f6874;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .k-team{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;font-weight:900;color:#201820;line-height:1.15}
 .k-flag{width:18px;display:inline-flex;justify-content:center;flex:0 0 18px}
@@ -276,10 +280,28 @@
 .bracket-legend .tag{background:#fff;border-color:var(--line);color:#5f5562}
 @media(max-width:720px){
   .knockout-scroll{padding:10px;border-radius:16px;margin-left:-4px;margin-right:-4px}
-  .knockout-map{min-width:980px;grid-template-columns:200px 185px 185px 185px 185px;grid-template-rows:32px repeat(16,72px);column-gap:16px;padding:4px 8px 10px}
+  .knockout-map{width:1112px;min-width:1112px;min-height:1364px;grid-template-columns:220px 200px 200px 200px 200px;grid-template-rows:34px repeat(16,74px);column-gap:18px;padding:6px 10px 12px}
   .knockout-card{min-height:64px;padding:7px 8px;border-radius:12px}
   .k-team{font-size:11px}.k-date{font-size:10px}.k-round-note{font-size:10px}
   .round-heading{font-size:10px;padding:6px 8px}
+}
+
+
+
+/* Knockout prediction controls */
+.prediction-inputs{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.advance-pick,.penalty-pick{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;font-weight:950;white-space:nowrap}
+.advance-select,.penalty-select{min-width:154px;border:1.5px solid var(--line);border-radius:999px;background:#fff8fb;color:#3a333d;padding:8px 10px;font-weight:900;outline:none}
+.penalty-select{min-width:154px;background:#fffde8;border-color:#f0d900}
+.advance-select:focus,.penalty-select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(194,24,91,.10)}
+.advance-select:disabled,.penalty-select:disabled{opacity:.55;background:#f8f2f6}
+.advance-note,.penalty-note{display:inline-flex;margin-left:5px;font-weight:950;color:#174a10}
+.penalty-note{color:#6f5700}
+.k-advance{font-size:10px;color:#174a10;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:720px){
+  .prediction-inputs{align-items:flex-start;margin-top:10px;width:100%}
+  .advance-pick,.penalty-pick{width:100%;justify-content:space-between;white-space:normal}
+  .advance-select,.penalty-select{min-width:0;flex:1;max-width:220px}
 }
 
 </style>
@@ -294,7 +316,7 @@
 <main class="container">
   <section class="hero">
     <div><h2>Round of 32 first, predictions in the same order.</h2><p>Round of 32 fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt correct outcome</span><span class="pill">Predictions lock at match time</span></div>
+    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">+1 penalties</span><span class="pill">+1 advancing team</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="schedule">🗺️ Round of 32</button>
@@ -319,11 +341,11 @@
     </div>
     <div class="card" id="champion-card"></div>
     <div class="card">
-      <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 72 saved</span></div>
-      <p class="help">By default, this list shows only upcoming/editable matches, including the Round of 32. Use “Show full schedule” if you need to review older or locked matches. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. Press Save when finished.</p>
+      <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 88 saved</span></div>
+      <p class="help">By default, this list shows only upcoming/editable matches, including the Round of 32. Use “Show full schedule” if you need to review older or locked matches. For knockout matches, predict the 90-minute score, whether it goes to penalties, and the team that advances after 90 minutes, extra time, or penalties. Empty matches are skipped. Press Save when finished.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
-      <button class="btn full" id="save-predictions">💾 Save champion and predictions</button>
+      <button class="btn full" id="save-predictions">💾 Save champion, scores, penalties and advancing picks</button>
     </div>
   </section>
 
@@ -509,6 +531,61 @@ function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
 function matchShortLabel(m){return m.stage ? `M${m.id} · ${m.stage}` : `Group ${m.group}`;}
 function matchFilterPass(m,active){return active==='ALL' || (active==='R32' ? m.stage==='Round of 32' : m.group===active);}
 function isRoundOf32(m){return m.stage==='Round of 32';}
+function isKnockoutMatch(m){return !!m.stage;}
+function validAdvanceTeam(m,team){return !!team && (team===m.home || team===m.away);}
+function validPenaltyPick(value){return value==='yes' || value==='no';}
+function penaltyValue(obj){return obj ? (obj.penalties || obj.penalty || '') : '';}
+function penaltyLabel(value){return value==='yes' ? 'Yes' : value==='no' ? 'No' : '';}
+function penaltyPickHtml(m,current='',disabled=false,prefix='pen'){
+  if(!isKnockoutMatch(m)) return '';
+  const c=validPenaltyPick(current)?current:'';
+  return `<label class="penalty-pick"><span>Penalties?</span><select class="penalty-select" id="${prefix}_${m.id}" ${disabled?'disabled':''}><option value="">Yes / No</option><option value="yes" ${c==='yes'?'selected':''}>Yes</option><option value="no" ${c==='no'?'selected':''}>No</option></select></label>`;
+}
+function advancingPickHtml(m,current='',disabled=false,prefix='adv'){
+  if(!isKnockoutMatch(m)) return '';
+  const c=validAdvanceTeam(m,current)?current:'';
+  return `<label class="advance-pick"><span>Advances</span><select class="advance-select" id="${prefix}_${m.id}" ${disabled?'disabled':''}><option value="">Pick team</option><option value="${esc(m.home)}" ${c===m.home?'selected':''}>${esc(m.home)}</option><option value="${esc(m.away)}" ${c===m.away?'selected':''}>${esc(m.away)}</option></select></label>`;
+}
+function predictionPenaltyNote(p,m){
+  const pen=penaltyValue(p);
+  if(!isKnockoutMatch(m) || !validPenaltyPick(pen)) return '';
+  return ` <span class="penalty-note">· Penalties: ${penaltyLabel(pen)}</span>`;
+}
+function predictionAdvanceNote(p,m){
+  if(!isKnockoutMatch(m) || !p || !validAdvanceTeam(m,p.advance)) return '';
+  return ` <span class="advance-note">· Advances: ${esc(p.advance)}</span>`;
+}
+function resultPenaltyNote(r,m){
+  const pen=penaltyValue(r);
+  if(!isKnockoutMatch(m) || !validPenaltyPick(pen)) return '';
+  return ` · Penalties: <b>${penaltyLabel(pen)}</b>`;
+}
+function resultAdvanceNote(r,m){
+  if(!isKnockoutMatch(m) || !r || !validAdvanceTeam(m,r.advance)) return '';
+  return ` · Advances: <b>${esc(r.advance)}</b>`;
+}
+function scoreOutcomeCode(score){
+  if(!score) return '';
+  const h=Number(score.h), a=Number(score.a);
+  if(!Number.isFinite(h)||!Number.isFinite(a)) return '';
+  return h>a?'H':h<a?'A':'D';
+}
+function calcScorePts(pred,result){
+  if(!completePrediction(pred)||!result) return 0;
+  if(Number(pred.h)===Number(result.h)&&Number(pred.a)===Number(result.a)) return 3;
+  return scoreOutcomeCode(pred)===scoreOutcomeCode(result)?1:0;
+}
+function calcAdvancePts(pred,result,m){
+  if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
+  if(!validAdvanceTeam(m,pred.advance)||!validAdvanceTeam(m,result.advance)) return 0;
+  return pred.advance===result.advance?1:0;
+}
+function calcPenaltyPts(pred,result,m){
+  if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
+  const pp=penaltyValue(pred), rp=penaltyValue(result);
+  if(!validPenaltyPick(pp)||!validPenaltyPick(rp)) return 0;
+  return pp===rp?1:0;
+}
 function normalizeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,24);}
 function normalizePass(s){return String(s||'').trim().slice(0,32);}
 function hasUnsafeFirebaseChars(s){return /[.#$\/\[\]]/.test(String(s||''));}
@@ -536,7 +613,9 @@ function canRevealPredictions(m){return matchStarted(m) || !!state.results[m.id]
 function isPreviousMatch(m){return matchStarted(m) || !!state.results[m.id];}
 function hasOfficialResult(m){
   const r=state.results[m.id];
-  return !!r && Number.isFinite(Number(r.h)) && Number.isFinite(Number(r.a));
+  const scoreReady=!!r && Number.isFinite(Number(r.h)) && Number.isFinite(Number(r.a));
+  if(!scoreReady) return false;
+  return !isKnockoutMatch(m) || (validAdvanceTeam(m,r.advance) && validPenaltyPick(penaltyValue(r)));
 }
 function togglePreviousPredictions(){
   showPreviousPredictions = !showPreviousPredictions;
@@ -741,16 +820,65 @@ function renderPredict(){
     day.matches.forEach(m=>{
       const p=preds[m.id]||{h:'',a:''}; const locked=matchStarted(m);
       const saved=completePrediction(p);
-      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
+      const penHtml=penaltyPickHtml(m,penaltyValue(p),locked,'ppen');
+      const advHtml=advancingPickHtml(m,p.advance||'',locked,'padv');
+      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${isKnockoutMatch(m)?' · 90-min score + penalties + advancing team':''}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="prediction-inputs"><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div>${penHtml}${advHtml}</div></div>`;
     });
     html+='</div></details>';
   });
   el.innerHTML=html || '<div class="empty">No matches found.</div>';
 }
 function savePredictions(){
-  if(!currentUser){toast('Login first');return;} const errors=[]; state.predictions[currentUser]=state.predictions[currentUser]||{};
-  MATCHES.forEach(m=>{if(matchStarted(m))return; const h=document.getElementById(`ph_${m.id}`), a=document.getElementById(`pa_${m.id}`); if(!h||!a)return; const hv=h.value.trim(), av=a.value.trim(); if(hv==='' && av==='')return; if(hv==='' || av===''){errors.push(`${m.home} vs ${m.away}`); return;} const hn=Number(hv), an=Number(av); if(!Number.isInteger(hn)||!Number.isInteger(an)||hn<0||an<0||hn>20||an>20){errors.push(`${m.home} vs ${m.away}`);return;} state.predictions[currentUser][m.id]={h:hn,a:an};});
-  if(errors.length){toast('Some scores are incomplete or invalid');return;} pushState(); renderAll(); toast(`${currentUser}'s predictions saved`);
+  if(!currentUser){toast('Login first');return;}
+  const errors=[];
+  state.predictions[currentUser]=state.predictions[currentUser]||{};
+  MATCHES.forEach(m=>{
+    if(matchStarted(m))return;
+    const h=document.getElementById(`ph_${m.id}`), a=document.getElementById(`pa_${m.id}`);
+    if(!h||!a)return;
+    const hv=h.value.trim(), av=a.value.trim();
+    const advEl=document.getElementById(`padv_${m.id}`);
+    const penEl=document.getElementById(`ppen_${m.id}`);
+    const adv=advEl ? advEl.value : '';
+    const pen=penEl ? penEl.value : '';
+    if(hv==='' && av==='' && !adv && !pen)return;
+    if(hv==='' || av===''){
+      errors.push(`${m.home} vs ${m.away}`);
+      return;
+    }
+    const hn=Number(hv), an=Number(av);
+    if(!Number.isInteger(hn)||!Number.isInteger(an)||hn<0||an<0||hn>20||an>20){
+      errors.push(`${m.home} vs ${m.away}`);
+      return;
+    }
+    if(isKnockoutMatch(m)){
+      if(!validPenaltyPick(pen)){
+        errors.push(`${m.home} vs ${m.away} — choose penalties yes/no`);
+        return;
+      }
+      if(hn!==an && pen==='yes'){
+        errors.push(`${m.home} vs ${m.away} — penalties can only happen after a 90-minute draw`);
+        return;
+      }
+      if(!validAdvanceTeam(m,adv)){
+        errors.push(`${m.home} vs ${m.away} — choose who advances`);
+        return;
+      }
+      if(hn>an && adv!==m.home){
+        errors.push(`${m.home} vs ${m.away} — if you predict a 90-minute home win, the home team must advance`);
+        return;
+      }
+      if(hn<an && adv!==m.away){
+        errors.push(`${m.home} vs ${m.away} — if you predict a 90-minute away win, the away team must advance`);
+        return;
+      }
+    }
+    const saved={h:hn,a:an};
+    if(isKnockoutMatch(m)){ saved.penalties=pen; saved.advance=adv; }
+    state.predictions[currentUser][m.id]=saved;
+  });
+  if(errors.length){toast('Some predictions are incomplete or invalid');return;}
+  pushState(); renderAll(); toast(`${currentUser}'s predictions saved`);
 }
 
 function renderPublicPredictions(){
@@ -782,7 +910,7 @@ function renderPublicPredictions(){
         }
         const cls=predictionClass(p,state.results[m.id],m);
         const label=predictionLabel(p,state.results[m.id],m);
-        chipsHtml+=`<span class="chip ${cls}">${geDate(m.utc)} · ${esc(matchStageLabel(m))} · ${esc(m.home)}–${esc(m.away)}: <b>${p.h}-${p.a}</b>${label?` <span class="result-note">${label}</span>`:''}</span>`;
+        chipsHtml+=`<span class="chip ${cls}">${geDate(m.utc)} · ${esc(matchStageLabel(m))} · ${esc(m.home)}–${esc(m.away)}: <b>${p.h}-${p.a}</b>${predictionPenaltyNote(p,m)}${predictionAdvanceNote(p,m)}${label?` <span class="result-note">${label}</span>`:''}</span>`;
       });
       if(hiddenCount){
         chipsHtml+=`<span class="chip hiddenlocked">🔒 ${hiddenCount} prediction${hiddenCount===1?'':'s'} hidden until match time</span>`;
@@ -812,10 +940,10 @@ function renderPublicPredictions(){
             if(!completePrediction(p)) return '';
             const cls=predictionClass(p,result,m);
             const label=predictionLabel(p,result,m);
-            return `<span class="chip ${cls}">${esc(u)}: <b>${p.h}-${p.a}</b>${label?` <span class="result-note">${label}</span>`:''}</span>`;
+            return `<span class="chip ${cls}">${esc(u)}: <b>${p.h}-${p.a}</b>${predictionPenaltyNote(p,m)}${predictionAdvanceNote(p,m)}${label?` <span class="result-note">${label}</span>`:''}</span>`;
           }).join('') || '<span class="small">No score predictions yet</span>';
         }
-        html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${result?` · Official: <b>${result.h}-${result.a}</b>`:''}${!canRevealPredictions(m)?' · Predictions hidden before lock':''}</div></div><div class="chips">${chips}</div></div>`;
+        html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${result?` · Official 90 min: <b>${result.h}-${result.a}</b>${resultPenaltyNote(result,m)}${resultAdvanceNote(result,m)}`:''}${!canRevealPredictions(m)?' · Predictions hidden before lock':''}</div></div><div class="chips">${chips}</div></div>`;
       });
       html+='</div></details>';
     });
@@ -848,23 +976,27 @@ function renderLeaderboard(){
   const el=document.getElementById('leaderboard-content');
   const cfg=leaderboardStageConfig(leaderboardStage);
   const stageMatches=leaderboardMatches(cfg.key);
-  const played=stageMatches.filter(m=>state.results[m.id]);
+  const played=stageMatches.filter(hasOfficialResult);
   const ranked=state.users.filter(u=>predictionCountForMatches(u,stageMatches)>0);
   if(!state.users.length){el.innerHTML='<div class="empty">No players yet. Players join from the Predict tab.</div>';return;}
 
   const rows=ranked.map(u=>{
-    const pts=played.reduce((a,m)=>a+calcPts(state.predictions[u]?.[m.id],state.results[m.id]),0);
-    const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&p.h===r.h&&p.a===r.a;}).length;
-    const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcPts(p,r)===1;}).length;
+    const pts=played.reduce((a,m)=>a+calcPts(state.predictions[u]?.[m.id],state.results[m.id],m),0);
+    const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&Number(p.h)===Number(r.h)&&Number(p.a)===Number(r.a);}).length;
+    const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcScorePts(p,r)===1;}).length;
+    const advance=played.filter(m=>calcAdvancePts(state.predictions[u]?.[m.id],state.results[m.id],m)===1).length;
+    const penalties=played.filter(m=>calcPenaltyPts(state.predictions[u]?.[m.id],state.results[m.id],m)===1).length;
     const predicted=predictionCountForMatches(u,stageMatches);
     const resultedPredicted=played.filter(m=>completePrediction(state.predictions[u]?.[m.id])).length;
     const correctOutcomes=exact+outcome;
     const accuracy=resultedPredicted ? Math.round((correctOutcomes/resultedPredicted)*100) : 0;
-    return {name:u,pts,accuracy,correctOutcomes,resultedPredicted,exact,outcome,predicted,champ:state.champion[u]||'—'};
+    return {name:u,pts,accuracy,correctOutcomes,resultedPredicted,exact,outcome,advance,penalties,predicted,champ:state.champion[u]||'—'};
   }).sort((a,b)=>
     b.pts-a.pts ||
     b.exact-a.exact ||
     b.outcome-a.outcome ||
+    b.advance-a.advance ||
+    b.penalties-a.penalties ||
     b.accuracy-a.accuracy ||
     b.predicted-a.predicted ||
     a.name.localeCompare(b.name)
@@ -875,18 +1007,18 @@ function renderLeaderboard(){
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
 
-  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. The Round of 32 leaderboard counts only R32 matches, so new players joining from this stage can compete fairly. Outcome accuracy means correct outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Knockout scoring uses 90-minute score prediction plus separate penalties and advancing-team points. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
-  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
+  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Advancing picks counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
-    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Outcome accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
+    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Outcome accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Advance</th><th class="num">Penalties</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
       const rowClass = i<3 ? `top-${i+1}` : '';
       const rankInner = i+1;
       const rankClass = i<3 ? `rank-chip top rank-${i+1}` : 'rank-chip';
       const champPublic=publicChampionDisplay(s.name);
-      const accuracyTitle = s.resultedPredicted ? `Outcome accuracy: ${s.correctOutcomes}/${s.resultedPredicted} correct outcomes in ${cfg.label}` : `No official results counted yet in ${cfg.label}`;
-      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Outcome accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge" title="${esc(accuracyTitle)}">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${stageMatches.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
+      const accuracyTitle = s.resultedPredicted ? `Outcome accuracy: ${s.correctOutcomes}/${s.resultedPredicted} correct 90-minute outcomes in ${cfg.label}` : `No official results counted yet in ${cfg.label}`;
+      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Outcome accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge" title="${esc(accuracyTitle)}">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Advance"><span class="stat-badge">${s.advance}</span></td><td class="num" data-label="Penalties"><span class="stat-badge">${s.penalties}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${stageMatches.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
     });
     html += '</tbody></table></div>';
   } else {
@@ -902,9 +1034,19 @@ function renderLeaderboard(){
   html += '</div>';
   el.innerHTML=html;
 }
-function calcPts(pred,result){if(!completePrediction(pred)||!result)return 0; if(pred.h===result.h&&pred.a===result.a)return 3; const po=pred.h>pred.a?'H':pred.h<pred.a?'A':'D'; const ro=result.h>result.a?'H':result.h<result.a?'A':'D'; return po===ro?1:0;}
-function predictionClass(pred,result,m){if(!result)return 'upcoming'; const pts=calcPts(pred,result); return pts===3?'exact':pts===1?'outcome':'miss';}
-function predictionLabel(pred,result,m){if(!result)return 'locked'; const pts=calcPts(pred,result); if(pts===3)return '✓ exact'; if(pts===1)return '✓ outcome'; if(result)return '0 pts'; return ''; }
+function calcPts(pred,result,m){return calcScorePts(pred,result)+calcPenaltyPts(pred,result,m)+calcAdvancePts(pred,result,m);}
+function predictionClass(pred,result,m){if(!result)return 'upcoming'; const scorePts=calcScorePts(pred,result); const penPts=calcPenaltyPts(pred,result,m); const advPts=calcAdvancePts(pred,result,m); if(scorePts===3)return 'exact'; if(scorePts===1 || penPts===1 || advPts===1)return 'outcome'; return 'miss';}
+function predictionLabel(pred,result,m){
+  if(!result)return 'locked';
+  const scorePts=calcScorePts(pred,result), penPts=calcPenaltyPts(pred,result,m), advPts=calcAdvancePts(pred,result,m), total=scorePts+penPts+advPts;
+  if(total===0)return '0 pts';
+  const parts=[];
+  if(scorePts===3) parts.push('exact');
+  else if(scorePts===1) parts.push('outcome');
+  if(penPts===1) parts.push('penalties');
+  if(advPts===1) parts.push('advance');
+  return `✓ ${parts.join(' + ')} · ${total} pt${total===1?'':'s'}`;
+}
 function groupTableData(group){
   const teams=GROUPS[group]||[];
   const rows=teams.map((team,idx)=>({team,idx,p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0}));
@@ -942,22 +1084,57 @@ function knockoutTeamLine(team, score){
   const scoreHtml = score===null || score===undefined ? '' : `<span class="k-score">${score}</span>`;
   return `<div class="k-team"><span class="k-flag">${esc(flagForTeam(team))}</span><span class="k-name">${esc(team)}</span>${scoreHtml}</div>`;
 }
-function knockoutCardFromMatch(m, gridColumn, gridRow){
+function bracketSideClass(side){
+  return side==='green' ? 'side-green' : 'side-yellow';
+}
+function knockoutCardFromMatch(m, gridColumn, gridRow, side='yellow'){
   const r=state.results[m.id];
   const rowStyle = String(gridRow).includes('/') ? gridRow : `${gridRow}`;
   const style=`grid-column:${gridColumn};grid-row:${rowStyle};`;
-  const status=r?'Official result':(matchStarted(m)?'Started / locked':'Open for predictions');
-  return `<div class="knockout-card ${r?'has-result':''}" style="${style}" title="M${m.id} · ${esc(m.venue)}"><div class="k-date">M${m.id} · ${geDate(m.utc)} · ${geTime(m.utc)} GEO</div>${knockoutTeamLine(m.home,r?r.h:null)}${knockoutTeamLine(m.away,r?r.a:null)}<div class="k-round-note">${esc(status)}</div></div>`;
+  const status=r ? `Adv: ${validAdvanceTeam(m,r.advance)?r.advance:'TBD'}${validPenaltyPick(penaltyValue(r))?' · Pens: '+penaltyLabel(penaltyValue(r)):''}` : (matchStarted(m)?'Started / locked':'Open for predictions');
+  return `<div class="knockout-card ${bracketSideClass(side)} ${r?'has-result':''}" style="${style}" title="M${m.id} · ${esc(m.venue)}"><div class="k-date">M${m.id} · ${geDate(m.utc)} · ${geTime(m.utc)} GEO</div>${knockoutTeamLine(m.home,r?r.h:null)}${knockoutTeamLine(m.away,r?r.a:null)}<div class="k-round-note">${esc(status)}</div></div>`;
 }
-function placeholderCard(matchId, homeLabel, awayLabel, roundName, gridColumn, gridRow, finalCard=false){
-  const cls = `knockout-card k-placeholder ${finalCard?'final-card':''}`;
+function placeholderCard(matchId, homeLabel, awayLabel, roundName, gridColumn, gridRow, side='yellow', finalCard=false){
+  const cls = `knockout-card k-placeholder ${finalCard?'final-card':bracketSideClass(side)}`;
   const rowStyle = String(gridRow).includes('/') ? gridRow : `${gridRow}`;
   const style=`grid-column:${gridColumn};grid-row:${rowStyle};`;
   return `<div class="${cls}" style="${style}"><div class="k-date">M${matchId} · ${esc(roundName)}</div>${knockoutTeamLine(homeLabel,null)}${knockoutTeamLine(awayLabel,null)}<div class="k-round-note">TBD after previous round</div></div>`;
 }
+function renderBracketLinesSvg(){
+  const L={1:10,2:248,3:466,4:684,5:902};
+  const R={1:230,2:448,3:666,4:884,5:1102};
+  const rowCenter=(row,span=1)=>48+(row-2)*82+(span*74+(span-1)*8)/2;
+  const mid=(fromCol,toCol)=>(R[fromCol]+L[toCol])/2;
+  const pieces=[];
+  const dot=(x,y,cls)=>`<circle class="${cls}" cx="${x}" cy="${y}" r="3.5"/>`;
+  const pair=(fromCol,y1,y2,toCol,yt,cls)=>{
+    const m=mid(fromCol,toCol), x1=R[fromCol], x2=L[toCol];
+    pieces.push(`<path class="${cls}" d="M${x1} ${y1} H${m} V${y2} H${x1} M${m} ${yt} H${x2}"/>`);
+    pieces.push(dot(x1,y1,cls)+dot(x1,y2,cls));
+  };
+  const single=(fromCol,ys,toCol,yt,cls)=>{
+    const m=mid(fromCol,toCol), x1=R[fromCol], x2=L[toCol];
+    pieces.push(`<path class="${cls}" d="M${x1} ${ys} H${m} V${yt} H${x2}"/>`);
+    pieces.push(dot(x1,ys,cls));
+  };
+  for(let i=0;i<8;i++){
+    const row=2+i*2, cls=i<4?'yellow':'green';
+    pair(1,rowCenter(row),rowCenter(row+1),2,rowCenter(row,2),cls);
+  }
+  pair(2,rowCenter(2,2),rowCenter(4,2),3,rowCenter(2,4),'yellow');
+  pair(2,rowCenter(6,2),rowCenter(8,2),3,rowCenter(6,4),'yellow');
+  pair(2,rowCenter(10,2),rowCenter(12,2),3,rowCenter(10,4),'green');
+  pair(2,rowCenter(14,2),rowCenter(16,2),3,rowCenter(14,4),'green');
+  pair(3,rowCenter(2,4),rowCenter(6,4),4,rowCenter(2,8),'yellow');
+  pair(3,rowCenter(10,4),rowCenter(14,4),4,rowCenter(10,8),'green');
+  single(4,rowCenter(2,8),5,rowCenter(6,8)-22,'yellow');
+  single(4,rowCenter(10,8),5,rowCenter(6,8)+22,'green');
+  return `<svg class="bracket-lines" viewBox="0 0 1112 1364" aria-hidden="true">${pieces.join('')}</svg>`;
+}
 function renderRound32Map(){
   const byId=Object.fromEntries(MATCHES.map(m=>[m.id,m]));
-  let html='<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><span class="tag">Round of 32 → Final</span></div><p class="help">Horizontal bracket view in route-to-final order, not chronological order. Scroll sideways on mobile. Round of 32 fixtures are confirmed; later rounds stay as winner placeholders until results are entered.</p><div class="bracket-legend"><span class="tag">🏁 Confirmed fixture</span><span class="tag">🛡️ Future placeholder</span><span class="tag">GEO = Georgia time</span></div><div class="knockout-scroll"><div class="knockout-map">';
+  let html='<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><span class="tag">Round of 32 → Final</span></div><p class="help">Horizontal bracket view in route-to-final order, not chronological order. Scroll sideways on mobile. The upper side is highlighted in yellow and the lower side in green; full connector lines show each path toward the final.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">GEO = Georgia time</span></div><div class="knockout-scroll"><div class="knockout-map">';
+  html += renderBracketLinesSvg();
   html += '<div class="round-heading" style="grid-column:1;grid-row:1">Round of 32</div>';
   html += '<div class="round-heading" style="grid-column:2;grid-row:1">Round of 16</div>';
   html += '<div class="round-heading" style="grid-column:3;grid-row:1">Quarter-finals</div>';
@@ -966,21 +1143,22 @@ function renderRound32Map(){
 
   const r32Order=[];
   KNOCKOUT_PATHS.forEach(path=>{r32Order.push(path.left,path.right);});
-  r32Order.forEach((id,i)=>{html += knockoutCardFromMatch(byId[id],1,i+2);});
+  r32Order.forEach((id,i)=>{html += knockoutCardFromMatch(byId[id],1,i+2,i<8?'yellow':'green');});
 
   KNOCKOUT_PATHS.forEach((path,i)=>{
     const rowStart=i*2+2;
-    html += placeholderCard(path.r16,`Winner M${path.left}`,`Winner M${path.right}`,'Round of 16',2,`${rowStart} / span 2`);
+    const side=i<4?'yellow':'green';
+    html += placeholderCard(path.r16,`Winner M${path.left}`,`Winner M${path.right}`,'Round of 16',2,`${rowStart} / span 2`,side);
   });
   [
-    {id:97,home:'Winner M89',away:'Winner M90',row:'3 / span 4'},
-    {id:98,home:'Winner M93',away:'Winner M94',row:'7 / span 4'},
-    {id:99,home:'Winner M91',away:'Winner M92',row:'11 / span 4'},
-    {id:100,home:'Winner M95',away:'Winner M96',row:'15 / span 3'}
-  ].forEach(q=>{html += placeholderCard(q.id,q.home,q.away,'Quarter-final',3,q.row);});
-  html += placeholderCard(101,'Winner M97','Winner M98','Semi-final',4,'5 / span 5');
-  html += placeholderCard(102,'Winner M99','Winner M100','Semi-final',4,'12 / span 5');
-  html += placeholderCard(104,'Winner M101','Winner M102','Final',5,'8 / span 5',true);
+    {id:97,home:'Winner M89',away:'Winner M90',row:'2 / span 4',side:'yellow'},
+    {id:98,home:'Winner M93',away:'Winner M94',row:'6 / span 4',side:'yellow'},
+    {id:99,home:'Winner M91',away:'Winner M92',row:'10 / span 4',side:'green'},
+    {id:100,home:'Winner M95',away:'Winner M96',row:'14 / span 4',side:'green'}
+  ].forEach(q=>{html += placeholderCard(q.id,q.home,q.away,'Quarter-final',3,q.row,q.side);});
+  html += placeholderCard(101,'Winner M97','Winner M98','Semi-final',4,'2 / span 8','yellow');
+  html += placeholderCard(102,'Winner M99','Winner M100','Semi-final',4,'10 / span 8','green');
+  html += placeholderCard(104,'Winner M101','Winner M102','Final',5,'6 / span 8','yellow',true);
   html += '</div></div></div>';
   return html;
 }
@@ -996,7 +1174,7 @@ function renderRound32Schedule(){
     html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · Georgia time</span></summary><div class="group-body">`;
     day.matches.forEach(m=>{
       const r=state.results[m.id];
-      const status = r ? `Official result ${r.h}-${r.a}` : (matchStarted(m) ? 'Started / locked' : 'Upcoming');
+      const status = r ? `Official 90 min ${r.h}-${r.a}${validPenaltyPick(penaltyValue(r))?' · Penalties: '+penaltyLabel(penaltyValue(r)):''}${validAdvanceTeam(m,r.advance)?' · Advances: '+r.advance:''}` : (matchStarted(m) ? 'Started / locked' : 'Upcoming');
       html+=`<div class="match schedule-match ${r?'has-result':''}"><div class="schedule-main"><div class="teams schedule-teams"><span class="time group-pill">M${m.id}</span><span class="team-name">${esc(m.home)}</span> <span class="dash">vs</span> <span class="team-name">${esc(m.away)}</span></div><div class="meta schedule-meta"><span class="time kickoff-pill">${geTime(m.utc)} Georgia</span><span class="venue-text">${esc(m.venue)}</span></div><div class="schedule-status">${esc(status)}</div></div>${r?`<span class="result-badge schedule-result">${r.h}–${r.a}</span>`:''}</div>`;
     });
     html+='</div></details>';
@@ -1031,7 +1209,9 @@ function renderResults(){
       day.matches.forEach(m=>{
         const r=state.results[m.id]||{h:'',a:''};
         const filled=hasOfficialResult(m);
-        html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${filled?' · Result already filled':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="rh_${m.id}" value="${esc(r.h)}"/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="ra_${m.id}" value="${esc(r.a)}"/></div></div>`;
+        const penHtml=penaltyPickHtml(m,penaltyValue(r),false,'rpen');
+        const advHtml=advancingPickHtml(m,r.advance||'',false,'radv');
+        html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${isKnockoutMatch(m)?' · enter 90-min score + penalties + actual advancing team':''}${filled?' · Result already filled':''}</div></div><div class="prediction-inputs"><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="rh_${m.id}" value="${esc(r.h)}"/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="ra_${m.id}" value="${esc(r.a)}"/></div>${penHtml}${advHtml}</div></div>`;
       });
       html+='</div></details>';
     });
@@ -1053,13 +1233,42 @@ function saveResults(){
     const h=document.getElementById(`rh_${m.id}`), a=document.getElementById(`ra_${m.id}`);
     if(!h||!a)return;
     const hv=h.value.trim(), av=a.value.trim();
-    if(hv===''&&av===''){delete state.results[m.id];return;}
-    if(hv===''||av===''){errors.push(`${m.home} vs ${m.away}`);return;}
+    const advEl=document.getElementById(`radv_${m.id}`);
+    const penEl=document.getElementById(`rpen_${m.id}`);
+    let adv=advEl ? advEl.value : '';
+    const pen=penEl ? penEl.value : '';
+    if(hv===''&&av===''&&!adv&&!pen){delete state.results[m.id];return;}
+    if(hv===''||av===''){
+      errors.push(`${m.home} vs ${m.away}`);
+      return;
+    }
     const hn=Number(hv), an=Number(av);
-    if(!Number.isInteger(hn)||!Number.isInteger(an)||hn<0||an<0||hn>20||an>20){errors.push(`${m.home} vs ${m.away}`);return;}
-    state.results[m.id]={h:hn,a:an};
+    if(!Number.isInteger(hn)||!Number.isInteger(an)||hn<0||an<0||hn>20||an>20){
+      errors.push(`${m.home} vs ${m.away}`);
+      return;
+    }
+    if(isKnockoutMatch(m)){
+      if(!validPenaltyPick(pen)){
+        errors.push(`${m.home} vs ${m.away} — choose penalties yes/no`);
+        return;
+      }
+      if(hn!==an && pen==='yes'){
+        errors.push(`${m.home} vs ${m.away} — penalties can only happen after a 90-minute draw`);
+        return;
+      }
+      if(!adv && hn!==an) adv = hn>an ? m.home : m.away;
+      if(!validAdvanceTeam(m,adv)){
+        errors.push(`${m.home} vs ${m.away} — choose actual advancing team`);
+        return;
+      }
+      if(hn>an && adv!==m.home){errors.push(`${m.home} vs ${m.away} — advancing team must match the 90-minute winner`);return;}
+      if(hn<an && adv!==m.away){errors.push(`${m.home} vs ${m.away} — advancing team must match the 90-minute winner`);return;}
+      state.results[m.id]={h:hn,a:an,penalties:pen,advance:adv};
+    }else{
+      state.results[m.id]={h:hn,a:an};
+    }
   });
-  if(errors.length){toast('Some official scores are incomplete or invalid');return;}
+  if(errors.length){toast('Some official results are incomplete or invalid');return;}
   pushState();renderAll();toast('Official results saved');
 }
 initFirebase();
