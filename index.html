@@ -827,9 +827,10 @@ function renderLeaderboard(){
     const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&p.h===r.h&&p.a===r.a;}).length;
     const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcPts(p,r)===1;}).length;
     const predicted=predictionCount(u);
-    const possible=played.length*3;
-    const accuracy=possible ? Math.round((pts/possible)*100) : 0;
-    return {name:u,pts,accuracy,exact,outcome,predicted,champ:state.champion[u]||'—'};
+    const resultedPredicted=played.filter(m=>completePrediction(state.predictions[u]?.[m.id])).length;
+    const correctOutcomes=exact+outcome;
+    const accuracy=resultedPredicted ? Math.round((correctOutcomes/resultedPredicted)*100) : 0;
+    return {name:u,pts,accuracy,correctOutcomes,resultedPredicted,exact,outcome,predicted,champ:state.champion[u]||'—'};
   }).sort((a,b)=>
     b.pts-a.pts ||
     b.exact-a.exact ||
@@ -837,17 +838,17 @@ function renderLeaderboard(){
     a.name.localeCompare(b.name)
   );
 
-  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Accuracy shows points earned as a percentage of the maximum possible points from results already entered. Exact-score count breaks ties first, then correct-outcome count.</p>';
+  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Accuracy now shows outcome accuracy: correct outcomes, including exact scores, divided by the player’s predicted matches with official results. Exact-score count breaks ties first, then correct-outcome count.</p>';
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
-  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${MATCHES.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">📊 Best accuracy: <b>${bestAccuracy}%</b></span></div>`;
+  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${MATCHES.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
-    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
+    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Outcome accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
       const rowClass = i<3 ? `top-${i+1}` : '';
       const rankInner = i+1;
       const rankClass = i<3 ? `rank-chip top rank-${i+1}` : 'rank-chip';
       const champPublic=publicChampionDisplay(s.name);
-      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
+      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Outcome accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge" title="Outcome accuracy: ${s.correctOutcomes}/${s.resultedPredicted} correct outcomes">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
     });
     html += '</tbody></table></div>';
   } else {
