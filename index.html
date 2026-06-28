@@ -64,6 +64,8 @@
   .rank-chip.rank-2{background:#fff200;color:#4b3f00}
   .rank-chip.rank-3{background:#fff200;color:#4b3f00}
   .points-badge{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:38px;padding:0 12px;border-radius:999px;background:var(--brand);color:#fff;font-weight:950;font-size:18px;letter-spacing:-.02em}
+  .points-accuracy{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+  .accuracy-badge{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 10px;border-radius:999px;background:#fff200;border:1px solid #e4cf00;color:#4b3f00;font-weight:950;font-size:13px}
   .stat-badge{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:32px;padding:0 10px;border-radius:999px;background:#fff8fc;border:1px solid var(--line);font-weight:850;font-size:13px;color:#4d3b47}
   .submitted-pill,.champion-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:850;line-height:1}
   .submitted-pill{background:#fff5fa;border:1px solid var(--line);color:#6c4e60}
@@ -76,6 +78,14 @@
   .schedule-switch{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.schedule-view-btn{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:950;color:#5f5562;cursor:pointer}.schedule-view-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}.schedule-view-btn:not(.active):hover{background:#fff0f6;border-color:var(--brand);color:var(--brand)}
   .schedule-match{grid-template-columns:minmax(0,1fr) auto}.schedule-main{min-width:0}.schedule-teams{display:flex;align-items:center;flex-wrap:wrap;gap:4px}.schedule-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.schedule-status{display:none}.group-pill,.kickoff-pill{white-space:nowrap}.venue-text{word-break:break-word}.schedule-result{justify-self:end;align-self:center;min-width:48px;text-align:center}.has-result .schedule-status{display:block;color:var(--brand);font-size:12px;font-weight:900;margin-top:5px}
   .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--line);background:#fff}.group-table{width:100%;border-collapse:collapse;min-width:520px}.group-table th,.group-table td{padding:10px 9px;border-bottom:1px solid var(--soft);font-size:12px;text-align:center;white-space:nowrap}.group-table th{background:#fff0f6;color:var(--brand);font-weight:950}.group-table td.team-cell{text-align:left;font-weight:950;color:#201920}.group-table tr:last-child td{border-bottom:none}.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:999px;background:var(--soft);color:var(--brand);font-weight:950;margin-right:7px}.qualify-note{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.4}
+
+  .bracket-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+  .bracket-path{border:1px solid var(--line);background:#fff9fc;border-radius:18px;padding:12px;box-shadow:0 8px 18px rgba(194,24,91,.04)}
+  .path-title{font-size:12px;font-weight:950;color:var(--brand);margin-bottom:8px;letter-spacing:.01em}
+  .bracket-match{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--soft);border-radius:14px;padding:10px;margin:7px 0}
+  .bracket-match-title{font-weight:950;font-size:13px;line-height:1.35;color:#211821}
+  .connector{text-align:center;font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin:4px 0}
+
   .admin-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--brand);color:white;border-radius:12px;padding:11px 18px;font-weight:900;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:200}.toast.show{opacity:1}.error{color:#b00020;font-weight:800}.success{color:var(--good);font-weight:800}
   @media(max-width:720px){.topbar{padding:16px 12px 22px}.topbar-inner,.hero{display:block}.title h1{font-size:21px}.timezone{text-align:left;margin-top:8px}.container{padding:0 10px 104px}.hero{padding:14px;border-radius:18px}.hero h2{font-size:18px}.hero p{font-size:13px}.rules{justify-content:flex-start;margin-top:12px}.tabs{display:flex;overflow-x:auto;gap:0;border-radius:15px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}.tab{min-width:104px;font-size:12px;white-space:nowrap;scroll-snap-align:start;padding:12px 10px}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat{padding:10px 6px;border-radius:14px}.stat strong{font-size:20px}.stat span{font-size:11px}.card{padding:13px;border-radius:16px}.section-title{display:block}.section-title .tag{margin-top:8px}.login-panel{grid-template-columns:1fr}.input,.btn{min-height:46px}.toolbar,.predictions-toolbar{display:block}.group-filter{margin-top:10px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter-btn{flex:0 0 auto}.segmented{width:100%;display:grid;grid-template-columns:1fr 1fr;border-radius:14px}.view-btn{padding:10px 8px}.match{display:block;padding:14px 0}.teams{font-size:14px}.meta{font-size:12px}.score-inputs{justify-content:flex-start;margin-top:10px}.score-inputs input{width:56px;height:44px;font-size:16px}.leader-row,.pred-row{grid-template-columns:auto 1fr;align-items:start}.points{grid-column:2;text-align:left;font-size:18px}.chips{display:grid;grid-template-columns:1fr}.chip{border-radius:12px;line-height:1.35}.champ-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.champ-btn{border-radius:14px;padding:10px 8px}.toast{width:calc(100% - 28px);text-align:center;bottom:14px}.schedule-switch{display:grid;grid-template-columns:1fr;gap:7px}.schedule-view-btn{width:100%;min-height:44px;border-radius:13px}.schedule-match{display:block;background:#fff;border:1px solid var(--soft);border-radius:15px;margin:10px 0;padding:12px;box-shadow:0 5px 14px rgba(194,24,91,.035)}.schedule-match .schedule-teams{font-size:15px;line-height:1.45}.schedule-match .team-name{font-weight:950}.schedule-meta{display:grid;grid-template-columns:1fr;gap:5px;margin-top:8px}.schedule-meta .time{display:inline-flex;width:max-content}.schedule-status{display:block;color:#6f6874;font-size:12px;font-weight:900;margin-top:8px}.schedule-result{display:inline-flex;margin-top:10px;min-width:58px;height:38px;align-items:center;justify-content:center;font-size:15px}.has-result{border-color:var(--line);background:#fffafd}.table-scroll{border:0;background:transparent;overflow:visible}.group-table,.group-table thead,.group-table tbody,.group-table th,.group-table td,.group-table tr{display:block;width:100%;min-width:0}.group-table thead{display:none}.group-table tr{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px 12px;margin-bottom:9px;box-shadow:0 5px 14px rgba(194,24,91,.035)}.group-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--soft);padding:7px 0;white-space:normal;text-align:right}.group-table td:last-child{border-bottom:0}.group-table td::before{content:attr(data-label);font-size:11px;font-weight:950;color:#6f6874;text-align:left}.group-table td.team-cell{font-size:14px;text-align:right}.group-table td.team-cell::before{color:var(--brand)}.rank-badge{margin-right:0}}
   @media(max-width:720px){
@@ -96,9 +106,18 @@
     .leader-table td.num,.leader-table th.num,.leader-table td.points-cell{text-align:right}
     .leader-player{max-width:none;text-align:right;font-size:14px}
     .points-badge,.stat-badge,.submitted-pill,.champion-pill,.rank-chip{margin-left:auto}
+    .points-accuracy{margin-left:auto;justify-content:flex-end}
     .rank-chip{width:36px;height:36px;font-size:15px}
     .points-badge{min-width:44px;height:34px;font-size:17px}
   }
+
+  @media(max-width:720px){
+    .bracket-grid{grid-template-columns:1fr;gap:10px}
+    .bracket-path{padding:10px;border-radius:16px}
+    .bracket-match{grid-template-columns:1fr;padding:10px}
+    .bracket-match .schedule-result{justify-self:start}
+  }
+
 @media(max-width:430px){.tab{min-width:96px}.title p,.timezone{font-size:12px}.grid-3{grid-template-columns:1fr}.stat strong{font-size:22px}.champ-grid{grid-template-columns:1fr}.pill{font-size:11px}.group-body{padding:0 12px 10px}details.group summary{padding:13px 12px}.match{padding:13px 0}}
 
 
@@ -177,22 +196,102 @@
   }
 }
 
+
+
+/* Knockout bracket map — horizontal desktop + scrollable mobile */
+.knockout-scroll{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  padding:14px;
+  margin-top:12px;
+  box-shadow:0 8px 18px rgba(194,24,91,.04);
+}
+.knockout-map{
+  min-width:1040px;
+  display:grid;
+  grid-template-columns:220px 200px 200px 200px 200px;
+  grid-template-rows:34px repeat(16,74px);
+  column-gap:18px;
+  row-gap:8px;
+  position:relative;
+  padding:6px 10px 12px;
+}
+.round-heading{
+  position:sticky;
+  top:0;
+  z-index:4;
+  background:#fff9fc;
+  border:1px solid var(--line);
+  color:var(--brand);
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:11px;
+  font-weight:950;
+  text-align:center;
+  margin-bottom:8px;
+  box-shadow:0 4px 12px rgba(194,24,91,.04);
+}
+.knockout-card{
+  position:relative;
+  align-self:center;
+  min-height:66px;
+  border:1.5px solid #d8d1d8;
+  background:linear-gradient(180deg,#fff,#fff8fc);
+  border-radius:13px;
+  padding:8px 9px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  box-shadow:0 5px 12px rgba(40,25,35,.055);
+}
+.knockout-card.has-result{border-color:var(--brand);background:#fff2f9}
+.knockout-card:after{
+  content:'';
+  position:absolute;
+  top:50%;
+  right:-19px;
+  width:18px;
+  border-top:1.5px solid #cfc8cf;
+}
+.knockout-card.final-card:after{display:none}
+.k-date{font-size:10px;color:#6f6874;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-team{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;font-weight:900;color:#201820;line-height:1.15}
+.k-flag{width:18px;display:inline-flex;justify-content:center;flex:0 0 18px}
+.k-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.k-score{margin-left:auto;background:var(--brand);color:white;border-radius:999px;padding:2px 6px;font-size:11px;font-weight:950;line-height:1}
+.k-placeholder .k-team{color:#6f6874}
+.k-placeholder .k-flag{filter:grayscale(1);opacity:.85}
+.k-round-note{font-size:10px;color:var(--muted);font-weight:850;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bracket-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.bracket-legend .tag{background:#fff;border-color:var(--line);color:#5f5562}
+@media(max-width:720px){
+  .knockout-scroll{padding:10px;border-radius:16px;margin-left:-4px;margin-right:-4px}
+  .knockout-map{min-width:980px;grid-template-columns:200px 185px 185px 185px 185px;grid-template-rows:32px repeat(16,72px);column-gap:16px;padding:4px 8px 10px}
+  .knockout-card{min-height:64px;padding:7px 8px;border-radius:12px}
+  .k-team{font-size:11px}.k-date{font-size:10px}.k-round-note{font-size:10px}
+  .round-heading{font-size:10px;padding:6px 8px}
+}
+
 </style>
 </head>
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="title"><h1>World Cup 2026 Predictor 🏆</h1><p>Group-stage score predictions · champion pick · live leaderboard</p></div>
+    <div class="title"><h1>World Cup 2026 Predictor 🏆</h1><p>Knockout predictions · champion pick · live leaderboard</p></div>
     <div class="timezone">🇬🇪 Georgia time<br>UTC+4</div>
   </div>
 </header>
 <main class="container">
   <section class="hero">
-    <div><h2>Schedule first, predictions in the same order.</h2><p>Matches are shown chronologically in Georgia time. The Predict page follows the same schedule order so players do not get confused.</p></div>
+    <div><h2>Round of 32 first, predictions in the same order.</h2><p>Round of 32 fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
     <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt correct outcome</span><span class="pill">Predictions lock at match time</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
-    <button class="tab active" data-tab="schedule">📅 Schedule</button>
+    <button class="tab active" data-tab="schedule">🗺️ Round of 32</button>
     <button class="tab" data-tab="predict">✏️ Predict</button>
     <button class="tab" data-tab="allpredictions">📋 Predictions</button>
     <button class="tab" data-tab="leaderboard">🏅 Leaderboard</button>
@@ -215,10 +314,10 @@
     <div class="card" id="champion-card"></div>
     <div class="card">
       <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 72 saved</span></div>
-      <p class="help">By default, this list shows only upcoming/editable matches. Use “Show full schedule” if you need to review older or locked matches. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. Press Save when finished.</p>
+      <p class="help">By default, this list shows only upcoming/editable matches, including the Round of 32. Use “Show full schedule” if you need to review older or locked matches. Enter full scores only, for example 2–1 or 0–0. Empty matches are skipped. Press Save when finished.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
-      <button class="btn full" id="save-predictions">💾 Save champion and scores</button>
+      <button class="btn full" id="save-predictions">💾 Save champion and predictions</button>
     </div>
   </section>
 
@@ -333,9 +432,51 @@ const MATCHES = [
   {id:69,group:'J',home:'Algeria',away:'Austria',utc:'2026-06-28T02:00',venue:'Kansas City Stadium'},
   {id:70,group:'J',home:'Jordan',away:'Argentina',utc:'2026-06-28T02:00',venue:'Dallas Stadium'},
   {id:71,group:'K',home:'Colombia',away:'Portugal',utc:'2026-06-27T23:30',venue:'Miami Stadium'},
-  {id:72,group:'K',home:'Congo DR',away:'Uzbekistan',utc:'2026-06-27T23:30',venue:'Atlanta Stadium'}
+  {id:72,group:'K',home:'Congo DR',away:'Uzbekistan',utc:'2026-06-27T23:30',venue:'Atlanta Stadium'},
+  // Round of 32 fixtures. UTC values are converted to Georgia time in the UI.
+  {id:73,group:'R32',stage:'Round of 32',home:'South Africa',away:'Canada',utc:'2026-06-28T19:00',venue:'Los Angeles Stadium'},
+  {id:74,group:'R32',stage:'Round of 32',home:'Brazil',away:'Japan',utc:'2026-06-29T17:00',venue:'Houston Stadium'},
+  {id:75,group:'R32',stage:'Round of 32',home:'Germany',away:'Paraguay',utc:'2026-06-29T20:30',venue:'Boston Stadium'},
+  {id:76,group:'R32',stage:'Round of 32',home:'Netherlands',away:'Morocco',utc:'2026-06-30T01:00',venue:'Estadio Monterrey'},
+  {id:77,group:'R32',stage:'Round of 32',home:'France',away:'Sweden',utc:'2026-06-30T21:00',venue:'New York New Jersey Stadium'},
+  {id:78,group:'R32',stage:'Round of 32',home:'Côte d’Ivoire',away:'Norway',utc:'2026-06-30T17:00',venue:'Dallas Stadium'},
+  {id:79,group:'R32',stage:'Round of 32',home:'Mexico',away:'Ecuador',utc:'2026-07-01T01:00',venue:'Mexico City Stadium'},
+  {id:80,group:'R32',stage:'Round of 32',home:'England',away:'Congo DR',utc:'2026-07-01T16:00',venue:'Atlanta Stadium'},
+  {id:81,group:'R32',stage:'Round of 32',home:'United States',away:'Bosnia & Herzegovina',utc:'2026-07-02T00:00',venue:'San Francisco Bay Area Stadium'},
+  {id:82,group:'R32',stage:'Round of 32',home:'Belgium',away:'Senegal',utc:'2026-07-01T20:00',venue:'Seattle Stadium'},
+  {id:83,group:'R32',stage:'Round of 32',home:'Portugal',away:'Croatia',utc:'2026-07-02T23:00',venue:'Toronto Stadium'},
+  {id:84,group:'R32',stage:'Round of 32',home:'Spain',away:'Austria',utc:'2026-07-02T19:00',venue:'Los Angeles Stadium'},
+  {id:85,group:'R32',stage:'Round of 32',home:'Switzerland',away:'Algeria',utc:'2026-07-03T03:00',venue:'BC Place Vancouver'},
+  {id:86,group:'R32',stage:'Round of 32',home:'Argentina',away:'Cabo Verde',utc:'2026-07-03T22:00',venue:'Miami Stadium'},
+  {id:87,group:'R32',stage:'Round of 32',home:'Colombia',away:'Ghana',utc:'2026-07-04T01:30',venue:'Kansas City Stadium'},
+  {id:88,group:'R32',stage:'Round of 32',home:'Australia',away:'Egypt',utc:'2026-07-03T18:00',venue:'Dallas Stadium'}
 ];
 const TEAMS = Object.values(GROUPS).flat();
+const ROUND_OF_32_IDS = Array.from({length:16},(_,i)=>73+i);
+const R32_PATHS = [
+  {r16:89,left:74,right:77},
+  {r16:90,left:73,right:75},
+  {r16:91,left:76,right:78},
+  {r16:92,left:79,right:80},
+  {r16:93,left:83,right:84},
+  {r16:94,left:81,right:82},
+  {r16:95,left:86,right:88},
+  {r16:96,left:85,right:87}
+];
+
+const KNOCKOUT_PATHS = [
+  {r16:89,left:74,right:77,qf:97,sf:101,final:104},
+  {r16:90,left:73,right:75,qf:97,sf:101,final:104},
+  {r16:93,left:83,right:84,qf:98,sf:101,final:104},
+  {r16:94,left:81,right:82,qf:98,sf:101,final:104},
+  {r16:91,left:76,right:78,qf:99,sf:102,final:104},
+  {r16:92,left:79,right:80,qf:99,sf:102,final:104},
+  {r16:95,left:86,right:88,qf:100,sf:102,final:104},
+  {r16:96,left:85,right:87,qf:100,sf:102,final:104}
+];
+const TEAM_FLAGS = {
+  'Argentina':'🇦🇷','Australia':'🇦🇺','Austria':'🇦🇹','Belgium':'🇧🇪','Bosnia & Herzegovina':'🇧🇦','Brazil':'🇧🇷','Cabo Verde':'🇨🇻','Canada':'🇨🇦','Colombia':'🇨🇴','Congo DR':'🇨🇩','Côte d’Ivoire':'🇨🇮','Ecuador':'🇪🇨','Egypt':'🇪🇬','England':'🏴','France':'🇫🇷','Germany':'🇩🇪','Ghana':'🇬🇭','Japan':'🇯🇵','Mexico':'🇲🇽','Morocco':'🇲🇦','Netherlands':'🇳🇱','Norway':'🇳🇴','Paraguay':'🇵🇾','Portugal':'🇵🇹','Senegal':'🇸🇳','South Africa':'🇿🇦','Spain':'🇪🇸','Sweden':'🇸🇪','Switzerland':'🇨🇭','United States':'🇺🇸','Croatia':'🇭🇷','Algeria':'🇩🇿'
+};
 
 const ADMIN_PIN = "1363";
 let state={users:[],predictions:{},results:{},champion:{},playerPasswords:{}};
@@ -357,6 +498,10 @@ let adminResultsMode = (function(){try{return localStorage.getItem('wc2026_admin
 let showPreviousPredictions = (function(){try{return localStorage.getItem('wc2026_showPreviousPredictions')!=='0';}catch(e){return true;}})();
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
+function matchShortLabel(m){return m.stage ? `M${m.id} · ${m.stage}` : `Group ${m.group}`;}
+function matchFilterPass(m,active){return active==='ALL' || (active==='R32' ? m.stage==='Round of 32' : m.group===active);}
+function isRoundOf32(m){return m.stage==='Round of 32';}
 function normalizeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,24);}
 function normalizePass(s){return String(s||'').trim().slice(0,32);}
 function hasUnsafeFirebaseChars(s){return /[.#$\/\[\]]/.test(String(s||''));}
@@ -526,7 +671,12 @@ function renderChampionPicker(){
   });
 }
 function makeFilter(containerId, active, setter){
-  const el=document.getElementById(containerId); if(!el)return; let html=`<button type="button" class="filter-btn ${active==='ALL'?'active':''}" data-group="ALL">All</button>`; Object.keys(GROUPS).forEach(g=>html+=`<button type="button" class="filter-btn ${active===g?'active':''}" data-group="${g}">${g}</button>`); el.innerHTML=html; el.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>setter(b.dataset.group));
+  const el=document.getElementById(containerId); if(!el)return;
+  const filters=[{key:'ALL',label:'All'},{key:'R32',label:'R32'},...Object.keys(GROUPS).map(g=>({key:g,label:g}))];
+  let html='';
+  filters.forEach(f=>{html+=`<button type="button" class="filter-btn ${active===f.key?'active':''}" data-group="${f.key}">${f.label}</button>`;});
+  el.innerHTML=html;
+  el.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>setter(b.dataset.group));
 }
 function renderPredictFilters(){makeFilter('predict-filter',predictGroup,g=>{predictGroup=g;renderPredictFilters();renderPredict();});}
 function renderPublicFilters(){makeFilter('public-filter',publicGroup,g=>{publicGroup=g;renderPublicFilters();renderPublicPredictions();});}
@@ -534,7 +684,7 @@ function groupsToShow(active){return active==='ALL'?Object.keys(GROUPS):[active]
 
 function sortedMatches(active='ALL'){
   return MATCHES
-    .filter(m=>active==='ALL' || m.group===active)
+    .filter(m=>matchFilterPass(m,active))
     .slice()
     .sort((a,b)=>new Date(a.utc+':00Z')-new Date(b.utc+':00Z') || a.id-b.id);
 }
@@ -584,7 +734,7 @@ function renderPredict(){
     day.matches.forEach(m=>{
       const p=preds[m.id]||{h:'',a:''}; const locked=matchStarted(m);
       const saved=completePrediction(p);
-      html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
+      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${saved?' · Saved':''}${locked?'<div class="locked">Locked — match has started.</div>':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked?'disabled':''}/></div></div>`;
     });
     html+='</div></details>';
   });
@@ -625,7 +775,7 @@ function renderPublicPredictions(){
         }
         const cls=predictionClass(p,state.results[m.id],m);
         const label=predictionLabel(p,state.results[m.id],m);
-        chipsHtml+=`<span class="chip ${cls}">${geDate(m.utc)} · Group ${esc(m.group)} · ${esc(m.home)}–${esc(m.away)}: <b>${p.h}-${p.a}</b>${label?` <span class="result-note">${label}</span>`:''}</span>`;
+        chipsHtml+=`<span class="chip ${cls}">${geDate(m.utc)} · ${esc(matchStageLabel(m))} · ${esc(m.home)}–${esc(m.away)}: <b>${p.h}-${p.a}</b>${label?` <span class="result-note">${label}</span>`:''}</span>`;
       });
       if(hiddenCount){
         chipsHtml+=`<span class="chip hiddenlocked">🔒 ${hiddenCount} prediction${hiddenCount===1?'':'s'} hidden until match time</span>`;
@@ -658,7 +808,7 @@ function renderPublicPredictions(){
             return `<span class="chip ${cls}">${esc(u)}: <b>${p.h}-${p.a}</b>${label?` <span class="result-note">${label}</span>`:''}</span>`;
           }).join('') || '<span class="small">No score predictions yet</span>';
         }
-        html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${result?` · Official: <b>${result.h}-${result.a}</b>`:''}${!canRevealPredictions(m)?' · Predictions hidden before lock':''}</div></div><div class="chips">${chips}</div></div>`;
+        html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${result?` · Official: <b>${result.h}-${result.a}</b>`:''}${!canRevealPredictions(m)?' · Predictions hidden before lock':''}</div></div><div class="chips">${chips}</div></div>`;
       });
       html+='</div></details>';
     });
@@ -677,7 +827,9 @@ function renderLeaderboard(){
     const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&p.h===r.h&&p.a===r.a;}).length;
     const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcPts(p,r)===1;}).length;
     const predicted=predictionCount(u);
-    return {name:u,pts,exact,outcome,predicted,champ:state.champion[u]||'—'};
+    const possible=played.length*3;
+    const accuracy=possible ? Math.round((pts/possible)*100) : 0;
+    return {name:u,pts,accuracy,exact,outcome,predicted,champ:state.champion[u]||'—'};
   }).sort((a,b)=>
     b.pts-a.pts ||
     b.exact-a.exact ||
@@ -685,16 +837,17 @@ function renderLeaderboard(){
     a.name.localeCompare(b.name)
   );
 
-  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Exact-score count breaks ties first, then correct-outcome count. Submitted prediction count is shown only for context.</p>';
-  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${MATCHES.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span></div>`;
+  let html='<div class="section-title"><h3>Leaderboard</h3></div><p class="help">Ranking is based on points from official results. Accuracy shows points earned as a percentage of the maximum possible points from results already entered. Exact-score count breaks ties first, then correct-outcome count.</p>';
+  const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
+  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${MATCHES.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">📊 Best accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
-    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
+    html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
       const rowClass = i<3 ? `top-${i+1}` : '';
       const rankInner = i+1;
       const rankClass = i<3 ? `rank-chip top rank-${i+1}` : 'rank-chip';
       const champPublic=publicChampionDisplay(s.name);
-      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points"><span class="points-badge">${s.pts}</span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
+      html += `<tr class="${rowClass}"><td class="num" data-label="Rank"><span class="${rankClass}">${rankInner}</span></td><td data-label="Player"><span class="leader-player">${esc(s.name)}</span></td><td class="points-cell" data-label="Points / Accuracy"><span class="points-accuracy"><span class="points-badge">${s.pts}</span><span class="accuracy-badge">${s.accuracy}%</span></span></td><td class="num" data-label="Exact"><span class="stat-badge">${s.exact}</span></td><td class="num" data-label="Outcome"><span class="stat-badge">${s.outcome}</span></td><td class="num" data-label="Submitted"><span class="submitted-pill">${s.predicted}/${MATCHES.length}</span></td><td data-label="Champion pick"><span class="${champPublic.cls}">${esc(champPublic.text)}</span></td></tr>`;
     });
     html += '</tbody></table></div>';
   } else {
@@ -745,52 +898,75 @@ function renderGroupTables(){
   });
   return html;
 }
+function flagForTeam(team){return TEAM_FLAGS[team] || '🛡️';}
+function knockoutTeamLine(team, score){
+  const scoreHtml = score===null || score===undefined ? '' : `<span class="k-score">${score}</span>`;
+  return `<div class="k-team"><span class="k-flag">${esc(flagForTeam(team))}</span><span class="k-name">${esc(team)}</span>${scoreHtml}</div>`;
+}
+function knockoutCardFromMatch(m, gridColumn, gridRow){
+  const r=state.results[m.id];
+  const rowStyle = String(gridRow).includes('/') ? gridRow : `${gridRow}`;
+  const style=`grid-column:${gridColumn};grid-row:${rowStyle};`;
+  const status=r?'Official result':(matchStarted(m)?'Started / locked':'Open for predictions');
+  return `<div class="knockout-card ${r?'has-result':''}" style="${style}" title="M${m.id} · ${esc(m.venue)}"><div class="k-date">M${m.id} · ${geDate(m.utc)} · ${geTime(m.utc)} GEO</div>${knockoutTeamLine(m.home,r?r.h:null)}${knockoutTeamLine(m.away,r?r.a:null)}<div class="k-round-note">${esc(status)}</div></div>`;
+}
+function placeholderCard(matchId, homeLabel, awayLabel, roundName, gridColumn, gridRow, finalCard=false){
+  const cls = `knockout-card k-placeholder ${finalCard?'final-card':''}`;
+  const rowStyle = String(gridRow).includes('/') ? gridRow : `${gridRow}`;
+  const style=`grid-column:${gridColumn};grid-row:${rowStyle};`;
+  return `<div class="${cls}" style="${style}"><div class="k-date">M${matchId} · ${esc(roundName)}</div>${knockoutTeamLine(homeLabel,null)}${knockoutTeamLine(awayLabel,null)}<div class="k-round-note">TBD after previous round</div></div>`;
+}
+function renderRound32Map(){
+  const byId=Object.fromEntries(MATCHES.map(m=>[m.id,m]));
+  let html='<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><span class="tag">Round of 32 → Final</span></div><p class="help">Horizontal bracket view in route-to-final order, not chronological order. Scroll sideways on mobile. Round of 32 fixtures are confirmed; later rounds stay as winner placeholders until results are entered.</p><div class="bracket-legend"><span class="tag">🏁 Confirmed fixture</span><span class="tag">🛡️ Future placeholder</span><span class="tag">GEO = Georgia time</span></div><div class="knockout-scroll"><div class="knockout-map">';
+  html += '<div class="round-heading" style="grid-column:1;grid-row:1">Round of 32</div>';
+  html += '<div class="round-heading" style="grid-column:2;grid-row:1">Round of 16</div>';
+  html += '<div class="round-heading" style="grid-column:3;grid-row:1">Quarter-finals</div>';
+  html += '<div class="round-heading" style="grid-column:4;grid-row:1">Semi-finals</div>';
+  html += '<div class="round-heading" style="grid-column:5;grid-row:1">Final</div>';
+
+  const r32Order=[];
+  KNOCKOUT_PATHS.forEach(path=>{r32Order.push(path.left,path.right);});
+  r32Order.forEach((id,i)=>{html += knockoutCardFromMatch(byId[id],1,i+2);});
+
+  KNOCKOUT_PATHS.forEach((path,i)=>{
+    const rowStart=i*2+2;
+    html += placeholderCard(path.r16,`Winner M${path.left}`,`Winner M${path.right}`,'Round of 16',2,`${rowStart} / span 2`);
+  });
+  [
+    {id:97,home:'Winner M89',away:'Winner M90',row:'3 / span 4'},
+    {id:98,home:'Winner M93',away:'Winner M94',row:'7 / span 4'},
+    {id:99,home:'Winner M91',away:'Winner M92',row:'11 / span 4'},
+    {id:100,home:'Winner M95',away:'Winner M96',row:'15 / span 3'}
+  ].forEach(q=>{html += placeholderCard(q.id,q.home,q.away,'Quarter-final',3,q.row);});
+  html += placeholderCard(101,'Winner M97','Winner M98','Semi-final',4,'5 / span 5');
+  html += placeholderCard(102,'Winner M99','Winner M100','Semi-final',4,'12 / span 5');
+  html += placeholderCard(104,'Winner M101','Winner M102','Final',5,'8 / span 5',true);
+  html += '</div></div></div>';
+  return html;
+}
+function renderRound32Schedule(){
+  const days=[]; let current='';
+  MATCHES.filter(isRoundOf32).slice().sort((a,b)=>new Date(a.utc+':00Z')-new Date(b.utc+':00Z') || a.id-b.id).forEach(m=>{
+    const label=geDateLong(m.utc);
+    if(label!==current){days.push({label,matches:[]}); current=label;}
+    days[days.length-1].matches.push(m);
+  });
+  let html='<div class="card"><div class="section-title"><h3>Round of 32 schedule</h3><span class="tag">Georgia time</span></div><p class="help">These 16 knockout fixtures are now added to the Predict page and lock automatically at kick-off.</p></div>';
+  days.forEach(day=>{
+    html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · Georgia time</span></summary><div class="group-body">`;
+    day.matches.forEach(m=>{
+      const r=state.results[m.id];
+      const status = r ? `Official result ${r.h}-${r.a}` : (matchStarted(m) ? 'Started / locked' : 'Upcoming');
+      html+=`<div class="match schedule-match ${r?'has-result':''}"><div class="schedule-main"><div class="teams schedule-teams"><span class="time group-pill">M${m.id}</span><span class="team-name">${esc(m.home)}</span> <span class="dash">vs</span> <span class="team-name">${esc(m.away)}</span></div><div class="meta schedule-meta"><span class="time kickoff-pill">${geTime(m.utc)} Georgia</span><span class="venue-text">${esc(m.venue)}</span></div><div class="schedule-status">${esc(status)}</div></div>${r?`<span class="result-badge schedule-result">${r.h}–${r.a}</span>`:''}</div>`;
+    });
+    html+='</div></details>';
+  });
+  return html;
+}
 function renderSchedule(){
   const el=document.getElementById('schedule-content');
-  const previousCount=MATCHES.filter(isPreviousMatch).length;
-  const toggleHtml = scheduleView==='fixtures'
-    ? `<button type="button" class="schedule-view-btn ${scheduleMode==='all'?'active':''}" data-schedule-mode-toggle>${scheduleMode==='upcoming'?'Show full schedule':'Show upcoming only'}</button>`
-    : '';
-  let html=`<div class="card"><div class="section-title"><h3>Group-stage schedule</h3><span class="tag">Georgia time</span></div><p class="help">By default, the schedule shows only upcoming matches. Use “Show full schedule” to review previous matches and entered results. Group tables update after official results are entered.</p><div class="schedule-switch"><button type="button" class="schedule-view-btn ${scheduleView==='fixtures'?'active':''}" data-schedule-view="fixtures">📅 Fixtures</button><button type="button" class="schedule-view-btn ${scheduleView==='tables'?'active':''}" data-schedule-view="tables">📊 Group tables</button>${toggleHtml}</div></div>`;
-  if(scheduleView==='tables'){
-    html+=renderGroupTables();
-  }else{
-    const visibleDays=matchesByDate('ALL')
-      .map(day=>({
-        label: day.label,
-        matches: day.matches.filter(m=>scheduleMode==='all' || !isPreviousMatch(m))
-      }))
-      .filter(day=>day.matches.length);
-
-    if(scheduleMode==='upcoming'){
-      html+=`<div class="warning">Previous/played matches are hidden here (${previousCount} hidden). Click “Show full schedule” to review them.</div>`;
-    }else{
-      html+='<div class="warning">Showing the full schedule. Entered official results are shown on the right.</div>';
-    }
-
-    if(!visibleDays.length){
-      html+='<div class="empty">No upcoming matches left. Click “Show full schedule” to view all fixtures and results.</div>';
-    }else{
-      visibleDays.forEach(day=>{
-        html+=`<details class="group" open><summary>${esc(day.label)}<span class="small">${day.matches.length} match${day.matches.length===1?'':'es'} · ${scheduleMode==='all'?'full schedule':'upcoming only'} · Georgia time</span></summary><div class="group-body">`;
-        day.matches.forEach(m=>{
-          const r=state.results[m.id];
-          const status = r ? `Official result ${r.h}-${r.a}` : (matchStarted(m) ? 'Started / locked' : 'Upcoming');
-          html+=`<div class="match schedule-match ${r?'has-result':''}"><div class="schedule-main"><div class="teams schedule-teams"><span class="time group-pill">Group ${esc(m.group)}</span><span class="team-name">${esc(m.home)}</span> <span class="dash">vs</span> <span class="team-name">${esc(m.away)}</span></div><div class="meta schedule-meta"><span class="time kickoff-pill">${geTime(m.utc)} Georgia</span><span class="venue-text">${esc(m.venue)}</span></div><div class="schedule-status">${esc(status)}</div></div>${r?`<span class="result-badge schedule-result">${r.h}–${r.a}</span>`:''}</div>`;
-        });
-        html+='</div></details>';
-      });
-    }
-  }
-  el.innerHTML=html;
-  el.querySelectorAll('[data-schedule-view]').forEach(b=>b.onclick=()=>{scheduleView=b.dataset.scheduleView;renderSchedule();});
-  const modeToggle=el.querySelector('[data-schedule-mode-toggle]');
-  if(modeToggle){
-    modeToggle.onclick=()=>{
-      scheduleMode = scheduleMode==='all' ? 'upcoming' : 'all';
-      renderSchedule();
-    };
-  }
+  el.innerHTML=renderRound32Map()+renderRound32Schedule();
 }
 function unlockAdmin(){const pin=document.getElementById('admin-pin').value;if(pin===ADMIN_PIN){adminUnlocked=true;sessionStorage.setItem('wc2026_admin','1');renderAdmin();renderResults();toast('Admin unlocked');}else toast('Wrong admin PIN');}
 function renderAdmin(){document.getElementById('admin-login').classList.toggle('hidden',adminUnlocked);document.getElementById('admin-panel').classList.toggle('hidden',!adminUnlocked);}
@@ -816,7 +992,7 @@ function renderResults(){
       day.matches.forEach(m=>{
         const r=state.results[m.id]||{h:'',a:''};
         const filled=hasOfficialResult(m);
-        html+=`<div class="match"><div><div class="teams"><span class="time">Group ${esc(m.group)}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${filled?' · Result already filled':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="rh_${m.id}" value="${esc(r.h)}"/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="ra_${m.id}" value="${esc(r.a)}"/></div></div>`;
+        html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(m.home)} <span class="dash">vs</span> ${esc(m.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(m.venue)}${filled?' · Result already filled':''}</div></div><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="rh_${m.id}" value="${esc(r.h)}"/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="ra_${m.id}" value="${esc(r.a)}"/></div></div>`;
       });
       html+='</div></details>';
     });
