@@ -218,12 +218,12 @@
 .knockout-map{
   width:1112px;
   min-width:1112px;
-  min-height:1364px;
+  min-height:1652px;
   display:grid;
   grid-template-columns:220px 200px 200px 200px 200px;
-  grid-template-rows:34px repeat(16,74px);
+  grid-template-rows:34px repeat(16,86px);
   column-gap:18px;
-  row-gap:8px;
+  row-gap:14px;
   position:relative;
   padding:6px 10px 12px;
 }
@@ -245,7 +245,7 @@
 .knockout-card{
   position:relative;
   align-self:center;
-  min-height:66px;
+  min-height:68px;
   border:1.5px solid #d8d1d8;
   background:linear-gradient(180deg,#fff,#fff8fc);
   border-radius:13px;
@@ -261,7 +261,7 @@
 .knockout-card.side-yellow{background:#fffde8;border-color:#f0d900;box-shadow:0 0 0 1px rgba(255,242,0,.24),0 5px 12px rgba(40,25,35,.055)}
 .knockout-card.side-green{background:#efffe9;border-color:#39ff14;box-shadow:0 0 0 1px rgba(57,255,20,.22),0 5px 12px rgba(40,25,35,.055)}
 .knockout-card.final-card{background:linear-gradient(180deg,#fffde8 0 50%,#efffe9 50% 100%);border-color:#d8d1d8}
-.bracket-lines{position:absolute;inset:0;width:1112px;height:1364px;z-index:1;pointer-events:none;overflow:visible}
+.bracket-lines{position:absolute;inset:0;width:1112px;height:1652px;z-index:1;pointer-events:none;overflow:visible}
 .bracket-lines path{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
 .bracket-lines path.yellow{stroke:#f0d900}
 .bracket-lines path.green{stroke:#18d900}
@@ -285,8 +285,8 @@
 .bracket-legend .tag{background:#fff;border-color:var(--line);color:#5f5562}
 @media(max-width:720px){
   .knockout-scroll{padding:10px;border-radius:16px;margin-left:-4px;margin-right:-4px}
-  .knockout-map{width:1112px;min-width:1112px;min-height:1364px;grid-template-columns:220px 200px 200px 200px 200px;grid-template-rows:34px repeat(16,74px);column-gap:18px;padding:6px 10px 12px}
-  .knockout-card{min-height:64px;padding:7px 8px;border-radius:12px}
+  .knockout-map{width:1112px;min-width:1112px;min-height:1652px;grid-template-columns:220px 200px 200px 200px 200px;grid-template-rows:34px repeat(16,86px);column-gap:18px;row-gap:14px;padding:6px 10px 12px}
+  .knockout-card{min-height:66px;padding:7px 8px;border-radius:12px}
   .k-team{font-size:11px}.k-date{font-size:10px}.k-round-note{font-size:10px}
   .round-heading{font-size:10px;padding:6px 8px}
 }
@@ -322,7 +322,7 @@
 <main class="container">
   <section class="hero">
     <div><h2>Round of 32 first, predictions in the same order.</h2><p>Round of 32 fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">+1 penalties</span><span class="pill">+1 draw advance</span></div>
+    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">2 pts KO outcome</span><span class="pill">+1 advance fallback</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="schedule">🗺️ Round of 32</button>
@@ -356,7 +356,7 @@
   </section>
 
   <section id="allpredictions" class="section">
-    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · 3 pts</span><span class="chip outcome">Outcome only · 1 pt</span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · 0 pts</span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
+    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · 3 pts</span><span class="chip outcome">Correct outcome · 1/2 pts</span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · 0 pts</span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
   </section>
 
   <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
@@ -620,20 +620,26 @@ function scoreOutcomeCode(score){
   if(!Number.isFinite(h)||!Number.isFinite(a)) return '';
   return h>a?'H':h<a?'A':'D';
 }
-function calcScorePts(pred,result){
+function calcScorePts(pred,result,m){
   if(!completePrediction(pred)||!result) return 0;
   if(Number(pred.h)===Number(result.h)&&Number(pred.a)===Number(result.a)) return 3;
-  return scoreOutcomeCode(pred)===scoreOutcomeCode(result)?1:0;
+  if(scoreOutcomeCode(pred)!==scoreOutcomeCode(result)) return 0;
+  return isKnockoutMatch(m) ? 2 : 1;
 }
 function calcAdvancePts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
-  // Advancement is scored only for matches that are draw after 90 minutes,
-  // and only for players who also predicted a 90-minute draw and selected who advances.
-  if(!scoreIsDraw(pred) || !scoreIsDraw(result)) return 0;
   const predAdv=inferredAdvanceTeam(m,pred);
   const resultAdv=inferredAdvanceTeam(m,result);
-  if(!validAdvanceTeam(m,predAdv)||!validAdvanceTeam(m,resultAdv)) return 0;
-  return predAdv===resultAdv?1:0;
+  if(!validAdvanceTeam(m,predAdv)||!validAdvanceTeam(m,resultAdv)||predAdv!==resultAdv) return 0;
+
+  // Draw bonus: when both predicted and official 90-minute scores are draws,
+  // the advancing-team pick is an extra knockout prediction.
+  if(scoreIsDraw(pred) && scoreIsDraw(result)) return 1;
+
+  // Fallback point: if the 90-minute scenario is wrong, but the player still
+  // picked the team that advances, award 1 point. Do not duplicate points when
+  // the 90-minute winner/outcome was already correct.
+  return calcScorePts(pred,result,m)===0 ? 1 : 0;
 }
 function calcPenaltyPts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
@@ -1038,7 +1044,7 @@ function renderLeaderboard(){
   const rows=ranked.map(u=>{
     const pts=played.reduce((a,m)=>a+calcPts(state.predictions[u]?.[m.id],state.results[m.id],m),0);
     const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&Number(p.h)===Number(r.h)&&Number(p.a)===Number(r.a);}).length;
-    const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcScorePts(p,r)===1;}).length;
+    const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcScorePts(p,r,m)>0 && calcScorePts(p,r,m)<3;}).length;
     const advance=played.filter(m=>calcAdvancePts(state.predictions[u]?.[m.id],state.results[m.id],m)===1).length;
     const penalties=played.filter(m=>calcPenaltyPts(state.predictions[u]?.[m.id],state.results[m.id],m)===1).length;
     const predicted=predictionCountForMatches(u,stageMatches);
@@ -1062,9 +1068,9 @@ function renderLeaderboard(){
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
 
-  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Knockout scoring uses 90-minute score prediction. Penalties and advancing-team bonus points are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 1 pt for correct outcome. Knockout scoring uses 90-minute score prediction: 3 pts exact score, 2 pts correct 90-minute outcome, or 1 pt if the 90-minute scenario is wrong but the advancing team is correct. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
-  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Draw advances counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
+  html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Advancing picks counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
     html += '<div class="leader-table-wrap"><table class="leader-table"><thead><tr><th class="num">Rank</th><th>Player</th><th class="num">Points / Outcome accuracy</th><th class="num">Exact</th><th class="num">Outcome</th><th class="num">Advance</th><th class="num">Penalties</th><th class="num">Submitted</th><th>Champion pick</th></tr></thead><tbody>';
     rows.forEach((s,i)=>{
@@ -1089,15 +1095,15 @@ function renderLeaderboard(){
   html += '</div>';
   el.innerHTML=html;
 }
-function calcPts(pred,result,m){return calcScorePts(pred,result)+calcPenaltyPts(pred,result,m)+calcAdvancePts(pred,result,m);}
-function predictionClass(pred,result,m){if(!result)return 'upcoming'; const scorePts=calcScorePts(pred,result); const penPts=calcPenaltyPts(pred,result,m); const advPts=calcAdvancePts(pred,result,m); if(scorePts===3)return 'exact'; if(scorePts===1 || penPts===1 || advPts===1)return 'outcome'; return 'miss';}
+function calcPts(pred,result,m){return calcScorePts(pred,result,m)+calcPenaltyPts(pred,result,m)+calcAdvancePts(pred,result,m);}
+function predictionClass(pred,result,m){if(!result)return 'upcoming'; const scorePts=calcScorePts(pred,result,m); const penPts=calcPenaltyPts(pred,result,m); const advPts=calcAdvancePts(pred,result,m); if(scorePts===3)return 'exact'; if(scorePts>0 || penPts===1 || advPts===1)return 'outcome'; return 'miss';}
 function predictionLabel(pred,result,m){
   if(!result)return 'locked';
-  const scorePts=calcScorePts(pred,result), penPts=calcPenaltyPts(pred,result,m), advPts=calcAdvancePts(pred,result,m), total=scorePts+penPts+advPts;
+  const scorePts=calcScorePts(pred,result,m), penPts=calcPenaltyPts(pred,result,m), advPts=calcAdvancePts(pred,result,m), total=scorePts+penPts+advPts;
   if(total===0)return '0 pts';
   const parts=[];
   if(scorePts===3) parts.push('exact');
-  else if(scorePts===1) parts.push('outcome');
+  else if(scorePts>0) parts.push('outcome');
   if(penPts===1) parts.push('penalties');
   if(advPts===1) parts.push('advance');
   return `✓ ${parts.join(' + ')} · ${total} pt${total===1?'':'s'}`;
@@ -1163,7 +1169,7 @@ function placeholderCard(matchId, homeLabel, awayLabel, roundName, gridColumn, g
 function renderBracketLinesSvg(){
   const L={1:10,2:248,3:466,4:684,5:902};
   const R={1:230,2:448,3:666,4:884,5:1102};
-  const rowCenter=(row,span=1)=>48+(row-2)*82+(span*74+(span-1)*8)/2;
+  const rowCenter=(row,span=1)=>54+(row-2)*100+(span*86+(span-1)*14)/2;
   const mid=(fromCol,toCol)=>(R[fromCol]+L[toCol])/2;
   const pieces=[];
   const dot=(x,y,cls)=>`<circle class="${cls}" cx="${x}" cy="${y}" r="3.5"/>`;
@@ -1189,7 +1195,7 @@ function renderBracketLinesSvg(){
   pair(3,rowCenter(10,4),rowCenter(14,4),4,rowCenter(10,8),'green');
   single(4,rowCenter(2,8),5,rowCenter(6,8)-22,'yellow');
   single(4,rowCenter(10,8),5,rowCenter(6,8)+22,'green');
-  return `<svg class="bracket-lines" viewBox="0 0 1112 1364" aria-hidden="true">${pieces.join('')}</svg>`;
+  return `<svg class="bracket-lines" viewBox="0 0 1112 1652" aria-hidden="true">${pieces.join('')}</svg>`;
 }
 function renderRound32Map(){
   const byId=Object.fromEntries(MATCHES.map(m=>[m.id,m]));
