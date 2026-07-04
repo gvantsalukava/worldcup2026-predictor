@@ -360,7 +360,7 @@
 <main class="container">
   <section class="hero">
     <div><h2>Round of 16 is next, predictions in the same order.</h2><p>Round of 16 fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">2 pts outcome</span><span class="pill">+1 advance fallback</span></div>
+    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt group outcome</span><span class="pill">2 pts playoff outcome</span><span class="pill">+1 advance fallback</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="schedule">🗺️ Round of 16</button>
@@ -394,7 +394,7 @@
   </section>
 
   <section id="allpredictions" class="section">
-    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · <span class="score-points">3 pts</span></span><span class="chip outcome">Correct outcome · <span class="score-points">2 pts</span></span><span class="score-tag advance-tag">Advancing team · <span class="score-points">+1</span></span><span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · <span class="score-points">0 pts</span></span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
+    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · <span class="score-points">3 pts</span></span><span class="chip outcome">Correct outcome · <span class="score-points">1 pt group / 2 pts playoff</span></span><span class="score-tag advance-tag">Advancing team · <span class="score-points">+1</span></span><span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · <span class="score-points">0 pts</span></span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
   </section>
 
   <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
@@ -825,11 +825,14 @@ function scoreOutcomeCode(score){
   if(!Number.isFinite(h)||!Number.isFinite(a)) return '';
   return h>a?'H':h<a?'A':'D';
 }
+function outcomePointsForMatch(m){
+  return isKnockoutMatch(m) ? 2 : 1;
+}
 function calcScorePts(pred,result,m){
   if(!completePrediction(pred)||!result) return 0;
   if(Number(pred.h)===Number(result.h)&&Number(pred.a)===Number(result.a)) return 3;
   if(scoreOutcomeCode(pred)!==scoreOutcomeCode(result)) return 0;
-  return 2;
+  return outcomePointsForMatch(m);
 }
 function calcAdvancePts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
@@ -1299,7 +1302,7 @@ function renderLeaderboard(){
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
 
-  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 2 pts for correct outcome. Knockout scoring uses 90-minute score prediction: 3 pts exact score, 2 pts correct 90-minute outcome, or 1 pt if the 90-minute scenario is wrong but the advancing team is correct. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 1 pt for correct outcome. Round of 32 and Round of 16 scoring use 90-minute score prediction: 3 pts exact score, 2 pts correct 90-minute outcome, or 1 pt if the 90-minute scenario is wrong but the advancing team is correct. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
   html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Advancing picks counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
