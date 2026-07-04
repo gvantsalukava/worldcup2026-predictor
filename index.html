@@ -310,28 +310,41 @@
 }
 
 
-/* Personalized greeting toast: larger, solid navy box */
+/* Personalized greeting toast: big centered square card */
 .toast.greeting{
+  left:50%;
+  top:50%;
+  bottom:auto;
+  transform:translate(-50%,-50%) scale(.96);
   background:#101b34;
   color:#ffffff;
-  min-width:min(460px, calc(100% - 32px));
-  max-width:680px;
-  padding:18px 26px;
-  border-radius:22px;
-  font-size:17px;
+  width:min(440px, calc(100% - 40px));
+  min-width:0;
+  min-height:220px;
+  max-width:440px;
+  padding:28px 26px;
+  border-radius:18px;
+  font-size:22px;
   line-height:1.35;
   font-weight:950;
   text-align:center;
-  box-shadow:0 18px 46px rgba(16,27,52,.34);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 24px 60px rgba(16,27,52,.42);
+}
+.toast.greeting.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
 }
 @media(max-width:720px){
   .toast.greeting{
-    width:calc(100% - 24px);
-    min-width:0;
-    padding:16px 18px;
-    border-radius:20px;
-    font-size:15px;
-    bottom:18px;
+    width:min(320px, calc(100% - 28px));
+    max-width:320px;
+    min-height:180px;
+    padding:22px 18px;
+    border-radius:16px;
+    font-size:19px;
   }
 }
 
