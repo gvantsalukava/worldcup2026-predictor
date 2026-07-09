@@ -363,7 +363,7 @@
     <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt group outcome</span><span class="pill">2 pts playoff outcome</span><span class="pill">+1 advance fallback</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
-    <button class="tab active" data-tab="schedule">🗺️ Round of 16</button>
+    <button class="tab active" data-tab="schedule">🗺️ Quarter-finals</button>
     <button class="tab" data-tab="predict">✏️ Predict</button>
     <button class="tab" data-tab="allpredictions">📋 Predictions</button>
     <button class="tab" data-tab="leaderboard">🏅 Leaderboard</button>
@@ -386,7 +386,7 @@
     <div class="card" id="champion-card"></div>
     <div class="card">
       <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 88 saved</span></div>
-      <p class="help">By default, this list shows only upcoming/editable matches, including the Round of 16. Use “Show full schedule” if you need to review older or locked matches. For knockout matches, enter the 90-minute score first. If you predict a 90-minute draw, the penalties and advancing-team fields will appear. Empty matches are skipped. Press Save when finished.</p>
+      <p class="help">By default, this list shows only upcoming/editable matches, including the Quarter-finals. Use “Show full schedule” if you need to review older or locked matches. For knockout matches, enter the 90-minute score first. If you predict a 90-minute draw, the penalties and advancing-team fields will appear. Empty matches are skipped. Press Save when finished.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
       <button class="btn full" id="save-predictions">💾 Save champion, scores, penalties and advancing picks</button>
@@ -532,11 +532,19 @@ const MATCHES = [
   {id:93,group:'R16',stage:'Round of 16',home:'Portugal',away:'Spain',homeFrom:83,awayFrom:84,utc:'2026-07-06T19:00',venue:'Dallas Stadium'},
   {id:94,group:'R16',stage:'Round of 16',home:'United States',away:'Belgium',homeFrom:81,awayFrom:82,utc:'2026-07-07T00:00',venue:'Seattle Stadium'},
   {id:95,group:'R16',stage:'Round of 16',home:'Argentina',away:'Egypt',homeFrom:86,awayFrom:88,utc:'2026-07-07T16:00',venue:'Atlanta Stadium'},
-  {id:96,group:'R16',stage:'Round of 16',home:'Switzerland',away:'Colombia',homeFrom:85,awayFrom:87,utc:'2026-07-07T20:00',venue:'BC Place Vancouver'}
+  {id:96,group:'R16',stage:'Round of 16',home:'Switzerland',away:'Colombia',homeFrom:85,awayFrom:87,utc:'2026-07-07T20:00',venue:'BC Place Vancouver'},
+
+  // Quarter-final fixtures. UTC values are converted to Georgia time in the UI.
+  // Teams are linked to Round-of-16 winners, so labels update automatically when admin results are entered.
+  {id:97,group:'QF',stage:'Quarter-final',home:'France',away:'Morocco',homeFrom:89,awayFrom:90,utc:'2026-07-09T20:00',venue:'Boston Stadium'},
+  {id:98,group:'QF',stage:'Quarter-final',home:'Spain',away:'Belgium',homeFrom:93,awayFrom:94,utc:'2026-07-10T19:00',venue:'Los Angeles Stadium'},
+  {id:99,group:'QF',stage:'Quarter-final',home:'Norway',away:'England',homeFrom:91,awayFrom:92,utc:'2026-07-11T21:00',venue:'Miami Stadium'},
+  {id:100,group:'QF',stage:'Quarter-final',home:'Argentina',away:'Switzerland',homeFrom:95,awayFrom:96,utc:'2026-07-12T01:00',venue:'Kansas City Stadium'}
 ];
 const TEAMS = Object.values(GROUPS).flat();
 const ROUND_OF_32_IDS = Array.from({length:16},(_,i)=>73+i);
 const ROUND_OF_16_IDS = Array.from({length:8},(_,i)=>89+i);
+const QUARTER_FINAL_IDS = Array.from({length:4},(_,i)=>97+i);
 const R32_PATHS = [
   {r16:90,left:73,right:75},
   {r16:89,left:74,right:77},
@@ -571,99 +579,106 @@ const TEAM_FLAGS = {
 
 const PLAYER_GREETINGS = {
   "maat": [
-    "Maat has entered the laboratory.",
-    "The scriptwriter is back.",
-    "Bracket chaos, but make it personal.",
-    "Admin by title, menace by nature.",
-    "Let’s pretend this is science."
+    "Maat opened the app. The format immediately became unstable.",
+    "Admin entered. Objectivity left quietly.",
+    "The laboratory is open. Results may be emotionally manipulated.",
+    "Bracket chaos, but make it autobiographical.",
+    "Maat is not predicting. Maat is writing lore.",
+    "Let’s pretend this is data analysis."
   ],
-  "gvantsatetrashvilii@gmai": [
-    "სისხლისმსმელო გვანცა, მზად ხარ? 🩸",
-    "No mercy, no midfield, no problem.",
-    "The red card has a favorite person.",
-    "Someone hide the VAR room.",
-    "Reckless era continues."
+
+  "gvantsatetrashvili@gmai": [
+    "სისხლისმსმელო გვანცა, მოემზადე 🩸",
+    "აბა, ვის უბნელდება ნათელი",
+    "გიგა თუ შოთა?",
+    "No mercy, no warm-up, no midfield.",
+    "This is not a prediction. This is disciplinary action."
   ],
+
   "Curva Sud": [
-    "Curva Sud has arrived.",
-    "Ruben Amorim sends his regards.",
-    "Milan heart, Argentina headache.",
-    "Approved by absolutely no coach.",
-    "Old Trafford called. Wrong number."
+    "Ruben Amorim sent a voice note: please don’t manage.",
+    "მესის უროსმა შვილმა არ გინახოს პრედიქშენები",
+    "ჰაი მიულერ!",
+    "This pick smells like smoke, espresso, and bad defending.",
+    "Somewhere, a coach resigned before seeing this prediction."
   ],
+
   "giorgidf": [
-    "Quiet confidence detected.",
-    "A tactical pause before disaster.",
-    "Let him cook. Carefully.",
-    "The ball is round. Your logic?"
+    "Giorgi entered with the confidence of a man hiding numbers.",
+    "Quiet mode on. Damage pending.",
+    "A tactical pause before public embarrassment.",
+    "Let him cook. Keep emergency services nearby.",
+    "This prediction has accountant energy and criminal potential."
   ],
+
   "Giorgi Vekua": [
-    "Quiet leader has entered.",
-    "Cinema brain, football consequences.",
-    "დასაწვენი ხარ, Giorgi.",
-    "The ball is round. Your logic?",
-    "Festival favourite. Leaderboard survivor.",
-    "რონალდო > მესი"
+    "ბიგ ბრო'ს ვოჩინ ",
+    "დიდხანს არ გიწერია პირველობა.",
+    "შეიყვარე თავი შენი და ვითარცა მესი :დ ",
+    "Festival favourite. Leaderboard fugitive."
   ],
+
   "Ikako98": [
-    "Ikako has joined.",
-    "Silent points are still points.",
-    "Peaceful entrance, suspicious timing."
+    "Peaceful face. Unclear intentions.",
+    "No speech, no scandal, just quiet arithmetic.",
+    "Ikako doesn’t announce danger. He schedules it."
   ],
+
   "Ninuka": [
-    "Ninuka arrived with plot energy.",
-    "Cute picks, dangerous consequences.",
-    "A small storm in nice packaging.",
-    "The bracket just got prettier."
+    "Ninuka smiled. Two favourites became unstable.",
+    "Soft entrance, plot twist pending."
   ],
+
   "Teko": [
-    "Teko entered with suspicious calm.",
-    "Argentina trauma is a group activity.",
-    "Defence? Never heard of her.",
-    "One joke away from extra time.",
-    "Chaos, but aesthetically pleasing."
+    "Teko opened the app. Argentina, behave.",
+    "Calm face, football trauma archive.",
+    "Defence left the chat. Again.",
+    "One joke away from penalties."
   ],
+
   "shalvajavakhia": [
-    "Shalva is here 🇩🇪",
-    "Germany pain builds character.",
-    "Predict through the sadness.",
-    "Still loyal, still dangerous.",
-    "Bundesliga spirit never dies."
+    "Bundesliga sadness, Georgian confidence.",
+    "Predict through the ruins.",
+    "ხეითი არ დააკლო არგენტინას."
   ],
+
   "Strikhina": [
-    "მაჟოს გაუმარჯოს ⚖️",
-    "მეგრელმა ბროებმა რაო?",
-    "ეს რა მაზავშიკურებია, ლიკა?!",
-    "კრიზისით თუ კრიზისის გარეშე?",
-    "Order in the prediction court."
+    "მაჟო, დროა ჩემპიონის თასი აწიო 🏆",
+    "ვაგორჯგინან თათარეფქ.",
+    "აბა ულაააა, ლესგოოო, მაჟოოო!",
+    "The court is in session. The bracket is guilty."
   ],
+
   "Crisis": [
-    "სალამი ჩვენო იდუმალო ლიდერო.",
-    "Anonymous, but suspiciously accurate.",
-    "Claude whispered. Crisis clicked.",
-    "The bride of mystery has arrived.",
-    "Incognito mode activated."
+    "ძლევამოსილების დაბრუნების დროა.",
+    "გიგა ბედინეიშვილს სალამი.",
+    "Future wife, current danger.",
+    "Former champion behaviour. No witnesses needed.",
+    "Someone check the trophy. It looks loyal."
   ],
+
   "dimabarca": [
-    "DimaBarca came to roast the scoreboard.",
-    "Confidence: 100. Accuracy: loading.",
-    "Wrong predictions only.",
-    "The insult landed. The score didn't.",
-    "Barcelona DNA, prediction flu."
+    "DimaBarca came to insult probability.",
+    "Wrong picks, correct attitude.",
+    "დიმა, დღეს ქულებიც სცადე.",
+    "The roast was accurate. The score was not.",
+    "Barcelona DNA, prediction fever.",
+    "Confidence entered first. Accuracy is still parking."
   ],
+
   "Maro": [
-    "Bonjour, Maro ✨",
-    "Très dangerous, très calm.",
-    "Soft voice, sharp bracket.",
-    "Maro brings continental elegance.",
-    "Paris approves this entrance."
+    "Bonjour? არა, დღეს ბონჟური კი არა, ანგარიშსწორებაა.",
+    "Maro picks like she’s judging wine: confidently and without mercy.",
+    "Maro-ს პროგნოზები: half elegance, half public threat.",
+    "This is not a prediction. This is a diplomatic incident with lipstick."
   ],
+
   "Natalia": [
-    "Natalia has joined.",
-    "Quiet picks can hurt people.",
-    "Let’s surprise everyone.",
-    "Klopp, Klopp, Kloopp",
-    "No pressure, only glory"
+    "Natalia opened the app like she owns the ending.",
+    "Champ is back. Hide the weak opinions.",
+    "She says nothing. The leaderboard understands.",
+    "Natalia’s strategy: smile, click, emotionally damage everyone.",
+    "Natalia doesn’t predict. She leaves hints for the future."
   ]
 };
 const PLAYER_GREETINGS_LOOKUP = Object.fromEntries(Object.keys(PLAYER_GREETINGS).map(k=>[k.toLowerCase(), k]));
@@ -683,8 +698,8 @@ const savedLogin=getSavedLogin();
 let currentUser=savedLogin.user || localStorage.getItem('wc2026_currentUser') || '';
 let currentPassword=savedLogin.pass || sessionStorage.getItem('wc2026_playerPassword') || '';
 let adminUnlocked=sessionStorage.getItem('wc2026_admin')==='1';
-let predictGroup='R16';
-let publicGroup='R16';
+let predictGroup='QF';
+let publicGroup='QF';
 let publicView='games';
 let scheduleView='fixtures';
 let scheduleMode='upcoming';
@@ -693,15 +708,16 @@ let predictMode='upcoming';
 let championEditorVisible=false;
 let adminResultsMode = (function(){try{return localStorage.getItem('wc2026_adminResultsMode') || 'unfilled';}catch(e){return 'unfilled';}})();
 let showPreviousPredictions = (function(){try{return localStorage.getItem('wc2026_showPreviousPredictions')!=='0';}catch(e){return true;}})();
-let showPreviousPlayoffSchedule = (function(){try{return localStorage.getItem('wc2026_showPreviousR32Schedule')==='1';}catch(e){return false;}})();
-let leaderboardStage = (function(){try{return localStorage.getItem('wc2026_leaderboardStage') || 'r16';}catch(e){return 'r16';}})();
+let showPreviousPlayoffSchedule = (function(){try{return localStorage.getItem('wc2026_showPreviousPlayoffSchedule')==='1' || localStorage.getItem('wc2026_showPreviousR32Schedule')==='1';}catch(e){return false;}})();
+let leaderboardStage = (function(){try{return localStorage.getItem('wc2026_leaderboardStage') || 'qf';}catch(e){return 'qf';}})();
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
 function matchShortLabel(m){return m.stage ? `M${m.id} · ${m.stage}` : `Group ${m.group}`;}
-function matchFilterPass(m,active){return active==='ALL' || (active==='R32' ? m.stage==='Round of 32' : active==='R16' ? m.stage==='Round of 16' : m.group===active);}
+function matchFilterPass(m,active){return active==='ALL' || (active==='QF' ? m.stage==='Quarter-final' : active==='R16' ? m.stage==='Round of 16' : active==='R32' ? m.stage==='Round of 32' : m.group===active);}
 function isRoundOf32(m){return m.stage==='Round of 32';}
 function isRoundOf16(m){return m.stage==='Round of 16';}
+function isQuarterFinal(m){return m.stage==='Quarter-final';}
 function isKnockoutMatch(m){return !!m.stage;}
 function matchById(id){return MATCHES.find(x=>Number(x.id)===Number(id));}
 function rawScoreReady(score){
@@ -1045,7 +1061,7 @@ function renderChampionPicker(){
 }
 function makeFilter(containerId, active, setter){
   const el=document.getElementById(containerId); if(!el)return;
-  const filters=[{key:'R16',label:'R16'},{key:'R32',label:'R32'},{key:'ALL',label:'All'},...Object.keys(GROUPS).map(g=>({key:g,label:g}))];
+  const filters=[{key:'QF',label:'QF'},{key:'R16',label:'R16'},{key:'R32',label:'R32'},{key:'ALL',label:'All'},...Object.keys(GROUPS).map(g=>({key:g,label:g}))];
   let html='';
   filters.forEach(f=>{html+=`<button type="button" class="filter-btn ${active===f.key?'active':''}" data-group="${f.key}">${f.label}</button>`;});
   el.innerHTML=html;
@@ -1249,14 +1265,16 @@ function leaderboardStageConfig(stage){
     overall:{key:'overall',label:'Main',title:'Main leaderboard',description:'all saved matches across the tournament', empty:'No score predictions submitted yet.', joinedStatus:'No saved score predictions yet'},
     group:{key:'group',label:'Group stage',title:'Group-stage leaderboard',description:'group-stage matches only', empty:'No group-stage score predictions submitted yet.', joinedStatus:'No saved group-stage predictions'},
     r32:{key:'r32',label:'Round of 32',title:'Round of 32 leaderboard',description:'Round of 32 matches only', empty:'No Round of 32 score predictions submitted yet.', joinedStatus:'No saved Round of 32 predictions'},
-    r16:{key:'r16',label:'Round of 16',title:'Round of 16 leaderboard',description:'Round of 16 matches only', empty:'No Round of 16 score predictions submitted yet.', joinedStatus:'No saved Round of 16 predictions'}
+    r16:{key:'r16',label:'Round of 16',title:'Round of 16 leaderboard',description:'Round of 16 matches only', empty:'No Round of 16 score predictions submitted yet.', joinedStatus:'No saved Round of 16 predictions'},
+    qf:{key:'qf',label:'Quarter-finals',title:'Quarter-final leaderboard',description:'Quarter-final matches only', empty:'No quarter-final score predictions submitted yet.', joinedStatus:'No saved quarter-final predictions'}
   };
-  return configs[stage] || configs.r16;
+  return configs[stage] || configs.qf;
 }
 function leaderboardMatches(stage){
   if(stage==='group') return MATCHES.filter(m=>!m.stage);
   if(stage==='r32') return MATCHES.filter(m=>m.stage==='Round of 32');
   if(stage==='r16') return MATCHES.filter(m=>m.stage==='Round of 16');
+  if(stage==='qf') return MATCHES.filter(m=>m.stage==='Quarter-final');
   return MATCHES;
 }
 function predictionCountForMatches(user,matches){
@@ -1297,12 +1315,12 @@ function renderLeaderboard(){
     a.name.localeCompare(b.name)
   );
 
-  const stageButtons=['overall','group','r32','r16'].map(key=>{
+  const stageButtons=['qf','r16','r32','group','overall'].map(key=>{
     const c=leaderboardStageConfig(key);
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
 
-  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 1 pt for correct outcome. Round of 32 and Round of 16 scoring use 90-minute score prediction: 3 pts exact score, 2 pts correct 90-minute outcome, or 1 pt if the 90-minute scenario is wrong but the advancing team is correct. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 1 pt for correct outcome. Round of 32, Round of 16 and Quarter-final scoring use 90-minute score prediction: 3 pts exact score, 2 pts correct 90-minute outcome, or 1 pt if the 90-minute scenario is wrong but the advancing team is correct. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
   html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Advancing picks counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
@@ -1434,13 +1452,16 @@ function renderBracketLinesSvg(){
 }
 function togglePreviousPlayoffs(){
   showPreviousPlayoffSchedule = !showPreviousPlayoffSchedule;
-  try{localStorage.setItem('wc2026_showPreviousR32Schedule', showPreviousPlayoffSchedule ? '1' : '0');}catch(e){}
+  try{
+    localStorage.setItem('wc2026_showPreviousPlayoffSchedule', showPreviousPlayoffSchedule ? '1' : '0');
+    localStorage.setItem('wc2026_showPreviousR32Schedule', showPreviousPlayoffSchedule ? '1' : '0');
+  }catch(e){}
   renderSchedule();
-  toast(showPreviousPlayoffSchedule ? 'Previous Round of 32 schedule is visible' : 'Previous Round of 32 schedule is hidden');
+  toast(showPreviousPlayoffSchedule ? 'Previous playoff schedule is visible' : 'Previous playoff schedule is hidden');
 }
 function renderKnockoutMap(){
   const byId=Object.fromEntries(MATCHES.map(m=>[m.id,m]));
-  let html=`<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><button type="button" class="btn secondary ${showPreviousPlayoffSchedule?'active':''}" id="toggle-previous-playoffs">${showPreviousPlayoffSchedule?'Hide Round of 32 schedule':'Show Round of 32 schedule'}</button></div><p class="help">The full fixture map stays visible from Round of 32 onward. Round of 16 cards are populated, and quarter-final, semi-final and final cards update automatically after admin enters each official winner. Scroll sideways on mobile.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">↳ Feeds to = next match</span><span class="tag">GEO = Georgia time</span><span class="tag">Round of 32 schedule hidden by default</span></div><div class="knockout-scroll"><div class="knockout-map">`;
+  let html=`<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><button type="button" class="btn secondary ${showPreviousPlayoffSchedule?'active':''}" id="toggle-previous-playoffs">${showPreviousPlayoffSchedule?'Hide previous playoff schedule':'Show previous playoff schedule'}</button></div><p class="help">The full fixture map stays visible from Round of 32 onward. Quarter-final cards are populated, and semi-final and final cards update automatically after admin enters each official winner. Scroll sideways on mobile.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">↳ Feeds to = next match</span><span class="tag">GEO = Georgia time</span><span class="tag">Previous playoff schedule hidden by default</span></div><div class="knockout-scroll"><div class="knockout-map">`;
   html += renderBracketLinesSvg();
   html += `<div class="round-heading" style="grid-column:1;grid-row:1">Round of 32</div>`;
   html += '<div class="round-heading" style="grid-column:2;grid-row:1">Round of 16</div>';
@@ -1470,7 +1491,14 @@ function renderKnockoutMap(){
     {id:98,home:93,away:94,row:'6 / span 4',side:'yellow',feed:101},
     {id:99,home:91,away:92,row:'10 / span 4',side:'green',feed:102},
     {id:100,home:95,away:96,row:'14 / span 4',side:'green',feed:102}
-  ].forEach(q=>{html += placeholderCard(q.id,sourceTeamLabel(q.home),sourceTeamLabel(q.away),'Quarter-final',3,q.row,q.side,false,q.feed);});
+  ].forEach(q=>{
+    const m=byId[q.id];
+    if(m){
+      html += knockoutCardFromMatch(m,3,q.row,q.side,q.feed);
+    }else{
+      html += placeholderCard(q.id,sourceTeamLabel(q.home),sourceTeamLabel(q.away),'Quarter-final',3,q.row,q.side,false,q.feed);
+    }
+  });
   html += placeholderCard(101,sourceTeamLabel(97),sourceTeamLabel(98),'Semi-final',4,'2 / span 8','yellow',false,104);
   html += placeholderCard(102,sourceTeamLabel(99),sourceTeamLabel(100),'Semi-final',4,'10 / span 8','green',false,104);
   html += placeholderCard(104,sourceTeamLabel(101),sourceTeamLabel(102),'Final',5,'6 / span 8','yellow',true,null);
@@ -1498,6 +1526,14 @@ function renderPlayoffScheduleFor(matches,title,help=''){
   });
   return html;
 }
+function renderQuarterFinalSchedule(){
+  let html=renderPlayoffScheduleFor(MATCHES.filter(isQuarterFinal),'Quarter-final schedule','These 4 knockout fixtures are added to the Predict page and lock automatically at kick-off.');
+  if(showPreviousPlayoffSchedule){
+    html+=renderPlayoffScheduleFor(MATCHES.filter(isRoundOf16),'Previous Round of 16 schedule','Unhidden previous playoff round for review.');
+    html+=renderPlayoffScheduleFor(MATCHES.filter(isRoundOf32),'Previous Round of 32 schedule','Unhidden previous playoff round for review.');
+  }
+  return html;
+}
 function renderRound16Schedule(){
   let html=renderPlayoffScheduleFor(MATCHES.filter(isRoundOf16),'Round of 16 schedule','These 8 knockout fixtures are added to the Predict page and lock automatically at kick-off.');
   if(showPreviousPlayoffSchedule){
@@ -1508,7 +1544,7 @@ function renderRound16Schedule(){
 function renderRound32Schedule(){return renderPlayoffScheduleFor(MATCHES.filter(isRoundOf32),'Round of 32 schedule','These 16 knockout fixtures are added to the Predict page and lock automatically at kick-off.');}
 function renderSchedule(){
   const el=document.getElementById('schedule-content');
-  el.innerHTML=renderKnockoutMap()+renderRound16Schedule();
+  el.innerHTML=renderKnockoutMap()+renderQuarterFinalSchedule();
   const toggle=document.getElementById('toggle-previous-playoffs');
   if(toggle) toggle.onclick=togglePreviousPlayoffs;
 }
