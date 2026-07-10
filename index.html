@@ -730,7 +730,7 @@ function getPlayerGreeting(name){
   return list[Math.floor(Math.random() * list.length)];
 }
 
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "1363";
 let state={users:[],predictions:{},results:{},champion:{},playerPasswords:{}};
 let db=null;
 function getSavedLogin(){try{return JSON.parse(localStorage.getItem('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
