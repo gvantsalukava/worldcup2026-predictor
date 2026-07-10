@@ -733,23 +733,29 @@ function getPlayerGreeting(name){
 const ADMIN_PIN = "1363";
 let state={users:[],predictions:{},results:{},champion:{},playerPasswords:{}};
 let db=null;
-function getSavedLogin(){try{return JSON.parse(localStorage.getItem('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
+function safeLocalGet(key){try{return window.localStorage.getItem(key);}catch(e){return null;}}
+function safeLocalSet(key,value){try{window.localStorage.setItem(key,value);return true;}catch(e){return false;}}
+function safeLocalRemove(key){try{window.localStorage.removeItem(key);return true;}catch(e){return false;}}
+function safeSessionGet(key){try{return window.sessionStorage.getItem(key);}catch(e){return null;}}
+function safeSessionSet(key,value){try{window.sessionStorage.setItem(key,value);return true;}catch(e){return false;}}
+function safeSessionRemove(key){try{window.sessionStorage.removeItem(key);return true;}catch(e){return false;}}
+function getSavedLogin(){try{return JSON.parse(safeLocalGet('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
 const savedLogin=getSavedLogin();
-let currentUser=savedLogin.user || localStorage.getItem('wc2026_currentUser') || '';
-let currentPassword=savedLogin.pass || sessionStorage.getItem('wc2026_playerPassword') || '';
-let adminUnlocked=sessionStorage.getItem('wc2026_admin')==='1';
+let currentUser=savedLogin.user || safeLocalGet('wc2026_currentUser') || '';
+let currentPassword=savedLogin.pass || safeSessionGet('wc2026_playerPassword') || '';
+let adminUnlocked=safeSessionGet('wc2026_admin')==='1';
 let predictGroup='QF';
 let publicGroup='QF';
 let publicView='games';
 let scheduleView='fixtures';
 let scheduleMode='upcoming';
-try{localStorage.removeItem('wc2026_scheduleMode');}catch(e){}
+safeLocalRemove('wc2026_scheduleMode');
 let predictMode='upcoming';
 let championEditorVisible=false;
-let adminResultsMode = (function(){try{return localStorage.getItem('wc2026_adminResultsMode') || 'unfilled';}catch(e){return 'unfilled';}})();
-let showPreviousPredictions = (function(){try{return localStorage.getItem('wc2026_showPreviousPredictions')!=='0';}catch(e){return true;}})();
-let showPreviousPlayoffSchedule = (function(){try{return localStorage.getItem('wc2026_showPreviousPlayoffSchedule')==='1' || localStorage.getItem('wc2026_showPreviousR32Schedule')==='1';}catch(e){return false;}})();
-let leaderboardStage = (function(){try{return localStorage.getItem('wc2026_leaderboardStage') || 'qf';}catch(e){return 'qf';}})();
+let adminResultsMode = (function(){try{return safeLocalGet('wc2026_adminResultsMode') || 'unfilled';}catch(e){return 'unfilled';}})();
+let showPreviousPredictions = (function(){try{return safeLocalGet('wc2026_showPreviousPredictions')!=='0';}catch(e){return true;}})();
+let showPreviousPlayoffSchedule = (function(){try{return safeLocalGet('wc2026_showPreviousPlayoffSchedule')==='1' || safeLocalGet('wc2026_showPreviousR32Schedule')==='1';}catch(e){return false;}})();
+let leaderboardStage = (function(){try{return safeLocalGet('wc2026_leaderboardStage') || 'qf';}catch(e){return 'qf';}})();
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
@@ -948,7 +954,7 @@ function hasOfficialResult(m){
 }
 function togglePreviousPredictions(){
   showPreviousPredictions = !showPreviousPredictions;
-  try{ localStorage.setItem('wc2026_showPreviousPredictions', showPreviousPredictions ? '1' : '0'); }catch(e){}
+  try{ safeLocalSet('wc2026_showPreviousPredictions', showPreviousPredictions ? '1' : '0'); }catch(e){}
   renderPublicPredictions();
   toast(showPreviousPredictions ? 'Previous predictions are visible' : 'Previous predictions are hidden');
 }
@@ -1045,11 +1051,11 @@ async function login(){
       currentUser=name; currentPassword=pass;
     }
 
-    localStorage.setItem('wc2026_currentUser',currentUser);
-    sessionStorage.setItem('wc2026_playerPassword',currentPassword);
+    safeLocalSet('wc2026_currentUser',currentUser);
+    safeSessionSet('wc2026_playerPassword',currentPassword);
     const remember=document.getElementById('remember-login')?.checked;
-    if(remember){localStorage.setItem('wc2026_savedLogin', JSON.stringify({user:currentUser, pass:currentPassword}));}
-    else{localStorage.removeItem('wc2026_savedLogin');}
+    if(remember){safeLocalSet('wc2026_savedLogin', JSON.stringify({user:currentUser, pass:currentPassword}));}
+    else{safeLocalRemove('wc2026_savedLogin');}
     if(!remember){document.getElementById('player-name').value='';document.getElementById('player-password').value='';}
     else{document.getElementById('player-name').value=currentUser;document.getElementById('player-password').value=currentPassword;}
     await pushState();
@@ -1062,7 +1068,7 @@ async function login(){
     loginBtn.disabled=false; loginBtn.textContent='Join / Login';
   }
 }
-function logout(show=true){currentUser='';currentPassword='';localStorage.removeItem('wc2026_currentUser');sessionStorage.removeItem('wc2026_playerPassword');localStorage.removeItem('wc2026_savedLogin');const cb=document.getElementById('remember-login'); if(cb) cb.checked=false; const n=document.getElementById('player-name'), p=document.getElementById('player-password'); if(n)n.value=''; if(p)p.value=''; if(show)toast('Logged out');renderAll();}
+function logout(show=true){currentUser='';currentPassword='';safeLocalRemove('wc2026_currentUser');safeSessionRemove('wc2026_playerPassword');safeLocalRemove('wc2026_savedLogin');const cb=document.getElementById('remember-login'); if(cb) cb.checked=false; const n=document.getElementById('player-name'), p=document.getElementById('player-password'); if(n)n.value=''; if(p)p.value=''; if(show)toast('Logged out');renderAll();}
 function renderCurrentUser(){
   const row=document.getElementById('current-user-row'); const tag=document.getElementById('save-state');
   if(currentUser){
@@ -1322,7 +1328,7 @@ function predictionCountForMatches(user,matches){
 }
 function setLeaderboardStage(stage){
   leaderboardStage=leaderboardStageConfig(stage).key;
-  try{localStorage.setItem('wc2026_leaderboardStage',leaderboardStage);}catch(e){}
+  try{safeLocalSet('wc2026_leaderboardStage',leaderboardStage);}catch(e){}
   renderLeaderboard();
 }
 function renderLeaderboard(){
@@ -1493,8 +1499,8 @@ function renderBracketLinesSvg(){
 function togglePreviousPlayoffs(){
   showPreviousPlayoffSchedule = !showPreviousPlayoffSchedule;
   try{
-    localStorage.setItem('wc2026_showPreviousPlayoffSchedule', showPreviousPlayoffSchedule ? '1' : '0');
-    localStorage.setItem('wc2026_showPreviousR32Schedule', showPreviousPlayoffSchedule ? '1' : '0');
+    safeLocalSet('wc2026_showPreviousPlayoffSchedule', showPreviousPlayoffSchedule ? '1' : '0');
+    safeLocalSet('wc2026_showPreviousR32Schedule', showPreviousPlayoffSchedule ? '1' : '0');
   }catch(e){}
   renderSchedule();
   toast(showPreviousPlayoffSchedule ? 'Previous playoff schedule is visible' : 'Previous playoff schedule is hidden');
@@ -1588,7 +1594,7 @@ function renderSchedule(){
   const toggle=document.getElementById('toggle-previous-playoffs');
   if(toggle) toggle.onclick=togglePreviousPlayoffs;
 }
-function unlockAdmin(){const pin=document.getElementById('admin-pin').value;if(pin===ADMIN_PIN){adminUnlocked=true;sessionStorage.setItem('wc2026_admin','1');renderAdmin();renderResults();toast('Admin unlocked');}else toast('Wrong admin PIN');}
+function unlockAdmin(){const pin=document.getElementById('admin-pin').value;if(pin===ADMIN_PIN){adminUnlocked=true;safeSessionSet('wc2026_admin','1');renderAdmin();renderResults();toast('Admin unlocked');}else toast('Wrong admin PIN');}
 function renderAdmin(){document.getElementById('admin-login').classList.toggle('hidden',adminUnlocked);document.getElementById('admin-panel').classList.toggle('hidden',!adminUnlocked);}
 function renderResults(){
   const el=document.getElementById('results-content');
@@ -1630,7 +1636,7 @@ function renderResults(){
   if(toggle){
     toggle.onclick=()=>{
       adminResultsMode = adminResultsMode==='all' ? 'unfilled' : 'all';
-      try{localStorage.setItem('wc2026_adminResultsMode', adminResultsMode);}catch(e){}
+      try{safeLocalSet('wc2026_adminResultsMode', adminResultsMode);}catch(e){}
       renderResults();
     };
   }
