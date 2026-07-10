@@ -7,6 +7,7 @@
 <title>World Cup 2026 — Prediction Game</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <style>
   :root{
     --bg:#fff6fa; --card:#ffffff; --text:#17151c; --muted:#6f6874;
@@ -988,22 +989,33 @@ function pushState(){
 
 function initFirebase(){
   try{
-    firebase.initializeApp(firebaseConfig); db=firebase.database();
-    db.ref('wc2026').on('value',snap=>{
-      const data=snap.val()||{};
-      state.users=uniqueUsers(normalizeUsersFromFirebase(data.users));
-      state.predictions=data.predictions||{};
-      state.results=data.results||{};
-      state.champion=data.champion||{};
-      state.playerPasswords=data.playerPasswords || data.playerPins || {};
-      if(currentUser && !state.users.includes(currentUser)) logout(false);
-      if(currentUser && state.playerPasswords[currentUser] && state.playerPasswords[currentUser]!==currentPassword) logout(false);
+    firebase.initializeApp(firebaseConfig);
+    db=firebase.database();
+    firebase.auth().signInAnonymously().then(()=>{
+      db.ref('wc2026').on('value', snap=>{
+        const data=snap.val()||{};
+        state.users=uniqueUsers(normalizeUsersFromFirebase(data.users));
+        state.predictions=data.predictions||{};
+        state.results=data.results||{};
+        state.champion=data.champion||{};
+        state.playerPasswords=data.playerPasswords || data.playerPins || {};
+        if(currentUser && !state.users.includes(currentUser)) logout(false);
+        if(currentUser && state.playerPasswords[currentUser] && state.playerPasswords[currentUser]!==currentPassword) logout(false);
+        renderAll();
+      }, err=>{
+        console.error('Firebase read failed:', err);
+        toast('Cannot read database — check Firebase rules');
+        renderAll();
+      });
+    }).catch(err=>{
+      console.error('Anonymous sign-in failed:', err);
+      toast('Connection sign-in failed');
       renderAll();
     });
-  }catch(e){console.error(e);toast('Firebase connection failed');renderAll();}
+  }catch(e){console.error(e);toast('Firebase connection failed');}
+  renderAll();
 }
-
-function switchTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');renderAll();}
+ function switchTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');renderAll();}
 document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('.tab'); if(b) switchTab(b.dataset.tab);});
 document.getElementById('login-btn').onclick=login;
 document.getElementById('player-name').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
