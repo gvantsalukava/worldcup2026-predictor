@@ -1,3 +1,4 @@
+<!-- Ann's Game update: complex 3x3 goalkeeper survival with curves and feints -->
 <!-- Ann's Game update: endless goalkeeper survival + separate max-save record -->
 <!-- Ann's Game update: penalty game first + balanced goalkeeper + direct-tap Keeper Challenge -->
 <!DOCTYPE html>
@@ -566,9 +567,9 @@
 .ann-gk-crowd{position:absolute;left:0;right:0;top:9px;text-align:center;color:#fff;font-size:12px;font-weight:950;letter-spacing:.04em;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:3}
 .ann-gk-goal{position:absolute;left:7%;right:7%;top:67px;height:218px;border:8px solid #fff;border-bottom-width:10px;border-radius:7px 7px 2px 2px;box-shadow:0 6px 16px rgba(0,0,0,.25);background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(255,255,255,.34) 27px 29px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.34) 39px 41px),rgba(225,242,255,.1);z-index:2}
 .ann-gk-goal:after{content:'';position:absolute;left:-8px;right:-8px;bottom:-31px;height:25px;border:5px solid rgba(255,255,255,.62);border-top:0;transform:skewX(-9deg);opacity:.72}
-.ann-gk-zone-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr;z-index:6;touch-action:none}
+.ann-gk-zone-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);z-index:6;touch-action:none}
 .ann-gk-zone{border:0;background:transparent;cursor:pointer;transition:background .1s;display:block;padding:0;touch-action:manipulation}.ann-gk-zone span,.ann-gk-zone b{display:none!important}
-.ann-gk-zone:not(:disabled):hover,.ann-gk-zone:not(:disabled):active{background:rgba(57,255,20,.13)}
+.ann-gk-zone:not(:disabled):hover,.ann-gk-zone:not(:disabled):active{background:rgba(57,255,20,.13);box-shadow:inset 0 0 0 1px rgba(255,255,255,.32)}
 .ann-gk-zone.selected{background:rgba(255,242,0,.18);box-shadow:inset 0 0 0 2px rgba(255,242,0,.72)}
 .ann-gk-zone:disabled{cursor:not-allowed}
 .ann-gk-keeper{position:absolute;left:50%;top:52%;width:76px;height:104px;transform:translate(-50%,-50%);z-index:5;transition:left .18s cubic-bezier(.22,.75,.18,1),top .18s cubic-bezier(.22,.75,.18,1),transform .18s ease}
@@ -577,6 +578,9 @@
 .ann-gk-ball.flying{transform:translate(-50%,-50%) rotate(760deg) scale(.76)}
 .ann-gk-ball.caught{filter:drop-shadow(0 0 10px rgba(57,255,20,.95));transform:translate(-50%,-50%) rotate(760deg) scale(.62)}
 .ann-gk-ball.goal{filter:drop-shadow(0 0 8px rgba(236,0,140,.9))}
+.ann-gk-ball.curving{filter:drop-shadow(0 0 9px rgba(255,242,0,.95))}
+.ann-gk-ball.feinting{filter:drop-shadow(0 0 10px rgba(184,140,255,.95))}
+.ann-gk-goal.tricky-shot{box-shadow:0 0 0 5px rgba(255,242,0,.16),0 6px 16px rgba(0,0,0,.25)}
 .ann-gk-shooter{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);z-index:4;font-size:47px;filter:drop-shadow(0 4px 4px rgba(0,0,0,.35))}
 .ann-gk-controls{display:grid;gap:9px;margin-top:11px}
 .ann-gk-start{width:100%;min-height:47px;font-size:14px}
@@ -805,9 +809,15 @@
 <div aria-live="polite" class="ann-gk-result-flash" id="ann-gk-result-flash"><strong id="ann-gk-result-text"></strong></div>
 <div class="ann-gk-goal" id="ann-gk-goal">
 <div aria-label="Choose where the goalkeeper dives" class="ann-gk-zone-grid" id="ann-gk-zone-grid">
-<button aria-label="Dive left" class="ann-gk-zone" data-gk-zone="3" disabled="" type="button"></button>
-<button aria-label="Stay in the centre" class="ann-gk-zone" data-gk-zone="4" disabled="" type="button"></button>
-<button aria-label="Dive right" class="ann-gk-zone" data-gk-zone="5" disabled="" type="button"></button>
+<button aria-label="Dive top left" class="ann-gk-zone" data-gk-zone="0" disabled="" type="button"></button>
+<button aria-label="Dive top centre" class="ann-gk-zone" data-gk-zone="1" disabled="" type="button"></button>
+<button aria-label="Dive top right" class="ann-gk-zone" data-gk-zone="2" disabled="" type="button"></button>
+<button aria-label="Dive middle left" class="ann-gk-zone" data-gk-zone="3" disabled="" type="button"></button>
+<button aria-label="Stay in the middle centre" class="ann-gk-zone" data-gk-zone="4" disabled="" type="button"></button>
+<button aria-label="Dive middle right" class="ann-gk-zone" data-gk-zone="5" disabled="" type="button"></button>
+<button aria-label="Dive bottom left" class="ann-gk-zone" data-gk-zone="6" disabled="" type="button"></button>
+<button aria-label="Dive bottom centre" class="ann-gk-zone" data-gk-zone="7" disabled="" type="button"></button>
+<button aria-label="Dive bottom right" class="ann-gk-zone" data-gk-zone="8" disabled="" type="button"></button>
 </div>
 <div aria-hidden="true" class="ann-gk-keeper" id="ann-gk-keeper">
 <span class="ann-keeper-head"></span><span class="ann-keeper-body"></span><span class="ann-keeper-legs"></span>
@@ -818,7 +828,7 @@
 </div>
 <div class="ann-gk-controls">
 <button class="btn ann-gk-start" id="ann-gk-start-btn" type="button">🧤 Start Keeper Challenge</button>
-<div aria-live="polite" class="ann-gk-commentary" id="ann-gk-commentary"><b>Ready?</b> Start the round, then tap inside the goal where the ball is going.</div>
+<div aria-live="polite" class="ann-gk-commentary" id="ann-gk-commentary"><b>Ready?</b> Watch both the height and side, then tap the exact part of the goal. Later shots can curve or feint.</div>
 <div class="ann-gk-progress" id="ann-gk-progress"></div>
 </div>
 </div>
@@ -1240,7 +1250,7 @@ function loadAnnRecord(){
   }catch(e){return defaultAnnRecord();}
 }
 function defaultAnnSession(previousRaf=0){return {active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,aimX:50,aimY:50,kickStyle:'placement',power:50,powerDirection:1,accuracy:50,accuracyDirection:-1,lastFrame:0,raf:previousRaf,outcomes:[],bonus:false,sideHistory:[]};}
-function defaultAnnKeeperSession(){return {active:false,locked:false,shot:0,saves:0,points:0,streak:0,bestStreak:0,targetZone:null,chosenZone:null,shotStarted:0,shotWindow:1500,timer:0,phase:'idle',outcomes:[],token:0};}
+function defaultAnnKeeperSession(){return {active:false,locked:false,shot:0,saves:0,points:0,streak:0,bestStreak:0,targetZone:null,fakeZone:null,chosenZone:null,shotType:'direct',shotStarted:0,decisionStarted:0,shotWindow:1500,timer:0,curveTimer:0,phase:'idle',outcomes:[],token:0};}
 let annRecord=loadAnnRecord();
 let annSession=defaultAnnSession();
 let annKeeperSession=defaultAnnKeeperSession();
@@ -1455,9 +1465,11 @@ function annKeeperGoalPoint(zone){
   const gr=goal.getBoundingClientRect(),sr=stadium.getBoundingClientRect();return {left:((gr.left-sr.left)+(pos.left/100)*gr.width)/sr.width*100,top:((gr.top-sr.top)+(pos.top/100)*gr.height)/sr.height*100};
 }
 function annKeeperResetActors(){
-  const ball=document.getElementById('ann-gk-ball'),keeper=document.getElementById('ann-gk-keeper');
-  if(ball){ball.classList.remove('flying','caught','goal');ball.style.transition='none';ball.style.left='50%';ball.style.top='89%';ball.style.opacity='1';requestAnimationFrame(()=>requestAnimationFrame(()=>ball.style.transition=''));}
+  if(annKeeperSession.curveTimer){clearTimeout(annKeeperSession.curveTimer);annKeeperSession.curveTimer=0;}
+  const ball=document.getElementById('ann-gk-ball'),keeper=document.getElementById('ann-gk-keeper'),goal=document.getElementById('ann-gk-goal');
+  if(ball){ball.classList.remove('flying','caught','goal','curving','feinting');ball.style.transition='none';ball.style.left='50%';ball.style.top='89%';ball.style.opacity='1';requestAnimationFrame(()=>requestAnimationFrame(()=>ball.style.transition=''));}
   if(keeper){keeper.classList.remove('catch');keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='52%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
+  if(goal)goal.classList.remove('tricky-shot');
   const flash=document.getElementById('ann-gk-result-flash');if(flash)flash.classList.remove('show','saved','goal');
 }
 function annKeeperSpeedLabel(){
@@ -1479,15 +1491,45 @@ function startAnnKeeperRound(){
   if(annSession.active){annKeeperSetComment('<b>Finish the penalty match first.</b> Then become the goalkeeper.');return;}
   if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annKeeperSession=defaultAnnKeeperSession();annKeeperSession.active=true;annKeeperSession.phase='preparing';annKeeperSession.token=annKeeperToken;annEnsureAudio(false);annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>${esc(annPlayerName())}</b>, survive until the first goal. The opening shot is slow.`);renderAnnKeeperGame();annTone(360,.07,'square');annTone(540,.09,'sine',.07);annHaptic([15,30,15]);setTimeout(()=>annKeeperPrepareShot(annKeeperSession.token),500);
 }
+function annKeeperZoneDistance(a,b){
+  if(a===null||b===null||Number.isNaN(a)||Number.isNaN(b))return 99;
+  const ar=Math.floor(a/3),ac=a%3,br=Math.floor(b/3),bc=b%3;return Math.abs(ar-br)+Math.abs(ac-bc);
+}
+function annKeeperPickFakeZone(target,hard=false){
+  const tr=Math.floor(target/3),tc=target%3,candidates=[];
+  for(let z=0;z<9;z++){
+    if(z===target)continue;const zr=Math.floor(z/3),zc=z%3,d=Math.abs(zr-tr)+Math.abs(zc-tc);
+    if((hard&&d>=2)||(!hard&&d===1))candidates.push(z);
+  }
+  return candidates.length?candidates[annRandom(candidates.length)]:4;
+}
+function annKeeperChooseShotType(){
+  const saves=annKeeperSession.saves;
+  if(saves<3)return 'direct';
+  const roll=annRandom(100);
+  if(saves>=10&&roll<28)return 'feint';
+  if(roll<(saves>=6?55:28))return 'curve';
+  return 'direct';
+}
+function annKeeperBendShot(token){
+  if(!annKeeperSession.active||token!==annKeeperSession.token||annKeeperSession.phase!=='flight')return;
+  const ball=document.getElementById('ann-gk-ball'),goal=document.getElementById('ann-gk-goal'),pos=annKeeperGoalPoint(annKeeperSession.targetZone);
+  if(!ball)return;annKeeperSession.decisionStarted=performance.now();const elapsed=annKeeperSession.decisionStarted-annKeeperSession.shotStarted,remaining=Math.max(180,annKeeperSession.shotWindow-elapsed);
+  ball.style.transition=`left ${remaining}ms cubic-bezier(.12,.72,.18,1),top ${remaining}ms cubic-bezier(.12,.72,.18,1),transform ${remaining}ms linear,opacity .2s`;ball.classList.remove('feinting');ball.classList.add('curving');ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;if(goal)goal.classList.add('tricky-shot');
+  annKeeperSetComment(`<b>${annKeeperSession.shotType==='feint'?'FEINT!':'CURVE!'}</b> The direction changed — react now.`);annTone(420,.045,'triangle');annHaptic(8);
+}
 function annKeeperPrepareShot(token){
-  if(!annKeeperSession.active||token!==annKeeperSession.token)return;annKeeperSession.locked=true;annKeeperSession.phase='preparing';annKeeperSession.targetZone=null;annKeeperSession.chosenZone=null;annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>Shot ${annKeeperSession.shot+1}:</b> ${annKeeperSpeedLabel()} speed…`);renderAnnKeeperGame();
-  const prepareDelay=Math.max(240,700-annKeeperSession.saves*28);annKeeperSession.timer=setTimeout(()=>annKeeperLaunchShot(token),prepareDelay);
+  if(!annKeeperSession.active||token!==annKeeperSession.token)return;annKeeperSession.locked=true;annKeeperSession.phase='preparing';annKeeperSession.targetZone=null;annKeeperSession.fakeZone=null;annKeeperSession.chosenZone=null;annKeeperSession.shotType='direct';annKeeperSession.decisionStarted=0;annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>Shot ${annKeeperSession.shot+1}:</b> ${annKeeperSpeedLabel()} speed… watch height and direction.`);renderAnnKeeperGame();
+  const prepareDelay=Math.max(220,700-annKeeperSession.saves*28);annKeeperSession.timer=setTimeout(()=>annKeeperLaunchShot(token),prepareDelay);
 }
 function annKeeperLaunchShot(token){
   if(!annKeeperSession.active||token!==annKeeperSession.token)return;
-  const weighted=[0,0,3,3,6,6,1,4,7,2,2,5,5,8,8];annKeeperSession.targetZone=weighted[annRandom(weighted.length)];annKeeperSession.shotWindow=Math.max(470,1500-annKeeperSession.saves*82);annKeeperSession.shotStarted=performance.now();annKeeperSession.locked=false;annKeeperSession.phase='flight';annKeeperDisableZones(false);
-  const ball=document.getElementById('ann-gk-ball'),pos=annKeeperGoalPoint(annKeeperSession.targetZone);if(ball){ball.style.transition=`left ${annKeeperSession.shotWindow}ms linear,top ${annKeeperSession.shotWindow}ms linear,transform ${annKeeperSession.shotWindow}ms linear,opacity .2s`;void ball.offsetWidth;ball.classList.add('flying');ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
-  annKeeperSetComment(`<b>SHOOT!</b> ${annKeeperSpeedLabel()} — tap where the ball is heading.`);renderAnnKeeperGame();annTone(210,.05,'square');annHaptic(12);
+  const weighted=[0,0,1,2,2,3,4,4,5,6,6,7,8,8];annKeeperSession.targetZone=weighted[annRandom(weighted.length)];annKeeperSession.shotType=annKeeperChooseShotType();annKeeperSession.fakeZone=annKeeperSession.shotType==='direct'?null:annKeeperPickFakeZone(annKeeperSession.targetZone,annKeeperSession.shotType==='feint');annKeeperSession.shotWindow=Math.max(430,1500-annKeeperSession.saves*78);annKeeperSession.shotStarted=performance.now();annKeeperSession.decisionStarted=annKeeperSession.shotStarted;annKeeperSession.locked=false;annKeeperSession.phase='flight';annKeeperDisableZones(false);
+  const ball=document.getElementById('ann-gk-ball'),firstZone=annKeeperSession.fakeZone===null?annKeeperSession.targetZone:annKeeperSession.fakeZone,pos=annKeeperGoalPoint(firstZone);if(ball){ball.style.transition=`left ${annKeeperSession.shotWindow}ms linear,top ${annKeeperSession.shotWindow}ms linear,transform ${annKeeperSession.shotWindow}ms linear,opacity .2s`;void ball.offsetWidth;ball.classList.add('flying');if(annKeeperSession.shotType==='feint')ball.classList.add('feinting');ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
+  const warning=annKeeperSession.saves>=3?' Watch for a late bend.':'';annKeeperSetComment(`<b>SHOOT!</b> ${annKeeperSpeedLabel()} — tap the exact zone.${warning}`);renderAnnKeeperGame();annTone(210,.05,'square');annHaptic(12);
+  if(annKeeperSession.shotType!=='direct'){
+    const bendRatio=annKeeperSession.shotType==='feint'?.61:.46;annKeeperSession.curveTimer=setTimeout(()=>annKeeperBendShot(token),Math.round(annKeeperSession.shotWindow*bendRatio));
+  }
   annKeeperSession.timer=setTimeout(()=>annKeeperResolve(null,true,token),annKeeperSession.shotWindow+25);
 }
 function annKeeperChooseZone(zone){
@@ -1496,18 +1538,19 @@ function annKeeperChooseZone(zone){
 function annKeeperResolve(chosenZone,timedOut,token){
   if(!annKeeperSession.active||token!==annKeeperSession.token||annKeeperSession.phase!=='flight')return;
   annKeeperSession.locked=true;annKeeperSession.phase='resolving';if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperDisableZones(true);annKeeperSession.chosenZone=chosenZone;
-  const target=annKeeperSession.targetZone,reaction=timedOut?annKeeperSession.shotWindow:Math.max(0,performance.now()-annKeeperSession.shotStarted);let outcome='goal',award=0;
+  if(annKeeperSession.curveTimer){clearTimeout(annKeeperSession.curveTimer);annKeeperSession.curveTimer=0;}
+  const target=annKeeperSession.targetZone,reactionBase=annKeeperSession.decisionStarted||annKeeperSession.shotStarted,reaction=timedOut?annKeeperSession.shotWindow:Math.max(0,performance.now()-reactionBase);let outcome='goal',award=0;
   if(chosenZone!==null&&!Number.isNaN(chosenZone)){
-    const targetLane=target%3,chosenLane=chosenZone%3,laneDistance=Math.abs(targetLane-chosenLane);const selected=document.querySelector(`[data-gk-zone="${chosenZone}"]`);if(selected)selected.classList.add('selected');
-    if(laneDistance===0){annKeeperMoveKeeper(target);outcome='save';annKeeperSession.streak++;const reactionBonus=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/85));award=18+reactionBonus+Math.min(12,annKeeperSession.saves);}
-    else if(laneDistance===1&&reaction<=annKeeperSession.shotWindow*.28){annKeeperMoveKeeper(chosenZone);outcome='parry';annKeeperSession.streak++;const reactionBonus=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/120));award=8+reactionBonus+Math.min(6,Math.floor(annKeeperSession.saves/2));}
-    else{annKeeperMoveKeeper(chosenZone);annKeeperSession.streak=0;}
+    const distance=annKeeperZoneDistance(target,chosenZone),selected=document.querySelector(`[data-gk-zone="${chosenZone}"]`);if(selected)selected.classList.add('selected');annKeeperMoveKeeper(chosenZone);
+    if(distance===0){outcome='save';annKeeperSession.streak++;const available=annKeeperSession.shotType==='direct'?annKeeperSession.shotWindow:Math.max(180,annKeeperSession.shotWindow-(reactionBase-annKeeperSession.shotStarted));const reactionBonus=Math.max(0,Math.min(5,Math.round((available-reaction)/150)));award=4+reactionBonus+Math.min(3,Math.floor(annKeeperSession.saves/5));}
+    else if(distance===1&&reaction<=Math.max(150,annKeeperSession.shotWindow*.24)){outcome='parry';annKeeperSession.streak++;const reactionBonus=reaction<120?2:reaction<210?1:0;award=2+reactionBonus;}
+    else annKeeperSession.streak=0;
   }else annKeeperSession.streak=0;
   const keeper=document.getElementById('ann-gk-keeper'),ball=document.getElementById('ann-gk-ball');
   annKeeperSession.shot++;annRecord.keeperShots=(annRecord.keeperShots||0)+1;
   if(outcome==='save'||outcome==='parry'){
     annKeeperSession.saves++;annKeeperSession.points+=award;annKeeperSession.bestStreak=Math.max(annKeeperSession.bestStreak,annKeeperSession.streak);annRecord.keeperSaves=(annRecord.keeperSaves||0)+1;if(keeper)keeper.classList.add('catch');if(ball){ball.classList.add('caught');const catchZone=chosenZone===null?target:chosenZone,pos=annKeeperGoalPoint(catchZone);ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
-    annKeeperShowResult('SAVED!','saved');annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> Save ${annKeeperSession.saves} · <b>+${award} pts</b> · next shot is faster.`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
+    annKeeperShowResult('SAVED!','saved');const shotLabel=annKeeperSession.shotType==='feint'?'feint':annKeeperSession.shotType==='curve'?'curving shot':'direct shot';annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> ${shotLabel} · Save ${annKeeperSession.saves} · <b>+${award} pts</b> · next shot is faster.`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
     annKeeperSession.outcomes.push(outcome);saveAnnRecord();renderAnnKeeperGame();
     annKeeperSession.timer=setTimeout(()=>{if(annKeeperSession.active&&token===annKeeperSession.token)annKeeperPrepareShot(token);},Math.max(260,520-annKeeperSession.saves*12));
   }else{
@@ -1619,7 +1662,7 @@ async function toggleAnnSound(){
 }
 function resetAnnRecords(){
   if(annSpinState.spinning)return;const anyActive=annSession.active||annKeeperSession.active;if(anyActive&&!window.confirm('A mini-game is active. Reset both games, free spins and all local records?'))return;if(!anyActive&&!window.confirm('Reset all local Ann’s Game records on this browser?'))return;
-  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annKeeperSession=defaultAnnKeeperSession();annKeeperSession.token=annKeeperToken;annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();annKeeperResetActors();annKeeperDisableZones(true);const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);annKeeperSetComment('<b>Ready?</b> Start slow, save as many as possible, and survive until the first goal.');renderBreakGame();
+  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annKeeperSession=defaultAnnKeeperSession();annKeeperSession.token=annKeeperToken;annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();annKeeperResetActors();annKeeperDisableZones(true);const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);annKeeperSetComment('<b>Ready?</b> Tap the exact 3×3 goal zone. After a few saves, shots can curve or feint late.');renderBreakGame();
 }
 function renderBreakGame(){
   const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};const player=annPlayerName();
