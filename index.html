@@ -408,7 +408,7 @@
 .ann-shot-dot.goal{background:var(--neon);border-color:#18d900;color:#0d4f00}
 .ann-shot-dot.saved{background:#dfe3e8;border-color:#bbc2ca;color:#4f5660}
 .ann-shot-dot.miss{background:#ffcee1;border-color:#ff8ebc;color:#8e164c}
-.ann-shot-dot.retake{background:#dff9ff;border-color:#78ddeb;color:#155465}
+.ann-shot-dot.retake{background:#dff9ff;border-color:#78ddeb;color:#155465}.ann-shot-dot.woodwork{background:#fff7a3;border-color:#e4cf00;color:#6d5900}
 .ann-local-note{display:inline-flex;align-items:center;gap:7px;margin-top:11px;padding:7px 10px;border-radius:999px;background:#f8f4f7;border:1px solid #e8dce3;color:#6b6067;font-size:11px;font-weight:850}
 .ann-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
 .ann-stat{border:1px solid var(--line);background:#fff9fc;border-radius:14px;padding:11px 6px;text-align:center}
@@ -455,7 +455,7 @@
 .ann-spin-card .section-title{margin-bottom:7px}
 .ann-wheel-shell{position:relative;width:246px;height:246px;margin:17px auto 12px;filter:drop-shadow(0 12px 18px rgba(16,27,52,.18))}
 .ann-wheel-pointer{position:absolute;z-index:8;left:50%;top:-10px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:0;border-bottom:31px solid #101b34;filter:drop-shadow(0 3px 2px rgba(0,0,0,.22))}
-.ann-spin-wheel{position:absolute;inset:0;border-radius:50%;border:8px solid #101b34;background:conic-gradient(from -22.5deg,#ec008c 0 45deg,#fff200 45deg 90deg,#39ff14 90deg 135deg,#ff86c7 135deg 180deg,#8eeaff 180deg 225deg,#101b34 225deg 270deg,#ffb52e 270deg 315deg,#b88cff 315deg 360deg);transition:transform 3s cubic-bezier(.12,.78,.12,1);will-change:transform;overflow:hidden}
+.ann-spin-wheel{position:absolute;inset:0;border-radius:50%;border:8px solid #101b34;background:conic-gradient(from -22.5deg,#ec008c 0 45deg,#fff200 45deg 90deg,#39ff14 90deg 135deg,#ff86c7 135deg 180deg,#8eeaff 180deg 225deg,#101b34 225deg 270deg,#ffb52e 270deg 315deg,#b88cff 315deg 360deg);transition:none;will-change:transform;overflow:hidden}
 .ann-spin-wheel:before{content:'';position:absolute;inset:10px;border-radius:50%;border:2px dashed rgba(255,255,255,.72)}
 .ann-spin-wheel:after{content:'⚽';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#fff;border:7px solid #101b34;font-size:31px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
 .ann-wheel-label{position:absolute;left:50%;top:50%;z-index:3;width:46px;margin-left:-23px;margin-top:-10px;text-align:center;font-size:12px;font-weight:950;color:#101b34;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.75);transform:rotate(calc(var(--i) * 45deg)) translateY(-91px) rotate(calc(var(--i) * -45deg));pointer-events:none}
@@ -473,6 +473,46 @@
 .ann-earn-note{margin-top:9px;padding:9px 10px;border-radius:12px;background:#fffde8;border:1px solid #f0d900;color:#5a4300;font-size:10px;line-height:1.4;font-weight:850}
 @media(max-width:560px){.ann-wheel-shell{width:230px;height:230px}.ann-wheel-label{width:40px;margin-left:-20px;transform:rotate(calc(var(--i) * 45deg)) translateY(-84px) rotate(calc(var(--i) * -45deg));font-size:10px;letter-spacing:-.02em}.ann-spin-wheel:after{width:50px;height:50px;font-size:23px}}
 @media(prefers-reduced-motion:reduce){.ann-spin-wheel{transition-duration:.25s}}
+
+
+
+/* Advanced penalty controls + mobile-safe game interaction */
+.ann-goal{touch-action:none;user-select:none;-webkit-user-select:none}
+.ann-zone-grid{touch-action:none}
+.ann-zone{cursor:crosshair}
+.ann-zone.selected:after{display:none}
+.ann-aim-reticle{position:absolute;left:50%;top:50%;width:31px;height:31px;border:3px solid var(--yellow);border-radius:50%;transform:translate(-50%,-50%);z-index:7;pointer-events:none;opacity:0;box-shadow:0 0 0 4px rgba(236,0,140,.34),0 3px 10px rgba(0,0,0,.3);transition:left .12s ease,top .12s ease,opacity .15s ease}
+.ann-aim-reticle:before,.ann-aim-reticle:after{content:'';position:absolute;background:#101b34;border-radius:999px}
+.ann-aim-reticle:before{width:3px;height:39px;left:11px;top:-7px}
+.ann-aim-reticle:after{height:3px;width:39px;left:-7px;top:11px}
+.ann-aim-reticle.visible{opacity:1}
+.ann-style-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.ann-style-btn{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 7px;cursor:pointer;color:#554851;text-align:center;min-height:58px;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+.ann-style-btn b{display:block;font-size:12px;color:#292027}
+.ann-style-btn span{display:block;font-size:9px;color:var(--muted);font-weight:850;margin-top:3px}
+.ann-style-btn.active{background:var(--yellow);border-color:#e4cf00;box-shadow:0 0 0 3px rgba(255,242,0,.17)}
+.ann-style-btn:active{transform:scale(.98)}
+.ann-style-btn:disabled{opacity:.48;cursor:not-allowed}
+.ann-meter-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ann-accuracy-track{height:19px;border:1px solid var(--line);border-radius:999px;position:relative;overflow:hidden;background:linear-gradient(90deg,#ff9abf 0 24%,#fff200 24% 40%,#39ff14 40% 64%,#fff200 64% 78%,#ff9abf 78% 100%)}
+.ann-accuracy-sweet{position:absolute;left:44%;width:18%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.95);border-right:2px solid rgba(255,255,255,.95);background:rgba(255,255,255,.12)}
+.ann-accuracy-marker{position:absolute;left:50%;top:-3px;width:5px;height:25px;border-radius:999px;background:#101b34;box-shadow:0 0 0 2px rgba(255,255,255,.88);transform:translateX(-50%);transition:left .025s linear}
+.ann-audio-status{border:1px dashed #b9aeba;border-radius:11px;padding:8px 10px;background:#faf7f9;color:#6a5f66;font-size:10px;font-weight:800;line-height:1.35;text-align:center}
+.ann-audio-status.ready{border-style:solid;border-color:#83e872;background:#efffe9;color:#195a0d}
+.ann-audio-status.error{border-style:solid;border-color:#ff9abf;background:#fff1f6;color:#8e164c}
+.ann-shot-quality{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#101b34;color:#fff;font-size:10px;font-weight:950;margin-left:4px;white-space:nowrap}
+.ann-spin-wheel{transition:none!important}
+.ann-spin-wheel.is-spinning{filter:saturate(1.12)}
+.ann-wheel-pointer.tick{animation:ann-pointer-tick .09s ease}
+@keyframes ann-pointer-tick{50%{transform:translateX(-50%) rotate(-9deg)}}
+@media(max-width:560px){
+  .ann-style-picker{grid-template-columns:1fr}
+  .ann-style-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:47px;text-align:left;padding:8px 11px}
+  .ann-style-btn b,.ann-style-btn span{display:inline;margin:0}
+  .ann-meter-grid{grid-template-columns:1fr}
+  .ann-aim-reticle{width:27px;height:27px}
+  .ann-aim-reticle:before{height:35px;left:9px;top:-7px}.ann-aim-reticle:after{width:35px;left:-7px;top:9px}
+}
 
 </style>
 </head>
@@ -562,6 +602,7 @@
                 <button class="ann-zone" type="button" data-zone="7" aria-label="Aim bottom centre"></button>
                 <button class="ann-zone" type="button" data-zone="8" aria-label="Aim bottom right"></button>
               </div>
+              <span class="ann-aim-reticle" id="ann-aim-reticle" aria-hidden="true"></span>
               <div class="ann-keeper" id="ann-keeper" aria-hidden="true">
                 <span class="ann-keeper-head"></span><span class="ann-keeper-body"></span><span class="ann-keeper-legs"></span>
               </div>
@@ -572,18 +613,30 @@
 
           <div class="ann-controls">
             <div class="ann-aim-row">
-              <span class="ann-selected-aim" id="ann-selected-aim">Aim: <b>choose a target</b></span>
-              <span class="small">Green power is controlled. Pink power is pure chaos.</span>
+              <span class="ann-selected-aim" id="ann-selected-aim">Aim: <b>tap anywhere inside the goal</b></span>
+              <span class="small">Choose a kick, then time both power and accuracy.</span>
             </div>
-            <div>
-              <div class="ann-power-label"><span>Power</span><span id="ann-power-number">50%</span></div>
-              <div class="ann-power-track"><div class="ann-power-fill" id="ann-power-fill"></div><span class="ann-power-sweet"></span></div>
+            <div class="ann-style-picker" id="ann-style-picker" role="group" aria-label="Choose kick style">
+              <button class="ann-style-btn active" type="button" data-kick-style="placement"><b>🎯 Placement</b><span>Safer and precise</span></button>
+              <button class="ann-style-btn" type="button" data-kick-style="power"><b>💥 Power</b><span>Harder to save</span></button>
+              <button class="ann-style-btn" type="button" data-kick-style="panenka"><b>🪄 Panenka</b><span>High risk, huge style</span></button>
+            </div>
+            <div class="ann-meter-grid">
+              <div>
+                <div class="ann-power-label"><span>Power</span><span id="ann-power-number">50%</span></div>
+                <div class="ann-power-track"><div class="ann-power-fill" id="ann-power-fill"></div><span class="ann-power-sweet" id="ann-power-sweet"></span></div>
+              </div>
+              <div>
+                <div class="ann-power-label"><span>Accuracy</span><span id="ann-accuracy-number">50%</span></div>
+                <div class="ann-accuracy-track"><span class="ann-accuracy-sweet" id="ann-accuracy-sweet"></span><span class="ann-accuracy-marker" id="ann-accuracy-marker"></span></div>
+              </div>
             </div>
             <div class="ann-buttons">
               <button class="btn secondary" id="ann-start-btn" type="button">Start penalty match</button>
               <button class="btn ann-shoot" id="ann-shoot-btn" type="button" disabled>⚽ SHOOT</button>
-              <button class="btn secondary" id="ann-sound-btn" type="button" aria-pressed="true">🔊 Sound</button>
+              <button class="btn secondary" id="ann-sound-btn" type="button" aria-pressed="true">🔈 Enable sound</button>
             </div>
+            <div class="ann-audio-status" id="ann-audio-status">Mobile tip: tap “Enable sound” once. Hardware silent mode can still mute browser audio.</div>
             <div class="ann-commentary" id="ann-commentary" aria-live="polite"><b>Guest Player</b>, the stadium is ready. The referee is already nervous.</div>
           </div>
           <span class="ann-local-note">🔒 No Firebase · no game login required · records stay only on this browser</span>
@@ -592,7 +645,7 @@
         <div class="ann-side-stack">
           <div class="card ann-spin-card">
             <div class="section-title"><h3>🎡 Ann's Wheel</h3><span class="tag" id="ann-spin-count">3 spins</span></div>
-            <p class="small">Spin to grow your bank toward the Grand Prize — but the wheel can <b>bust</b> and cost you. Big banks are worth more, so quit while you're ahead. Complete matches to earn more spins.</p>
+            <p class="small">Spin to grow your bank toward the Grand Prize — but the wheel can <b>bust</b> and cost you. Spins now finish from the real animation state and interrupted spins are recovered automatically.</p>
             <div class="ann-wheel-shell" aria-label="Football bonus wheel">
               <span class="ann-wheel-pointer" aria-hidden="true"></span>
               <div class="ann-spin-wheel" id="ann-spin-wheel">
@@ -994,6 +1047,7 @@ function safeSessionRemove(key){try{window.sessionStorage.removeItem(key);return
 
 const ANN_GAME_STORAGE_KEY = 'wc2026_annsGame_v3';
 const ANN_GRAND_PRIZE = 10000;
+const ANN_FALLBACK_BEEP = 'data:audio/wav;base64,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';
 const ANN_ZONE_NAMES = ['top left','top centre','top right','middle left','middle centre','middle right','bottom left','bottom centre','bottom right'];
 const ANN_ZONE_POSITIONS = [
   {left:18,top:18},{left:50,top:18},{left:82,top:18},
@@ -1001,6 +1055,11 @@ const ANN_ZONE_POSITIONS = [
   {left:18,top:80},{left:50,top:80},{left:82,top:80}
 ];
 const ANN_PRESSURE_STAGES = ['Friendly','Group stage','Knockout','Semi-final','FINAL','Golden Ball'];
+const ANN_KICK_STYLES = {
+  placement:{label:'Placement',icon:'🎯',ideal:[42,76],powerMid:59,miss:.015,save:.05,points:15},
+  power:{label:'Power',icon:'💥',ideal:[68,91],powerMid:80,miss:.055,save:-.13,points:45},
+  panenka:{label:'Panenka',icon:'🪄',ideal:[34,59],powerMid:47,miss:.08,save:0,points:95}
+};
 const ANN_GOAL_LINES = [
   'The goalkeeper has been sent into another postcode.',
   'Top-class finish. The net has filed a complaint.',
@@ -1020,6 +1079,11 @@ const ANN_MISS_LINES = [
   'Missed. A tactical warning shot to the parking area.',
   'The goal remained completely unharmed.'
 ];
+const ANN_WOODWORK_LINES = [
+  'Off the post. The goal frame has chosen violence.',
+  'Crossbar. Millimetres away from a documentary ending.',
+  'Woodwork. The stadium made the same noise at once.'
+];
 const ANN_SPIN_OUTCOMES = [
   {label:'+100 bonus points',short:'+100',type:'points',value:100},
   {label:'+250 bonus points',short:'+250',type:'points',value:250},
@@ -1031,53 +1095,77 @@ const ANN_SPIN_OUTCOMES = [
   {label:'Mystery reward',short:'Mystery',type:'mystery',value:0}
 ];
 
-function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',grandPrizeWon:false,submittedBest:0};}
+function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',grandPrizeWon:false,submittedBest:0,pendingSpin:null};}
 function loadAnnRecord(){
   try{
     const parsed=JSON.parse(safeLocalGet(ANN_GAME_STORAGE_KEY)||'null');
     if(!parsed||typeof parsed!=='object') return defaultAnnRecord();
+    const pending=parsed.pendingSpin&&Number.isInteger(Number(parsed.pendingSpin.index))&&Number(parsed.pendingSpin.index)>=0&&Number(parsed.pendingSpin.index)<ANN_SPIN_OUTCOMES.length?{index:Number(parsed.pendingSpin.index),nonce:String(parsed.pendingSpin.nonce||''),startedAt:Number(parsed.pendingSpin.startedAt)||Date.now()}:null;
     return {
       matches:Number(parsed.matches)||0,trophies:Number(parsed.trophies)||0,totalGoals:Number(parsed.totalGoals)||0,totalShots:Number(parsed.totalShots)||0,
       bestGoals:Number(parsed.bestGoals)||0,bestPoints:Number(parsed.bestPoints)||0,bestStreak:Number(parsed.bestStreak)||0,sound:parsed.sound!==false,
       history:Array.isArray(parsed.history)?parsed.history.slice(0,6):[],freeSpins:Math.max(0,Number(parsed.freeSpins)||0),bonusPoints:Number(parsed.bonusPoints)||0,
       varShields:Math.max(0,Number(parsed.varShields)||0),nextGoalMultiplier:Number(parsed.nextGoalMultiplier)===2?2:1,totalSpins:Number(parsed.totalSpins)||0,
       spinHistory:Array.isArray(parsed.spinHistory)?parsed.spinHistory.slice(0,6):[],lastSpin:String(parsed.lastSpin||'Free spins are ready.'),
-      grandPrizeWon:parsed.grandPrizeWon===true,submittedBest:Number(parsed.submittedBest)||0
+      grandPrizeWon:parsed.grandPrizeWon===true,submittedBest:Number(parsed.submittedBest)||0,pendingSpin:pending
     };
   }catch(e){return defaultAnnRecord();}
 }
+function defaultAnnSession(previousRaf=0){return {active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,aimX:50,aimY:50,kickStyle:'placement',power:50,powerDirection:1,accuracy:50,accuracyDirection:-1,lastFrame:0,raf:previousRaf,outcomes:[],bonus:false,sideHistory:[]};}
 let annRecord=loadAnnRecord();
-let annSession={active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,power:50,powerDirection:1,lastFrame:0,raf:0,outcomes:[],bonus:false};
-let annSpinState={spinning:false,rotation:0};
+let annSession=defaultAnnSession();
+let annSpinState={spinning:false,rotation:0,raf:0,token:0,lastSector:null};
 let annAudioContext=null;
+let annAudioArmed=false;
+let annAudioState='idle';
+let annFallbackAudio=null;
+let annPendingRecovered=false;
 function saveAnnRecord(){safeLocalSet(ANN_GAME_STORAGE_KEY,JSON.stringify(annRecord));}
 function annPlayerName(){try{return currentUser&&String(currentUser).trim()?String(currentUser).trim():'Guest Player';}catch(e){return 'Guest Player';}}
 function annRandom(max){
   if(window.crypto&&window.crypto.getRandomValues){const a=new Uint32Array(1);window.crypto.getRandomValues(a);return a[0]%max;}
   return Math.floor(Math.random()*max);
 }
-function annChance(probability){return annRandom(10000)<Math.round(probability*10000);}
+function annChance(probability){return annRandom(10000)<Math.round(Math.max(0,Math.min(1,probability))*10000);}
 function annPick(list){return list[annRandom(list.length)];}
-function annTone(freq,duration=0.09,type='sine',delay=0){
-  if(!annRecord.sound) return;
+function annClamp(value,min,max){return Math.max(min,Math.min(max,value));}
+function annHaptic(pattern=12){try{if(navigator.vibrate)navigator.vibrate(pattern);}catch(e){}}
+function annFallbackBeep(){
+  if(!annRecord.sound||!annAudioArmed)return;
   try{
-    annAudioContext=annAudioContext||new (window.AudioContext||window.webkitAudioContext)();
-    if(annAudioContext.state==='suspended'){annAudioContext.resume();}
-    const now=annAudioContext.currentTime+delay;
-    const osc=annAudioContext.createOscillator();const gain=annAudioContext.createGain();
-    osc.type=type;osc.frequency.setValueAtTime(freq,now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.13,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
-    osc.connect(gain);gain.connect(annAudioContext.destination);osc.start(now);osc.stop(now+duration+.02);
+    annFallbackAudio=annFallbackAudio||new Audio(ANN_FALLBACK_BEEP);
+    annFallbackAudio.setAttribute('playsinline','');annFallbackAudio.currentTime=0;
+    const p=annFallbackAudio.play();if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
 }
-function annUnlockAudio(){
+async function annEnsureAudio(test=false){
+  if(!annRecord.sound)return false;
   try{
-    annAudioContext=annAudioContext||new (window.AudioContext||window.webkitAudioContext)();
-    if(annAudioContext.state==='suspended'){annAudioContext.resume();}
-    // play a silent blip inside the user gesture to fully arm audio on iOS/Android
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC){
+      annFallbackAudio=annFallbackAudio||new Audio(ANN_FALLBACK_BEEP);annFallbackAudio.setAttribute('playsinline','');
+      annFallbackAudio.currentTime=0;await annFallbackAudio.play();annAudioArmed=true;annAudioState='fallback';renderBreakGame();return true;
+    }
+    if(!annAudioContext||annAudioContext.state==='closed')annAudioContext=new AC({latencyHint:'interactive'});
+    if(annAudioContext.state==='suspended'||annAudioContext.state==='interrupted')await annAudioContext.resume();
+    const buffer=annAudioContext.createBuffer(1,1,22050);const source=annAudioContext.createBufferSource();source.buffer=buffer;source.connect(annAudioContext.destination);source.start(0);
+    annAudioArmed=annAudioContext.state==='running';annAudioState=annAudioArmed?'ready':'blocked';
+    if(test&&annAudioArmed){annTone(660,.08,'sine');setTimeout(()=>annTone(880,.1,'sine'),80);}
+    renderBreakGame();return annAudioArmed;
+  }catch(e){
+    annAudioState='blocked';annAudioArmed=false;
+    try{annFallbackAudio=annFallbackAudio||new Audio(ANN_FALLBACK_BEEP);annFallbackAudio.setAttribute('playsinline','');annFallbackAudio.currentTime=0;await annFallbackAudio.play();annAudioArmed=true;annAudioState='fallback';}catch(f){}
+    renderBreakGame();return annAudioArmed;
+  }
+}
+function annTone(freq,duration=0.09,type='sine',delay=0){
+  if(!annRecord.sound||!annAudioArmed)return;
+  if(!annAudioContext||annAudioContext.state!=='running'){if(delay===0)annFallbackBeep();return;}
+  try{
+    const now=annAudioContext.currentTime+delay;
     const osc=annAudioContext.createOscillator();const gain=annAudioContext.createGain();
-    gain.gain.setValueAtTime(.00001,annAudioContext.currentTime);
-    osc.connect(gain);gain.connect(annAudioContext.destination);
-    osc.start();osc.stop(annAudioContext.currentTime+.01);
+    osc.type=type;osc.frequency.setValueAtTime(freq,now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.12,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    osc.connect(gain);gain.connect(annAudioContext.destination);osc.start(now);osc.stop(now+duration+.025);
   }catch(e){}
 }
 function annCelebrate(big=false){
@@ -1090,141 +1178,145 @@ function annCelebrate(big=false){
 function annPowerLoop(timestamp){
   if(!annSession.active||annSession.locked){annSession.lastFrame=timestamp;annSession.raf=requestAnimationFrame(annPowerLoop);return;}
   const dt=annSession.lastFrame?Math.min(40,timestamp-annSession.lastFrame):16;annSession.lastFrame=timestamp;
-  annSession.power+=annSession.powerDirection*dt*.072;
-  if(annSession.power>=100){annSession.power=100;annSession.powerDirection=-1;}
-  if(annSession.power<=0){annSession.power=0;annSession.powerDirection=1;}
+  const pressure=Math.min(annSession.shot,5);
+  annSession.power+=annSession.powerDirection*dt*(.064+pressure*.004);
+  annSession.accuracy+=annSession.accuracyDirection*dt*(.096+pressure*.008);
+  if(annSession.power>=100){annSession.power=100;annSession.powerDirection=-1;}if(annSession.power<=0){annSession.power=0;annSession.powerDirection=1;}
+  if(annSession.accuracy>=100){annSession.accuracy=100;annSession.accuracyDirection=-1;}if(annSession.accuracy<=0){annSession.accuracy=0;annSession.accuracyDirection=1;}
   updateAnnPowerUI();annSession.raf=requestAnimationFrame(annPowerLoop);
 }
+function annAccuracyWindow(){const shrink=Math.min(5,annSession.shot);return {left:44+shrink*1.2,width:18-shrink*1.6};}
 function updateAnnPowerUI(){
-  const fill=document.getElementById('ann-power-fill');const num=document.getElementById('ann-power-number');
-  if(fill) fill.style.width=`${Math.max(0,Math.min(100,annSession.power))}%`;
-  if(num) num.textContent=`${Math.round(annSession.power)}%`;
+  const fill=document.getElementById('ann-power-fill');const pnum=document.getElementById('ann-power-number');const marker=document.getElementById('ann-accuracy-marker');const anum=document.getElementById('ann-accuracy-number');
+  if(fill)fill.style.width=`${annClamp(annSession.power,0,100)}%`;if(pnum)pnum.textContent=`${Math.round(annSession.power)}%`;
+  if(marker)marker.style.left=`${annClamp(annSession.accuracy,0,100)}%`;if(anum)anum.textContent=`${Math.round(annSession.accuracy)}%`;
+  const style=ANN_KICK_STYLES[annSession.kickStyle]||ANN_KICK_STYLES.placement;const sweet=document.getElementById('ann-power-sweet');if(sweet){sweet.style.left=`${style.ideal[0]}%`;sweet.style.width=`${style.ideal[1]-style.ideal[0]}%`;}
+  const aw=annAccuracyWindow();const as=document.getElementById('ann-accuracy-sweet');if(as){as.style.left=`${aw.left}%`;as.style.width=`${aw.width}%`;}
 }
 function annStage(){return ANN_PRESSURE_STAGES[Math.min(annSession.shot,ANN_PRESSURE_STAGES.length-1)];}
 function annSetComment(html){const el=document.getElementById('ann-commentary');if(el)el.innerHTML=html;}
-function annAim(zone){
-  if(!annSession.active||annSession.locked) return;
-  annSession.selectedZone=zone;
-  document.querySelectorAll('.ann-zone').forEach(btn=>btn.classList.toggle('selected',Number(btn.dataset.zone)===zone));
-  const label=document.getElementById('ann-selected-aim');if(label)label.innerHTML=`Aim: <b>${esc(ANN_ZONE_NAMES[zone])}</b>`;
-  const shoot=document.getElementById('ann-shoot-btn');if(shoot)shoot.disabled=false;
-  annTone(330,.045,'sine');
+function annZoneFromAim(x,y){const col=x<33.34?0:x<66.67?1:2;const row=y<33.34?0:y<66.67?1:2;return row*3+col;}
+function annUpdateAimUI(){
+  const reticle=document.getElementById('ann-aim-reticle');if(reticle){reticle.style.left=`${annSession.aimX}%`;reticle.style.top=`${annSession.aimY}%`;reticle.classList.toggle('visible',annSession.selectedZone!==null);}
+  document.querySelectorAll('.ann-zone').forEach(btn=>btn.classList.toggle('selected',Number(btn.dataset.zone)===annSession.selectedZone));
+  const label=document.getElementById('ann-selected-aim');if(label)label.innerHTML=annSession.selectedZone===null?'Aim: <b>tap anywhere inside the goal</b>':`Aim: <b>${esc(ANN_ZONE_NAMES[annSession.selectedZone])}</b> · ${Math.round(annSession.aimX)}/${Math.round(annSession.aimY)}`;
+  const shoot=document.getElementById('ann-shoot-btn');if(shoot)shoot.disabled=!annSession.active||annSession.locked||annSession.selectedZone===null;
 }
-function annMoveActor(id,zone){
-  const el=document.getElementById(id);const pos=ANN_ZONE_POSITIONS[zone];if(!el||!pos)return;
-  el.style.left=`${pos.left}%`;el.style.top=`${pos.top}%`;
+function annAimPoint(x,y){
+  if(!annSession.active||annSession.locked)return;
+  annSession.aimX=annClamp(x,4,96);annSession.aimY=annClamp(y,5,94);annSession.selectedZone=annZoneFromAim(annSession.aimX,annSession.aimY);
+  annUpdateAimUI();annTone(330,.035,'sine');annHaptic(8);
 }
+function annAim(zone){const pos=ANN_ZONE_POSITIONS[zone];if(pos)annAimPoint(pos.left,pos.top);}
+function annAimFromPointer(event){
+  if(!annSession.active||annSession.locked)return;
+  const goal=document.getElementById('ann-goal');if(!goal)return;const rect=goal.getBoundingClientRect();
+  const x=((event.clientX-rect.left)/rect.width)*100;const y=((event.clientY-rect.top)/rect.height)*100;
+  annAimPoint(x,y);event.preventDefault();
+}
+function annSetKickStyle(style){
+  if(!ANN_KICK_STYLES[style]||annSession.locked)return;
+  annSession.kickStyle=style;document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.classList.toggle('active',btn.dataset.kickStyle===style));
+  updateAnnPowerUI();annTone(style==='power'?230:style==='panenka'?760:460,.05,'sine');
+}
+function annMoveKeeper(zone){const el=document.getElementById('ann-keeper');const pos=ANN_ZONE_POSITIONS[zone];if(!el||!pos)return;el.style.left=`${pos.left}%`;el.style.top=`${pos.top}%`;}
+function annGoalPointToStadium(x,y){
+  const goal=document.getElementById('ann-goal'),stadium=document.getElementById('ann-stadium');if(!goal||!stadium)return {left:x,top:y};
+  const gr=goal.getBoundingClientRect(),sr=stadium.getBoundingClientRect();
+  return {left:((gr.left-sr.left)+(x/100)*gr.width)/sr.width*100,top:((gr.top-sr.top)+(y/100)*gr.height)/sr.height*100};
+}
+function annMoveBall(x,y){const ball=document.getElementById('ann-ball');if(!ball)return;const pos=annGoalPointToStadium(x,y);ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
 function annResetActors(){
   const ball=document.getElementById('ann-ball');const keeper=document.getElementById('ann-keeper');
   if(ball){ball.classList.remove('shooting','missed');ball.style.transition='none';ball.style.left='50%';ball.style.top='87%';requestAnimationFrame(()=>requestAnimationFrame(()=>ball.style.transition=''));}
   if(keeper){keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='51%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
 }
 function startAnnMatch(){
-  if(annSession.locked)return;
-  annSession={active:true,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,power:28+annRandom(45),powerDirection:1,lastFrame:0,raf:annSession.raf,outcomes:[],bonus:false};
-  annResetActors();
-  document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});
+  if(annSession.locked)return;annEnsureAudio(false).then(()=>{annTone(440,.07,'square');annTone(660,.09,'sine',.08);});
+  const raf=annSession.raf;annSession=defaultAnnSession(raf);annSession.active=true;annSession.power=28+annRandom(45);annSession.accuracy=20+annRandom(60);annSession.powerDirection=annChance(.5)?1:-1;annSession.accuracyDirection=annChance(.5)?1:-1;
+  annResetActors();document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.disabled=false);
   const start=document.getElementById('ann-start-btn');if(start)start.textContent='Restart match';
-  annSetComment(`<b>${esc(annPlayerName())}</b>, choose a target. The goalkeeper has studied absolutely no footage.`);
-  renderBreakGame();updateAnnPowerUI();
-  if(!annSession.raf)annSession.raf=requestAnimationFrame(annPowerLoop);
-  annTone(440,.07,'square');annTone(660,.09,'sine',.08);
+  annSetComment(`<b>${esc(annPlayerName())}</b>, tap an exact target, choose a kick style, and catch both meters at the right moment.`);
+  renderBreakGame();annUpdateAimUI();updateAnnPowerUI();if(!annSession.raf)annSession.raf=requestAnimationFrame(annPowerLoop);annHaptic([15,35,15]);
 }
-function annShotResolution(zone,power){
-  const pressure=Math.min(annSession.shot,4);
-  let keeperZone=annChance(.20+pressure*.075)?zone:annRandom(9);
-  const corner=[0,2,6,8].includes(zone);const top=[0,1,2].includes(zone);const sweet=power>=55&&power<=84;
-  const panenka=[4,7].includes(zone)&&power>=42&&power<=62&&annChance(.34);
-  let missChance=.025;
-  if(power>94)missChance=.52;else if(power>89)missChance=.18;else if(power<14)missChance=.22;else if(power<23)missChance=.10;
-  if(top&&power>86)missChance+=.09;
-  if(annChance(missChance))return {type:'miss',keeperZone,style:0,panenka:false,varState:'none'};
-  const zr=Math.floor(zone/3),zc=zone%3,kr=Math.floor(keeperZone/3),kc=keeperZone%3;
-  const distance=Math.abs(zr-kr)+Math.abs(zc-kc);
-  let saveChance=distance===0?.69+pressure*.035:distance===1?.16+pressure*.012:.025;
-  if(sweet)saveChance-=.18;if(corner)saveChance-=.08;if(power<28)saveChance+=.19;if(panenka)saveChance=.06;
-  if(annChance(Math.max(.015,Math.min(.88,saveChance))))return {type:'saved',keeperZone,style:0,panenka:false,varState:'none'};
-  let style=100+(sweet?35:0)+(corner?25:0)+(top?15:0)+(panenka?75:0)+annSession.streak*20;
-  let varState='none';
-  if(annChance(.13)){const r=annRandom(100);varState=r<10?'disallowed':r<31?'retake':'confirmed';}
-  return {type:'goal',keeperZone,style,panenka,varState};
+function annShotQuality(power,accuracy,styleName){
+  const style=ANN_KICK_STYLES[styleName];const aw=annAccuracyWindow();const powerGood=power>=style.ideal[0]&&power<=style.ideal[1];const accuracyGood=accuracy>=aw.left&&accuracy<=aw.left+aw.width;
+  const powerDistance=Math.abs(power-style.powerMid);const accuracyDistance=Math.abs(accuracy-(aw.left+aw.width/2));
+  if(powerGood&&accuracyGood&&powerDistance<8&&accuracyDistance<5)return {label:'PERFECT',score:1};
+  if(powerGood&&accuracyGood)return {label:'Clean',score:.84};
+  if(powerDistance<22&&accuracyDistance<20)return {label:'Good',score:.64};
+  if(powerDistance<34&&accuracyDistance<31)return {label:'Risky',score:.42};
+  return {label:'Wild',score:.2};
+}
+function annShotResolution(target,power,accuracy,styleName){
+  const pressure=Math.min(annSession.shot,5);const style=ANN_KICK_STYLES[styleName];const zone=annZoneFromAim(target.x,target.y);const side=target.x<36?0:target.x>64?2:1;
+  const repeats=annSession.sideHistory.slice(-2).filter(s=>s===side).length;const readChance=.17+pressure*.065+repeats*.15;
+  let keeperZone;if(annChance(readChance)){const row=target.y<34?0:target.y<67?1:2;keeperZone=row*3+side;}else keeperZone=annRandom(9);
+  const quality=annShotQuality(power,accuracy,styleName);const edge=Math.max(Math.abs(target.x-50)/50,Math.abs(target.y-50)/50);const aw=annAccuracyWindow();
+  let missChance=style.miss+(1-quality.score)*.25;
+  if(power>96)missChance+=.34;else if(power>91)missChance+=.12;if(power<12)missChance+=.24;else if(power<22)missChance+=.10;
+  if(target.y<14&&power>84)missChance+=.11;if(edge>.91)missChance+=.05;
+  if(styleName==='panenka'&&(side!==1||target.y<28))missChance+=.16;
+  if(annChance(missChance)){const woodwork=edge>.72&&annChance(.48);return {type:woodwork?'woodwork':'miss',keeperZone,style:0,panenka:false,varState:'none',quality,zone,target};}
+  const zr=Math.floor(zone/3),zc=zone%3,kr=Math.floor(keeperZone/3),kc=keeperZone%3,distance=Math.abs(zr-kr)+Math.abs(zc-kc);
+  let saveChance=distance===0?.58+pressure*.038:distance===1?.17+pressure*.014:.025;
+  saveChance+=style.save;saveChance-=(quality.score-.5)*.24;saveChance-=edge*.07;if(power<28)saveChance+=.16;
+  let panenka=false;
+  if(styleName==='panenka'){panenka=true;const keeperStayed=[1,4,7].includes(keeperZone);saveChance=keeperStayed?.78+pressure*.025:.035;}
+  if(annChance(annClamp(saveChance,.012,.9)))return {type:'saved',keeperZone,style:0,panenka,varState:'none',quality,zone,target};
+  const cornerBonus=Math.round(edge*48);const topBonus=Math.round((1-target.y/100)*24);const perfectBonus=quality.label==='PERFECT'?85:quality.label==='Clean'?40:0;
+  let stylePoints=100+style.points+cornerBonus+topBonus+perfectBonus+annSession.streak*22;
+  let varState='none';if(annChance(.1)){const r=annRandom(100);varState=r<8?'disallowed':r<24?'retake':'confirmed';}
+  return {type:'goal',keeperZone,style:stylePoints,panenka,varState,quality,zone,target};
 }
 function shootAnnPenalty(){
   if(!annSession.active||annSession.locked||annSession.selectedZone===null)return;
-  annSession.locked=true;
-  const zone=annSession.selectedZone;const power=Math.round(annSession.power);const shotNo=annSession.shot+1;
-  const outcome=annShotResolution(zone,power);
-  document.querySelectorAll('.ann-zone').forEach(btn=>btn.disabled=true);
+  annEnsureAudio(false);annSession.locked=true;
+  const target={x:annSession.aimX,y:annSession.aimY};const power=Math.round(annSession.power);const accuracy=Math.round(annSession.accuracy);const styleName=annSession.kickStyle;const shotNo=annSession.shot+1;
+  const outcome=annShotResolution(target,power,accuracy,styleName);
+  document.querySelectorAll('.ann-zone').forEach(btn=>btn.disabled=true);document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.disabled=true);
   const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='In flight…';}
-  annSetComment(`<b>Shot ${shotNo}:</b> ${esc(ANN_ZONE_NAMES[zone])} at ${power}% power. The stadium has stopped breathing.`);
-  annMoveActor('ann-keeper',outcome.keeperZone);
-  const ball=document.getElementById('ann-ball');if(ball){ball.classList.add('shooting');annMoveActor('ann-ball',zone);}
-  annTone(180,.045,'square');annTone(285,.06,'sine',.04);
-  setTimeout(()=>resolveAnnPenalty(outcome,zone,power),720);
+  annSetComment(`<b>Shot ${shotNo}:</b> ${ANN_KICK_STYLES[styleName].icon} ${esc(ANN_KICK_STYLES[styleName].label)} · ${power}% power · ${accuracy}% accuracy <span class="ann-shot-quality">${esc(outcome.quality.label)}</span>`);
+  annMoveKeeper(outcome.keeperZone);const ball=document.getElementById('ann-ball');if(ball)ball.classList.add('shooting');annMoveBall(target.x,target.y);
+  annTone(180,.045,'square');annTone(styleName==='power'?330:285,.06,'sine',.04);annHaptic(18);setTimeout(()=>resolveAnnPenalty(outcome,target,power,accuracy,styleName),720);
 }
-function resolveAnnPenalty(outcome,zone,power){
-  const goal=document.getElementById('ann-goal');const ball=document.getElementById('ann-ball');
-  let counted=true;let resultType=outcome.type;let line='';let shieldUsed=false;let boostUsed=false;
+function resolveAnnPenalty(outcome,target,power,accuracy,styleName){
+  const goal=document.getElementById('ann-goal');const ball=document.getElementById('ann-ball');let counted=true;let resultType=outcome.type;let line='';let shieldUsed=false;let boostUsed=false;
   if(outcome.type==='goal'&&outcome.varState==='disallowed'&&annRecord.varShields>0){annRecord.varShields--;outcome.varState='shielded';shieldUsed=true;}
   if(outcome.type==='goal'){
-    if(outcome.varState==='disallowed'){
-      resultType='miss';line='📺 VAR has disallowed it for excessive excellence. This institution will answer for its crimes.';annTone(150,.22,'sawtooth');
-    }else if(outcome.varState==='retake'){
-      counted=false;resultType='retake';line='📺 VAR orders a retake. Apparently the goalkeeper moved, breathed, or displayed an opinion.';annTone(520,.06,'square');annTone(520,.06,'square',.12);
-    }else{
-      annSession.goals++;annSession.streak++;
-      let award=outcome.style;
-      if(annRecord.nextGoalMultiplier===2){award*=2;annRecord.nextGoalMultiplier=1;boostUsed=true;}
-      annSession.points+=award;
-      line=`${outcome.panenka?'🪄 PANENKA. ':''}${annPick(ANN_GOAL_LINES)}${outcome.varState==='confirmed'?' VAR reluctantly confirms it.':''}${shieldUsed?' 🛡️ The VAR shield blocks the cancellation.':''}${boostUsed?' ✨ The 2× boost doubles this goal’s style points.':''}`;
-      if(goal){goal.classList.remove('goal-flash');void goal.offsetWidth;goal.classList.add('goal-flash');}
-      annTone(660,.09,'sine');annTone(880,.13,'sine',.08);annCelebrate(false);
+    if(outcome.varState==='disallowed'){resultType='miss';line='📺 VAR has disallowed it for excessive excellence. This institution will answer for its crimes.';annTone(150,.22,'sawtooth');annHaptic([45,30,45]);}
+    else if(outcome.varState==='retake'){counted=false;resultType='retake';line='📺 VAR orders a retake. Apparently the goalkeeper moved, breathed, or displayed an opinion.';annTone(520,.06,'square');annTone(520,.06,'square',.12);annHaptic([15,35,15]);}
+    else{
+      annSession.goals++;annSession.streak++;let award=outcome.style;if(annRecord.nextGoalMultiplier===2){award*=2;annRecord.nextGoalMultiplier=1;boostUsed=true;}annSession.points+=award;
+      line=`${outcome.panenka?'🪄 PANENKA. ':''}${annPick(ANN_GOAL_LINES)} ${outcome.quality.label} contact adds <b>${award} pts</b>.${outcome.varState==='confirmed'?' VAR reluctantly confirms it.':''}${shieldUsed?' 🛡️ The VAR shield blocks the cancellation.':''}${boostUsed?' ✨ The 2× boost doubles this goal’s style points.':''}`;
+      if(goal){goal.classList.remove('goal-flash');void goal.offsetWidth;goal.classList.add('goal-flash');}annTone(660,.09,'sine');annTone(880,.13,'sine',.08);annCelebrate(false);annHaptic([18,24,35]);
     }
-  }else if(outcome.type==='saved'){
-    annSession.streak=0;line=annPick(ANN_SAVE_LINES);if(ball)ball.classList.add('missed');annTone(170,.18,'square');
-  }else{
-    annSession.streak=0;line=annPick(ANN_MISS_LINES);if(ball){ball.classList.add('missed');ball.style.top=zone<3?'4%':ball.style.top;}annTone(120,.22,'sawtooth');
-  }
-  if(counted){annSession.outcomes.push(resultType);annSession.shot++;annRecord.totalShots++;if(resultType==='goal')annRecord.totalGoals++;annRecord.bestStreak=Math.max(annRecord.bestStreak,annSession.streak);saveAnnRecord();}
-  else annSession.outcomes.push('retake');
-  annSetComment(`<b>${resultType==='goal'?'GOAL!':resultType==='saved'?'SAVED':resultType==='retake'?'RETAKE':'MISS'}:</b> ${esc(line)}`);
-  renderBreakGame();
+  }else if(outcome.type==='saved'){annSession.streak=0;line=`${annPick(ANN_SAVE_LINES)} <span class="ann-shot-quality">${esc(outcome.quality.label)}</span>`;if(ball)ball.classList.add('missed');annTone(170,.18,'square');annHaptic(45);}
+  else if(outcome.type==='woodwork'){annSession.streak=0;line=`${annPick(ANN_WOODWORK_LINES)} <span class="ann-shot-quality">${esc(outcome.quality.label)}</span>`;if(ball)ball.classList.add('missed');annTone(310,.06,'triangle');annTone(180,.22,'sawtooth',.07);annHaptic([20,25,20]);}
+  else{annSession.streak=0;line=`${annPick(ANN_MISS_LINES)} <span class="ann-shot-quality">${esc(outcome.quality.label)}</span>`;if(ball){ball.classList.add('missed');if(target.y<25)ball.style.top='4%';}annTone(120,.22,'sawtooth');annHaptic(55);}
+  if(counted){annSession.outcomes.push(resultType);annSession.shot++;annSession.sideHistory.push(target.x<36?0:target.x>64?2:1);annRecord.totalShots++;if(resultType==='goal')annRecord.totalGoals++;annRecord.bestStreak=Math.max(annRecord.bestStreak,annSession.streak);saveAnnRecord();}
+  annSetComment(`<b>${resultType==='goal'?'GOAL!':resultType==='saved'?'SAVED':resultType==='woodwork'?'WOODWORK':resultType==='retake'?'RETAKE':'MISS'}:</b> ${line}`);renderBreakGame();
   const perfectFive=annSession.shot===5&&annSession.goals===5&&!annSession.bonus;
-  if(perfectFive){
-    annSession.bonus=true;annSession.maxShots=6;
-    setTimeout(()=>{annSetComment('<b>5/5!</b> The secret Golden Ball penalty is unlocked. This shot is for unnecessary greatness.');prepareNextAnnShot();annTone(880,.1,'sine');annTone(1100,.15,'sine',.1);},1200);
-  }else if(counted&&annSession.shot>=annSession.maxShots){
-    setTimeout(finishAnnMatch,1250);
-  }else{
-    setTimeout(prepareNextAnnShot,counted?1050:1250);
-  }
+  if(perfectFive){annSession.bonus=true;annSession.maxShots=6;setTimeout(()=>{annSetComment('<b>5/5!</b> The secret Golden Ball penalty is unlocked. Accuracy now moves faster.');prepareNextAnnShot();annTone(880,.1,'sine');annTone(1100,.15,'sine',.1);},1200);}
+  else if(counted&&annSession.shot>=annSession.maxShots)setTimeout(finishAnnMatch,1250);else setTimeout(prepareNextAnnShot,counted?1050:1250);
 }
 function prepareNextAnnShot(){
-  if(!annSession.active)return;
-  annSession.locked=false;annSession.selectedZone=null;annSession.power=22+annRandom(56);annSession.powerDirection=annChance(.5)?1:-1;
-  annResetActors();
-  document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});
-  const aim=document.getElementById('ann-selected-aim');if(aim)aim.innerHTML='Aim: <b>choose a target</b>';
-  const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='⚽ SHOOT';}
-  renderBreakGame();updateAnnPowerUI();
+  if(!annSession.active)return;annSession.locked=false;annSession.selectedZone=null;annSession.aimX=50;annSession.aimY=50;annSession.power=18+annRandom(66);annSession.accuracy=12+annRandom(76);annSession.powerDirection=annChance(.5)?1:-1;annSession.accuracyDirection=annChance(.5)?1:-1;
+  annResetActors();document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.disabled=false);
+  const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='⚽ SHOOT';}renderBreakGame();annUpdateAimUI();updateAnnPowerUI();
 }
 function finishAnnMatch(){
-  annSession.active=false;annSession.locked=false;
-  const trophy=annSession.goals>=4;
-  let earnedSpins=1;if(annSession.goals>=4)earnedSpins++;if(annSession.goals>=5)earnedSpins++;
-  annRecord.freeSpins+=earnedSpins;annRecord.matches++;if(trophy)annRecord.trophies++;
-  annRecord.bestGoals=Math.max(annRecord.bestGoals,annSession.goals);annRecord.bestPoints=Math.max(annRecord.bestPoints,annSession.points);
+  annSession.active=false;annSession.locked=false;const trophy=annSession.goals>=4;let earnedSpins=1;if(annSession.goals>=4)earnedSpins++;if(annSession.goals>=5)earnedSpins++;
+  annRecord.freeSpins+=earnedSpins;annRecord.matches++;if(trophy)annRecord.trophies++;annRecord.bestGoals=Math.max(annRecord.bestGoals,annSession.goals);annRecord.bestPoints=Math.max(annRecord.bestPoints,annSession.points);
   const title=annSession.goals>=6?'👑 ABSOLUTE CHAOS':annSession.goals===5?'🏆 Stadium conquered':annSession.goals===4?'🏆 Trophy secured':annSession.goals===3?'⚽ Respectable chaos':'📺 VAR-controlled outcome';
   annRecord.history=[{goals:annSession.goals,shots:annSession.maxShots,points:annSession.points,title,spins:earnedSpins,at:Date.now()},...annRecord.history].slice(0,6);saveAnnRecord();
   annSetComment(`<b>${esc(title)}</b><br>Final score: ${annSession.goals}/${annSession.maxShots}, ${annSession.points} style points. You earned <b>${earnedSpins} free spin${earnedSpins===1?'':'s'}</b>.${trophy?' The trophy room has been updated.':' The comeback narrative begins immediately.'}`);
-  const start=document.getElementById('ann-start-btn');if(start)start.textContent='Play again';
-  const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='Match finished';}
-  document.querySelectorAll('.ann-zone').forEach(btn=>btn.disabled=true);
-  if(trophy){annCelebrate(true);annTone(660,.12,'sine');annTone(880,.12,'sine',.13);annTone(1100,.2,'sine',.27);}
-  checkGrandPrize();
-  renderBreakGame();
+  const start=document.getElementById('ann-start-btn');if(start)start.textContent='Play again';const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='Match finished';}
+  document.querySelectorAll('.ann-zone').forEach(btn=>btn.disabled=true);document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.disabled=true);
+  if(trophy){annCelebrate(true);annTone(660,.12,'sine');annTone(880,.12,'sine',.13);annTone(1100,.2,'sine',.27);}checkGrandPrize();renderBreakGame();
 }
-function applyAnnSpinReward(index){
+function applyAnnSpinReward(index,nonce='',recovered=false){
+  const pending=annRecord.pendingSpin;if(nonce&&(!pending||pending.nonce!==nonce))return;annRecord.pendingSpin=null;
   const reward=ANN_SPIN_OUTCOMES[index];let message='';let historyLabel=reward.short;
   if(reward.type==='points'){annRecord.bonusPoints+=reward.value;message=`You won <b>${reward.value} bonus points</b>. The local bank is feeling healthier.`;}
   else if(reward.type==='multiplier'){annRecord.nextGoalMultiplier=2;message='<b>2× GOAL BOOST!</b> The next successful penalty earns double style points.';}
@@ -1233,124 +1325,86 @@ function applyAnnSpinReward(index){
   else if(reward.type==='bust'){
     const before=annRecord.bonusPoints;const lost=Math.round(before*reward.value);annRecord.bonusPoints=Math.max(0,before-lost);
     if(annRecord.varShields>0){annRecord.varShields--;annRecord.bonusPoints=before;message='<b>💥 BUST!</b> A VAR shield absorbs the disaster — your bank is safe this time.';historyLabel='Bust blocked';}
-    else{message=lost>0?`<b>💥 BUST!</b> The wheel eats <b>${lost} points</b>. Should have banked it.`:'<b>💥 BUST!</b> Nothing to lose — an empty bank is its own shield.';}
-  }
-  else{
-    const mystery=annRandom(3);
-    if(mystery===0){annRecord.bonusPoints+=300;message='<b>MYSTERY: +300 bonus points!</b>';historyLabel='Mystery +300';}
+    else message=lost>0?`<b>💥 BUST!</b> The wheel eats <b>${lost} points</b>. Should have banked it.`:'<b>💥 BUST!</b> Nothing to lose — an empty bank is its own shield.';
+  }else{
+    const mystery=annRandom(3);if(mystery===0){annRecord.bonusPoints+=300;message='<b>MYSTERY: +300 bonus points!</b>';historyLabel='Mystery +300';}
     else if(mystery===1){annRecord.freeSpins+=1;message='<b>MYSTERY: +1 free spin!</b>';historyLabel='Mystery spin';}
     else{annRecord.varShields+=1;message='<b>MYSTERY: +1 VAR shield!</b>';historyLabel='Mystery shield';}
   }
-  annRecord.lastSpin=message.replace(/<[^>]*>/g,'');
-  annRecord.spinHistory=[historyLabel,...annRecord.spinHistory].slice(0,6);saveAnnRecord();
-  annSpinState.spinning=false;
-  const result=document.getElementById('ann-spin-result');if(result)result.innerHTML=message;
-  if(reward.type==='bust'){annTone(160,.28,'sawtooth');annTone(120,.3,'sawtooth',.06);}
-  else if(reward.value>=500||reward.type==='multiplier'||reward.type==='shield'){annCelebrate(true);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);annTone(1100,.18,'sine',.2);}
-  else{annTone(620,.08,'sine');annTone(820,.11,'sine',.09);}
-  checkGrandPrize();
-  renderBreakGame();
+  if(recovered)message=`<b>Recovered interrupted spin.</b><br>${message}`;
+  annRecord.lastSpin=message.replace(/<[^>]*>/g,'');annRecord.spinHistory=[historyLabel,...annRecord.spinHistory].slice(0,6);saveAnnRecord();annSpinState.spinning=false;annSpinState.raf=0;
+  const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.classList.remove('is-spinning');const result=document.getElementById('ann-spin-result');if(result)result.innerHTML=message;
+  if(reward.type==='bust'){annTone(160,.28,'sawtooth');annTone(120,.3,'sawtooth',.06);annHaptic([50,40,70]);}
+  else if(reward.value>=500||reward.type==='multiplier'||reward.type==='shield'){annCelebrate(true);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);annTone(1100,.18,'sine',.2);annHaptic([20,30,20,30,50]);}
+  else{annTone(620,.08,'sine');annTone(820,.11,'sine',.09);annHaptic([12,20,20]);}checkGrandPrize();renderBreakGame();
 }
 function annBank(){return annRecord.bonusPoints+annRecord.bestPoints;}
 function checkGrandPrize(){
-  if(annRecord.grandPrizeWon)return;
-  if(annBank()>=ANN_GRAND_PRIZE){
-    annRecord.grandPrizeWon=true;saveAnnRecord();
-    annCelebrate(true);setTimeout(()=>annCelebrate(true),400);setTimeout(()=>annCelebrate(true),800);
-    annTone(660,.14,'sine');annTone(880,.16,'sine',.14);annTone(1100,.22,'sine',.3);annTone(1320,.3,'sine',.5);
-    const result=document.getElementById('ann-spin-result');
-    if(result)result.innerHTML=`<b>🏆 GRAND PRIZE!</b> ${esc(annPlayerName())} crossed ${ANN_GRAND_PRIZE.toLocaleString()} points and wins Ann's Game. Submit your score to the Champions board!`;
-  }
+  if(annRecord.grandPrizeWon)return;if(annBank()>=ANN_GRAND_PRIZE){annRecord.grandPrizeWon=true;saveAnnRecord();annCelebrate(true);setTimeout(()=>annCelebrate(true),400);setTimeout(()=>annCelebrate(true),800);annTone(660,.14,'sine');annTone(880,.16,'sine',.14);annTone(1100,.22,'sine',.3);annTone(1320,.3,'sine',.5);const result=document.getElementById('ann-spin-result');if(result)result.innerHTML=`<b>🏆 GRAND PRIZE!</b> ${esc(annPlayerName())} crossed ${ANN_GRAND_PRIZE.toLocaleString()} points and wins Ann's Game. Submit your score to the Champions board!`;}
 }
 let annChampions={};
 function annChampKey(name){return String(name).replace(/[.#$/\[\]]/g,'_').slice(0,40)||'guest';}
-function initAnnChampions(){
-  try{
-    if(!db)return;
-    db.ref('annsGameChampions').on('value',snap=>{annChampions=snap.val()||{};renderAnnChampions();});
-  }catch(e){console.error(e);}
-}
+function initAnnChampions(){try{if(!db)return;db.ref('annsGameChampions').on('value',snap=>{annChampions=snap.val()||{};renderAnnChampions();});}catch(e){console.error(e);}}
 function postAnnScore(){
-  const score=annBank();
-  if(score<=0){const r=document.getElementById('ann-spin-result');if(r)r.innerHTML='<b>Nothing to post yet.</b><br>Score some goals or spin the wheel first.';return;}
-  if(!db){toast('Champions board is offline right now');return;}
-  const doPost=()=>{
-    const name=annPlayerName();const key=annChampKey(name);
-    const existing=annChampions[key];
-    if(existing&&Number(existing.score)>=score){toast(`Your posted best is already ${Number(existing.score).toLocaleString()}`);return;}
-    db.ref('annsGameChampions/'+key).set({name:name,score:score,won:annRecord.grandPrizeWon,at:Date.now()})
-      .then(()=>{annRecord.submittedBest=score;saveAnnRecord();toast(`Posted ${score.toLocaleString()} to the Champions board`);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);})
-      .catch(err=>{console.error(err);toast('Could not post score — check Firebase rules');});
-  };
-  try{
-    if(firebase.auth&&firebase.auth().currentUser){doPost();}
-    else{
-      toast('Connecting…');
-      firebase.auth().signInAnonymously()
-        .then(()=>doPost())
-        .catch(err=>{console.error(err);toast('Could not sign in to post score');});
-    }
-  }catch(e){doPost();}
+  const score=annBank();if(score<=0){const r=document.getElementById('ann-spin-result');if(r)r.innerHTML='<b>Nothing to post yet.</b><br>Score some goals or spin the wheel first.';return;}if(!db){toast('Champions board is offline right now');return;}
+  const doPost=()=>{const name=annPlayerName();const key=annChampKey(name);const existing=annChampions[key];if(existing&&Number(existing.score)>=score){toast(`Your posted best is already ${Number(existing.score).toLocaleString()}`);return;}db.ref('annsGameChampions/'+key).set({name,score,won:annRecord.grandPrizeWon,at:Date.now()}).then(()=>{annRecord.submittedBest=score;saveAnnRecord();toast(`Posted ${score.toLocaleString()} to the Champions board`);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);}).catch(err=>{console.error(err);toast('Could not post score — check Firebase rules');});};
+  try{if(firebase.auth&&firebase.auth().currentUser)doPost();else{toast('Connecting…');firebase.auth().signInAnonymously().then(doPost).catch(err=>{console.error(err);toast('Could not sign in to post score');});}}catch(e){doPost();}
 }
 function renderAnnChampions(){
-  const el=document.getElementById('ann-champ-list');if(!el)return;
-  const rows=Object.keys(annChampions).map(k=>annChampions[k]).filter(x=>x&&Number(x.score)>0).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,10);
-  const me=annChampKey(annPlayerName());
+  const el=document.getElementById('ann-champ-list');if(!el)return;const rows=Object.keys(annChampions).map(k=>annChampions[k]).filter(x=>x&&Number(x.score)>0).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,10);const me=annChampKey(annPlayerName());
   if(!rows.length){el.innerHTML='<div class="ann-history-empty">No champions posted yet. Be the first to claim the top spot.</div>';return;}
-  el.innerHTML=rows.map((r,i)=>{
-    const isYou=annChampKey(r.name)===me;const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
-    return `<div class="ann-champ-row${i===0?' first':''}${isYou?' you':''}"><span class="ann-champ-rank">${medal}</span><span class="ann-champ-name">${esc(r.name)}${r.won?'<span class="ann-champ-crown">GRAND PRIZE</span>':''}${isYou?'<span class="ann-champ-sub">that\'s you</span>':''}</span><span class="ann-champ-score">${Number(r.score).toLocaleString()}</span></div>`;
-  }).join('');
+  el.innerHTML=rows.map((r,i)=>{const isYou=annChampKey(r.name)===me;const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);return `<div class="ann-champ-row${i===0?' first':''}${isYou?' you':''}"><span class="ann-champ-rank">${medal}</span><span class="ann-champ-name">${esc(r.name)}${r.won?'<span class="ann-champ-crown">GRAND PRIZE</span>':''}${isYou?'<span class="ann-champ-sub">that\'s you</span>':''}</span><span class="ann-champ-score">${Number(r.score).toLocaleString()}</span></div>`;}).join('');
+}
+function annWheelSector(rotation){return Math.floor((((360-(rotation%360))+22.5)%360)/45)%8;}
+function annAnimateWheel(index,nonce){
+  const wheel=document.getElementById('ann-spin-wheel');if(!wheel){applyAnnSpinReward(index,nonce);return;}const pointer=document.querySelector('.ann-wheel-pointer');wheel.classList.add('is-spinning');
+  const startRotation=((annSpinState.rotation%360)+360)%360;const target=(360-index*45)%360;const delta=(target-startRotation+360)%360;const turns=7+annRandom(4);const finalRotation=startRotation+turns*360+delta;
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;const duration=reduced?760:3600;const started=performance.now();annSpinState.lastSector=annWheelSector(startRotation);
+  const token=++annSpinState.token;
+  const step=now=>{
+    if(!annSpinState.spinning||token!==annSpinState.token)return;const progress=annClamp((now-started)/duration,0,1);const eased=1-Math.pow(1-progress,4);const rotation=startRotation+(finalRotation-startRotation)*eased;wheel.style.transform=`rotate(${rotation}deg)`;
+    const sector=annWheelSector(rotation);if(sector!==annSpinState.lastSector){annSpinState.lastSector=sector;if(pointer){pointer.classList.remove('tick');void pointer.offsetWidth;pointer.classList.add('tick');}annTone(230+sector*12,.025,'square');if(sector%2===0)annHaptic(5);}
+    if(progress<1)annSpinState.raf=requestAnimationFrame(step);else{annSpinState.rotation=((finalRotation%360)+360)%360;wheel.style.transform=`rotate(${annSpinState.rotation}deg)`;applyAnnSpinReward(index,nonce);}
+  };annSpinState.raf=requestAnimationFrame(step);
 }
 function spinAnnWheel(){
-  if(annSpinState.spinning)return;
-  if(annRecord.freeSpins<=0){const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>No free spins left.</b><br>Complete a penalty match to earn another.';annTone(150,.14,'square');return;}
-  annRecord.freeSpins--;annRecord.totalSpins++;saveAnnRecord();annSpinState.spinning=true;
-  const index=annRandom(ANN_SPIN_OUTCOMES.length);const current=((annSpinState.rotation%360)+360)%360;const target=(360-index*45)%360;const delta=(target-current+360)%360;
-  const extraTurns=8+annRandom(3);annSpinState.rotation+=extraTurns*360+delta;
-  const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform=`rotate(${annSpinState.rotation}deg)`;
-  const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>Spinning…</b><br>The football gods are reviewing the request.';
-  annTone(260,.05,'square');for(let i=1;i<7;i++)annTone(260+i*28,.04,'square',i*.11);
-  renderBreakGame();
-  setTimeout(()=>applyAnnSpinReward(index),3050);
+  if(annSpinState.spinning)return;annEnsureAudio(false);
+  if(annRecord.freeSpins<=0){const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>No free spins left.</b><br>Complete a penalty match to earn another.';annTone(150,.14,'square');annHaptic(30);return;}
+  const index=annRandom(ANN_SPIN_OUTCOMES.length);const nonce=`${Date.now()}_${annRandom(1000000)}`;annRecord.freeSpins--;annRecord.totalSpins++;annRecord.pendingSpin={index,nonce,startedAt:Date.now()};saveAnnRecord();annSpinState.spinning=true;
+  const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>Spinning…</b><br>The pointer result — not a timeout — decides the prize.';renderBreakGame();annAnimateWheel(index,nonce);
 }
-function toggleAnnSound(){annRecord.sound=!annRecord.sound;saveAnnRecord();renderBreakGame();if(annRecord.sound)annTone(660,.08,'sine');}
+function recoverAnnPendingSpin(){
+  if(annPendingRecovered||annSpinState.spinning||!annRecord.pendingSpin)return;annPendingRecovered=true;const pending=annRecord.pendingSpin;annSpinState.spinning=true;const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>Recovering an interrupted spin…</b>';setTimeout(()=>applyAnnSpinReward(pending.index,pending.nonce,true),250);
+}
+async function toggleAnnSound(){
+  if(annRecord.sound&&annAudioArmed){annRecord.sound=false;annAudioState='muted';saveAnnRecord();renderBreakGame();return;}
+  annRecord.sound=true;saveAnnRecord();const ok=await annEnsureAudio(true);if(!ok){annAudioState='blocked';renderBreakGame();}
+}
 function resetAnnRecords(){
-  if(annSpinState.spinning)return;
-  if(annSession.active&&!window.confirm('A penalty match is active. Reset the match, free spins and all local records?'))return;
-  if(!annSession.active&&!window.confirm('Reset all local penalty and free-spin records on this browser?'))return;
-  annRecord=defaultAnnRecord();saveAnnRecord();annSession={active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,power:50,powerDirection:1,lastFrame:0,raf:annSession.raf,outcomes:[],bonus:false};annSpinState={spinning:false,rotation:0};annResetActors();const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);renderBreakGame();
+  if(annSpinState.spinning)return;if(annSession.active&&!window.confirm('A penalty match is active. Reset the match, free spins and all local records?'))return;if(!annSession.active&&!window.confirm('Reset all local penalty and free-spin records on this browser?'))return;
+  annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);renderBreakGame();
 }
 function renderBreakGame(){
-  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
-  const player=annPlayerName();
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};const player=annPlayerName();
   set('ann-shot-number',`${annSession.shot}/${annSession.maxShots}`);set('ann-match-goals',annSession.goals);set('ann-match-points',annSession.points);set('ann-stage-name',annSession.active?annStage():'Warm-up');
   set('ann-best-points',annRecord.bestPoints);set('ann-best-goals',annRecord.bestGoals);set('ann-trophies',annRecord.trophies);set('ann-match-count',`${annRecord.matches} played`);
   set('ann-spin-count',`${annRecord.freeSpins} spin${annRecord.freeSpins===1?'':'s'}`);set('ann-bonus-points',annRecord.bonusPoints);set('ann-var-shields',annRecord.varShields);set('ann-next-multiplier',`${annRecord.nextGoalMultiplier}×`);set('ann-total-spins',annRecord.totalSpins);
   const playerLabel=document.getElementById('ann-player-label');if(playerLabel)playerLabel.textContent=`🎮 Playing as ${player}`;
-  const sound=document.getElementById('ann-sound-btn');if(sound){sound.textContent=annRecord.sound?'🔊 Sound':'🔇 Muted';sound.setAttribute('aria-pressed',String(annRecord.sound));}
+  const sound=document.getElementById('ann-sound-btn');if(sound){
+    if(!annRecord.sound) sound.textContent='🔇 Muted';else if(annAudioArmed)sound.textContent='🔊 Sound on';else sound.textContent='🔈 Enable sound';sound.setAttribute('aria-pressed',String(annRecord.sound&&annAudioArmed));
+  }
+  const audioStatus=document.getElementById('ann-audio-status');if(audioStatus){audioStatus.classList.remove('ready','error');if(!annRecord.sound)audioStatus.textContent='Sound is muted. Tap the sound button to enable it.';else if(annAudioArmed){audioStatus.textContent=annAudioState==='fallback'?'Sound ready using compatibility mode.':'Sound ready on this device.';audioStatus.classList.add('ready');}else if(annAudioState==='blocked'){audioStatus.textContent='Sound was blocked. Tap “Enable sound” again and check the device media volume.';audioStatus.classList.add('error');}else audioStatus.textContent='Mobile tip: tap “Enable sound” once. Hardware silent mode can still mute browser audio.';}
+  document.querySelectorAll('[data-kick-style]').forEach(btn=>{btn.classList.toggle('active',btn.dataset.kickStyle===annSession.kickStyle);btn.disabled=annSession.locked||(!annSession.active&&annSession.shot>0);});
   const spin=document.getElementById('ann-spin-btn');if(spin){spin.disabled=annSpinState.spinning||annRecord.freeSpins<=0;spin.textContent=annSpinState.spinning?'🎡 SPINNING…':annRecord.freeSpins>0?'🎟️ USE FREE SPIN':'🔒 EARN A SPIN';}
   const crowd=document.getElementById('ann-crowd-fill');if(crowd)crowd.style.width=`${Math.min(100,(annSession.goals/Math.max(1,annSession.maxShots))*100)}%`;
   const crowdText=document.getElementById('ann-crowd-text');if(crowdText)crowdText.textContent=annSession.goals>=4?`${player.toUpperCase()} OWNS THIS STADIUM`:annSession.streak>=2?`${player.toUpperCase()}! ${player.toUpperCase()}!`:annSession.active?'NO PRESSURE. ABSOLUTELY NONE.':'THE STADIUM IS READY';
-  const progress=document.getElementById('ann-shot-progress');
-  if(progress){
-    const slots=annSession.maxShots;let html='';
-    for(let i=0;i<slots;i++){
-      const outcome=annSession.outcomes[i];const cls=outcome?outcome:(annSession.active&&i===annSession.shot?'current':'');const symbol=outcome==='goal'?'⚽':outcome==='saved'?'🧤':outcome==='miss'?'✕':outcome==='retake'?'VAR':i+1;
-      html+=`<span class="ann-shot-dot ${esc(cls)}">${esc(symbol)}</span>`;
-    }
-    progress.innerHTML=html;
-  }
-  const history=document.getElementById('ann-history');
-  if(history)history.innerHTML=annRecord.history.length?annRecord.history.map(x=>`<div class="ann-history-row"><span>${Number(x.goals)>=4?'🏆':'⚽'}</span><div><b>${esc(x.title||'Penalty match')}</b><div class="small">${Number(x.goals)||0}/${Number(x.shots)||5} goals · +${Number(x.spins)||1} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-history-empty">No completed matches yet. The locker room is dramatically empty.</div>';
-  const spinHistory=document.getElementById('ann-spin-history');
-  if(spinHistory)spinHistory.innerHTML=annRecord.spinHistory.length?annRecord.spinHistory.map(x=>`<span class="ann-spin-chip">🎡 ${esc(x)}</span>`).join(''):'<span class="ann-spin-chip">Welcome spins ready</span>';
-  const bank=annBank();const pct=Math.min(100,(bank/ANN_GRAND_PRIZE)*100);
-  const prizeText=document.getElementById('ann-prize-text');if(prizeText)prizeText.textContent=annRecord.grandPrizeWon?'🏆 GRAND PRIZE WON':`${bank.toLocaleString()} / ${ANN_GRAND_PRIZE.toLocaleString()}`;
-  const prizeFill=document.getElementById('ann-prize-fill');if(prizeFill){prizeFill.style.width=`${pct}%`;prizeFill.classList.toggle('won',annRecord.grandPrizeWon);}
-  renderAnnChampions();
-  updateAnnPowerUI();
+  const progress=document.getElementById('ann-shot-progress');if(progress){let html='';for(let i=0;i<annSession.maxShots;i++){const outcome=annSession.outcomes[i];const cls=outcome?outcome:(annSession.active&&i===annSession.shot?'current':'');const symbol=outcome==='goal'?'⚽':outcome==='saved'?'🧤':outcome==='woodwork'?'🥅':outcome==='miss'?'✕':outcome==='retake'?'VAR':i+1;html+=`<span class="ann-shot-dot ${esc(cls)}">${esc(symbol)}</span>`;}progress.innerHTML=html;}
+  const history=document.getElementById('ann-history');if(history)history.innerHTML=annRecord.history.length?annRecord.history.map(x=>`<div class="ann-history-row"><span>${Number(x.goals)>=4?'🏆':'⚽'}</span><div><b>${esc(x.title||'Penalty match')}</b><div class="small">${Number(x.goals)||0}/${Number(x.shots)||5} goals · +${Number(x.spins)||1} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-history-empty">No completed matches yet. The locker room is dramatically empty.</div>';
+  const spinHistory=document.getElementById('ann-spin-history');if(spinHistory)spinHistory.innerHTML=annRecord.spinHistory.length?annRecord.spinHistory.map(x=>`<span class="ann-spin-chip">🎡 ${esc(x)}</span>`).join(''):'<span class="ann-spin-chip">Welcome spins ready</span>';
+  const bank=annBank(),pct=Math.min(100,(bank/ANN_GRAND_PRIZE)*100);const prizeText=document.getElementById('ann-prize-text');if(prizeText)prizeText.textContent=annRecord.grandPrizeWon?'🏆 GRAND PRIZE WON':`${bank.toLocaleString()} / ${ANN_GRAND_PRIZE.toLocaleString()}`;const prizeFill=document.getElementById('ann-prize-fill');if(prizeFill){prizeFill.style.width=`${pct}%`;prizeFill.classList.toggle('won',annRecord.grandPrizeWon);}
+  renderAnnChampions();annUpdateAimUI();updateAnnPowerUI();if(!annPendingRecovered&&!annSpinState.spinning&&annRecord.pendingSpin)setTimeout(recoverAnnPendingSpin,0);
 }
+
 function getSavedLogin(){try{return JSON.parse(safeLocalGet('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
 const savedLogin=getSavedLogin();
 let currentUser=savedLogin.user || safeLocalGet('wc2026_currentUser') || '';
@@ -1634,13 +1688,9 @@ document.getElementById('ann-sound-btn').onclick=toggleAnnSound;
 document.getElementById('ann-reset-btn').onclick=resetAnnRecords;
 document.getElementById('ann-spin-btn').onclick=spinAnnWheel;
 document.getElementById('ann-post-btn').onclick=postAnnScore;
-(function armAnnAudio(){
-  const unlock=()=>{annUnlockAudio();document.removeEventListener('touchstart',unlock);document.removeEventListener('pointerdown',unlock);document.removeEventListener('click',unlock);};
-  document.addEventListener('touchstart',unlock,{passive:true});
-  document.addEventListener('pointerdown',unlock,{passive:true});
-  document.addEventListener('click',unlock);
-})();
-document.getElementById('ann-zone-grid').addEventListener('click',e=>{const b=e.target.closest('[data-zone]');if(b)annAim(Number(b.dataset.zone));});
+document.getElementById('ann-goal').addEventListener('pointerdown',annAimFromPointer);
+document.getElementById('ann-style-picker').addEventListener('click',e=>{const b=e.target.closest('[data-kick-style]');if(b){annEnsureAudio(false);annSetKickStyle(b.dataset.kickStyle);}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&annRecord.sound&&annAudioArmed)annEnsureAudio(false);});
 document.getElementById('clear-empty-btn').onclick=()=>{predictMode = predictMode==='upcoming' ? 'all' : 'upcoming'; renderPredict();};
 document.getElementById('prediction-view-toggle').addEventListener('click',e=>{const b=e.target.closest('[data-view]'); if(!b)return; publicView=b.dataset.view; document.querySelectorAll('#prediction-view-toggle .view-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===publicView)); renderPublicPredictions();});
 const previousBtnInit=document.getElementById('toggle-previous-btn');
