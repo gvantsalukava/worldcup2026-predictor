@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>World Cup 2026 — Prediction Game · Ann's Game</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
   :root{
@@ -1261,12 +1262,23 @@ function postAnnScore(){
   const score=annBank();
   if(score<=0){const r=document.getElementById('ann-spin-result');if(r)r.innerHTML='<b>Nothing to post yet.</b><br>Score some goals or spin the wheel first.';return;}
   if(!db){toast('Champions board is offline right now');return;}
-  const name=annPlayerName();const key=annChampKey(name);
-  const existing=annChampions[key];
-  if(existing&&Number(existing.score)>=score){toast(`Your posted best is already ${Number(existing.score).toLocaleString()}`);return;}
-  db.ref('annsGameChampions/'+key).set({name:name,score:score,won:annRecord.grandPrizeWon,at:Date.now()})
-    .then(()=>{annRecord.submittedBest=score;saveAnnRecord();toast(`Posted ${score.toLocaleString()} to the Champions board`);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);})
-    .catch(err=>{console.error(err);toast('Could not post score');});
+  const doPost=()=>{
+    const name=annPlayerName();const key=annChampKey(name);
+    const existing=annChampions[key];
+    if(existing&&Number(existing.score)>=score){toast(`Your posted best is already ${Number(existing.score).toLocaleString()}`);return;}
+    db.ref('annsGameChampions/'+key).set({name:name,score:score,won:annRecord.grandPrizeWon,at:Date.now()})
+      .then(()=>{annRecord.submittedBest=score;saveAnnRecord();toast(`Posted ${score.toLocaleString()} to the Champions board`);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);})
+      .catch(err=>{console.error(err);toast('Could not post score — check Firebase rules');});
+  };
+  try{
+    if(firebase.auth&&firebase.auth().currentUser){doPost();}
+    else{
+      toast('Connecting…');
+      firebase.auth().signInAnonymously()
+        .then(()=>doPost())
+        .catch(err=>{console.error(err);toast('Could not sign in to post score');});
+    }
+  }catch(e){doPost();}
 }
 function renderAnnChampions(){
   const el=document.getElementById('ann-champ-list');if(!el)return;
@@ -1577,6 +1589,9 @@ function pushState(){
 function initFirebase(){
   try{
     firebase.initializeApp(firebaseConfig); db=firebase.database();
+    try{
+      firebase.auth().signInAnonymously().catch(err=>{console.error('Anon sign-in failed',err);});
+    }catch(e){console.error('Auth unavailable',e);}
     db.ref('wc2026').on('value',snap=>{
       const data=snap.val()||{};
       state.users=uniqueUsers(normalizeUsersFromFirebase(data.users));
