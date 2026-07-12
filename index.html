@@ -1,3 +1,4 @@
+<!-- Ann's Game update: endless goalkeeper survival + separate max-save record -->
 <!-- Ann's Game update: penalty game first + balanced goalkeeper + direct-tap Keeper Challenge -->
 <!DOCTYPE html>
 
@@ -6,7 +7,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>World Cup 2026 — Ann's Game · Fast Keeper Challenge + Penalties</title>
+<title>World Cup 2026 — Ann's Game · Keeper Survival</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -592,6 +593,11 @@
 .ann-gk-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
 .ann-gk-stat{border:1px solid #b9e6f4;background:rgba(255,255,255,.86);border-radius:13px;padding:10px 6px;text-align:center}
 .ann-gk-stat strong{display:block;color:#101b34;font-size:19px}.ann-gk-stat span{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-top:4px;text-transform:uppercase}
+
+.ann-gk-record{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:14px;border-radius:16px;background:linear-gradient(135deg,#101b34,#243b67);color:#fff;border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 18px rgba(16,27,52,.14)}
+.ann-gk-record-icon{font-size:34px;line-height:1}
+.ann-gk-record strong{display:block;font-size:25px;line-height:1;color:#fff200}
+.ann-gk-record span{display:block;margin-top:4px;font-size:10px;font-weight:850;color:#dfe8ff;line-height:1.35}
 .ann-gk-history{display:grid;gap:7px}
 .ann-gk-history-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:#fff;border:1px solid #dceef4;border-radius:12px;padding:9px 10px;font-size:11px}
 .ann-gk-history-row b{font-size:12px}.ann-gk-empty{padding:13px;text-align:center;color:var(--muted);font-size:11px;border:1px dashed #b9e6f4;border-radius:12px;background:rgba(255,255,255,.6)}
@@ -782,17 +788,17 @@
 <div class="ann-gk-head">
 <div>
 <h3>🧤 Goalkeeper Challenge</h3>
-<p>You are the goalkeeper. Press start, watch the ball, and tap directly inside the goal where the shot is heading.</p>
+<p>Survive as long as possible. The first shot starts slow, every save makes the next shot faster, and the run ends when one goal goes in.</p>
 </div>
-<span class="ann-gk-badge">Saves add to Grand Slam progress</span>
+<span class="ann-gk-badge">Endless survival · lower points</span>
 </div>
 <div class="ann-gk-layout">
 <div>
 <div class="ann-gk-scoreboard">
-<div class="ann-gk-scorebox"><strong id="ann-gk-shot">0/5</strong><span>Shots</span></div>
+<div class="ann-gk-scorebox"><strong id="ann-gk-shot">0</strong><span>Shots faced</span></div>
 <div class="ann-gk-scorebox"><strong id="ann-gk-saves">0</strong><span>Saves</span></div>
 <div class="ann-gk-scorebox"><strong id="ann-gk-points">0</strong><span>Round points</span></div>
-<div class="ann-gk-scorebox"><strong id="ann-gk-streak">0</strong><span>Save streak</span></div>
+<div class="ann-gk-scorebox"><strong id="ann-gk-streak">Slow</strong><span>Shot speed</span></div>
 </div>
 <div class="ann-gk-stadium" id="ann-gk-stadium">
 <div class="ann-gk-crowd" id="ann-gk-crowd">KEEP YOUR EYES ON THE BALL</div>
@@ -817,15 +823,19 @@
 </div>
 </div>
 <div class="ann-gk-side">
-<div class="ann-gk-tip"><b>Easy controls:</b><br/>Tap directly inside the goal where the ball is heading. Five shots per round; a clean sheet gives a large bonus and two free spins.</div>
+<div class="ann-gk-tip"><b>Survival rules:</b><br/>Tap directly inside the goal where the ball is heading. The first shot is slow. Every save speeds up the next shot. One conceded goal ends the run.</div>
+<div class="ann-gk-record">
+<div class="ann-gk-record-icon">🏅</div>
+<div><strong id="ann-gk-record-saves">0 saves</strong><span id="ann-gk-record-note">No keeper record yet</span></div>
+</div>
 <div class="ann-gk-stats">
-<div class="ann-gk-stat"><strong id="ann-gk-best">0</strong><span>Best saves</span></div>
+<div class="ann-gk-stat"><strong id="ann-gk-best">0</strong><span>Max saves record</span></div>
 <div class="ann-gk-stat"><strong id="ann-gk-total-saves">0</strong><span>Total saves</span></div>
-<div class="ann-gk-stat"><strong id="ann-gk-best-streak">0</strong><span>Best streak</span></div>
+<div class="ann-gk-stat"><strong id="ann-gk-best-streak">0</strong><span>Best run</span></div>
 <div class="ann-gk-stat"><strong id="ann-gk-rounds">0</strong><span>Rounds played</span></div>
 </div>
-<div class="section-title"><h3>Recent keeper rounds</h3><span class="small">Browser only</span></div>
-<div class="ann-gk-history" id="ann-gk-history"><div class="ann-gk-empty">No goalkeeper rounds yet.</div></div>
+<div class="section-title"><h3>Recent keeper survival runs</h3><span class="small">Separate save log</span></div>
+<div class="ann-gk-history" id="ann-gk-history"><div class="ann-gk-empty">No keeper survival runs yet.</div></div>
 </div>
 </div>
 </div></div>
@@ -1208,7 +1218,7 @@ const ANN_SPIN_OUTCOMES = [
   {label:'Mystery reward',short:'Mystery',type:'mystery',value:0}
 ];
 
-function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',keeperMatches:0,keeperSaves:0,keeperShots:0,keeperBestSaves:0,keeperBestStreak:0,keeperHistory:[],milestoneVersion:2,milestones:{tenK:false,elite:false,grandPrize:false,grandSlam:false},grandPrizeWon:false,grandSlamWon:false,submittedBest:0,pendingSpin:null};}
+function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',keeperMatches:0,keeperSaves:0,keeperShots:0,keeperBestSaves:0,keeperBestStreak:0,keeperRecordAt:0,keeperHistory:[],milestoneVersion:2,milestones:{tenK:false,elite:false,grandPrize:false,grandSlam:false},grandPrizeWon:false,grandSlamWon:false,submittedBest:0,pendingSpin:null};}
 function loadAnnRecord(){
   try{
     const parsed=JSON.parse(safeLocalGet(ANN_GAME_STORAGE_KEY)||'null');
@@ -1220,7 +1230,7 @@ function loadAnnRecord(){
       history:Array.isArray(parsed.history)?parsed.history.slice(0,6):[],freeSpins:Math.max(0,Number(parsed.freeSpins)||0),bonusPoints:Number(parsed.bonusPoints)||0,
       varShields:Math.max(0,Number(parsed.varShields)||0),nextGoalMultiplier:Number(parsed.nextGoalMultiplier)===2?2:1,totalSpins:Number(parsed.totalSpins)||0,
       spinHistory:Array.isArray(parsed.spinHistory)?parsed.spinHistory.slice(0,6):[],lastSpin:String(parsed.lastSpin||'Free spins are ready.'),
-      keeperMatches:Number(parsed.keeperMatches)||0,keeperSaves:Number(parsed.keeperSaves)||0,keeperShots:Number(parsed.keeperShots)||0,keeperBestSaves:Number(parsed.keeperBestSaves)||0,keeperBestStreak:Number(parsed.keeperBestStreak)||0,keeperHistory:Array.isArray(parsed.keeperHistory)?parsed.keeperHistory.slice(0,6):[],
+      keeperMatches:Number(parsed.keeperMatches)||0,keeperSaves:Number(parsed.keeperSaves)||0,keeperShots:Number(parsed.keeperShots)||0,keeperBestSaves:Number(parsed.keeperBestSaves)||0,keeperBestStreak:Number(parsed.keeperBestStreak)||0,keeperRecordAt:Number(parsed.keeperRecordAt)||0,keeperHistory:Array.isArray(parsed.keeperHistory)?parsed.keeperHistory.slice(0,8):[],
       milestoneVersion:2,
       milestones:(()=>{const bank=(Number(parsed.bonusPoints)||0)+(Number(parsed.bestPoints)||0);const modern=Number(parsed.milestoneVersion)>=2;const saved=modern&&parsed.milestones&&typeof parsed.milestones==='object'?parsed.milestones:{};return {tenK:saved.tenK===true||bank>=10000,elite:saved.elite===true||bank>=25000,grandPrize:saved.grandPrize===true||bank>=ANN_GRAND_PRIZE,grandSlam:saved.grandSlam===true||bank>=ANN_GRAND_SLAM};})(),
       grandPrizeWon:(Number(parsed.milestoneVersion)>=2&&parsed.grandPrizeWon===true)||((Number(parsed.bonusPoints)||0)+(Number(parsed.bestPoints)||0))>=ANN_GRAND_PRIZE,
@@ -1230,7 +1240,7 @@ function loadAnnRecord(){
   }catch(e){return defaultAnnRecord();}
 }
 function defaultAnnSession(previousRaf=0){return {active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,aimX:50,aimY:50,kickStyle:'placement',power:50,powerDirection:1,accuracy:50,accuracyDirection:-1,lastFrame:0,raf:previousRaf,outcomes:[],bonus:false,sideHistory:[]};}
-function defaultAnnKeeperSession(){return {active:false,locked:false,shot:0,maxShots:5,saves:0,points:0,streak:0,bestStreak:0,targetZone:null,chosenZone:null,shotStarted:0,shotWindow:1300,timer:0,phase:'idle',outcomes:[],token:0};}
+function defaultAnnKeeperSession(){return {active:false,locked:false,shot:0,saves:0,points:0,streak:0,bestStreak:0,targetZone:null,chosenZone:null,shotStarted:0,shotWindow:1500,timer:0,phase:'idle',outcomes:[],token:0};}
 let annRecord=loadAnnRecord();
 let annSession=defaultAnnSession();
 let annKeeperSession=defaultAnnKeeperSession();
@@ -1450,28 +1460,34 @@ function annKeeperResetActors(){
   if(keeper){keeper.classList.remove('catch');keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='52%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
   const flash=document.getElementById('ann-gk-result-flash');if(flash)flash.classList.remove('show','saved','goal');
 }
+function annKeeperSpeedLabel(){
+  const w=annKeeperSession.shotWindow;
+  return w>=1250?'Slow':w>=1000?'Steady':w>=780?'Fast':w>=600?'Very fast':'⚡ Extreme';
+}
 function renderAnnKeeperGame(){
-  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
-  set('ann-gk-shot',`${annKeeperSession.shot}/${annKeeperSession.maxShots}`);set('ann-gk-saves',annKeeperSession.saves);set('ann-gk-points',annKeeperSession.points);set('ann-gk-streak',annKeeperSession.streak);
-  set('ann-gk-best',annRecord.keeperBestSaves||0);set('ann-gk-total-saves',annRecord.keeperSaves||0);set('ann-gk-best-streak',annRecord.keeperBestStreak||0);set('ann-gk-rounds',annRecord.keeperMatches||0);
-  const start=document.getElementById('ann-gk-start-btn');if(start){start.disabled=annKeeperSession.phase==='preparing'||annKeeperSession.phase==='flight'||annKeeperSession.phase==='resolving';start.textContent=annKeeperSession.active?'Keeper round active':annKeeperSession.phase==='finished'?'🧤 Play keeper again':'🧤 Start Keeper Challenge';}
-  const crowd=document.getElementById('ann-gk-crowd');if(crowd)crowd.textContent=annKeeperSession.saves>=4?'THE WALL CANNOT BE BEATEN':annKeeperSession.streak>=2?'WHAT A SAVE STREAK!':annKeeperSession.phase==='flight'?'DIVE NOW!':annKeeperSession.active?'STAY READY':'KEEP YOUR EYES ON THE BALL';
-  const progress=document.getElementById('ann-gk-progress');if(progress){let html='';for(let i=0;i<annKeeperSession.maxShots;i++){const outcome=annKeeperSession.outcomes[i];const cls=outcome||(annKeeperSession.active&&i===annKeeperSession.shot?'current':'');const symbol=outcome==='save'?'🧤':outcome==='parry'?'✋':outcome==='goal'?'⚽':i+1;html+=`<span class="ann-gk-dot ${esc(cls)}">${esc(symbol)}</span>`;}progress.innerHTML=html;}
-  const history=document.getElementById('ann-gk-history');if(history)history.innerHTML=(annRecord.keeperHistory||[]).length?annRecord.keeperHistory.map(x=>`<div class="ann-gk-history-row"><span>${Number(x.saves)===5?'🧱':'🧤'}</span><div><b>${esc(x.title||'Keeper round')}</b><div class="small">${Number(x.saves)||0}/5 saves · +${Number(x.spins)||0} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-gk-empty">No goalkeeper rounds yet.</div>';
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('ann-gk-shot',annKeeperSession.shot);set('ann-gk-saves',annKeeperSession.saves);set('ann-gk-points',annKeeperSession.points);set('ann-gk-streak',annKeeperSpeedLabel());
+  set('ann-gk-best',annRecord.keeperBestSaves||0);set('ann-gk-total-saves',annRecord.keeperSaves||0);set('ann-gk-best-streak',annRecord.keeperBestSaves||0);set('ann-gk-rounds',annRecord.keeperMatches||0);
+  set('ann-gk-record-saves',`${annRecord.keeperBestSaves||0} save${Number(annRecord.keeperBestSaves)===1?'':'s'}`);
+  const recordNote=document.getElementById('ann-gk-record-note');if(recordNote){recordNote.textContent=annRecord.keeperBestSaves?`Personal keeper record${annRecord.keeperRecordAt?` · ${new Date(annRecord.keeperRecordAt).toLocaleDateString()}`:''}`:'No keeper record yet';}
+  const start=document.getElementById('ann-gk-start-btn');if(start){start.disabled=annKeeperSession.phase==='preparing'||annKeeperSession.phase==='flight'||annKeeperSession.phase==='resolving';start.textContent=annKeeperSession.active?'Survival run active':annKeeperSession.phase==='finished'?'🧤 Try keeper survival again':'🧤 Start Keeper Survival';}
+  const crowd=document.getElementById('ann-gk-crowd');if(crowd)crowd.textContent=annKeeperSession.saves>=15?'IMPOSSIBLE KEEPER!':annKeeperSession.saves>=8?'THE WALL IS STILL STANDING':annKeeperSession.saves>=3?'SAVE STREAK!':annKeeperSession.phase==='flight'?'DIVE NOW!':annKeeperSession.active?'GET READY':'SURVIVE UNTIL A GOAL';
+  const progress=document.getElementById('ann-gk-progress');if(progress){const recent=annKeeperSession.outcomes.slice(-10);progress.innerHTML=recent.map((outcome,i)=>`<span class="ann-gk-dot ${esc(outcome)}">${outcome==='save'?'🧤':outcome==='parry'?'✋':'⚽'}</span>`).join('')+(annKeeperSession.active?'<span class="ann-gk-dot current">…</span>':'');}
+  const history=document.getElementById('ann-gk-history');if(history)history.innerHTML=(annRecord.keeperHistory||[]).length?annRecord.keeperHistory.map((x,i)=>`<div class="ann-gk-history-row"><span>${i===0&&Number(x.saves)===(annRecord.keeperBestSaves||0)?'🏅':'🧤'}</span><div><b>${Number(x.saves)||0} save${Number(x.saves)===1?'':'s'}</b><div class="small">${esc(x.title||'Keeper survival')} · +${Number(x.spins)||0} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-gk-empty">No keeper survival runs yet.</div>';
 }
 function startAnnKeeperRound(){
   if(annSession.active){annKeeperSetComment('<b>Finish the penalty match first.</b> Then become the goalkeeper.');return;}
-  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annKeeperSession=defaultAnnKeeperSession();annKeeperSession.active=true;annKeeperSession.phase='preparing';annKeeperSession.token=annKeeperToken;annEnsureAudio(false);annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>${esc(annPlayerName())}</b>, gloves on. Five shots are coming.`);renderAnnKeeperGame();annTone(360,.07,'square');annTone(540,.09,'sine',.07);annHaptic([15,30,15]);setTimeout(()=>annKeeperPrepareShot(annKeeperSession.token),320);
+  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annKeeperSession=defaultAnnKeeperSession();annKeeperSession.active=true;annKeeperSession.phase='preparing';annKeeperSession.token=annKeeperToken;annEnsureAudio(false);annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>${esc(annPlayerName())}</b>, survive until the first goal. The opening shot is slow.`);renderAnnKeeperGame();annTone(360,.07,'square');annTone(540,.09,'sine',.07);annHaptic([15,30,15]);setTimeout(()=>annKeeperPrepareShot(annKeeperSession.token),500);
 }
 function annKeeperPrepareShot(token){
-  if(!annKeeperSession.active||token!==annKeeperSession.token)return;annKeeperSession.locked=true;annKeeperSession.phase='preparing';annKeeperSession.targetZone=null;annKeeperSession.chosenZone=null;annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>Shot ${annKeeperSession.shot+1}:</b> the striker is preparing…`);renderAnnKeeperGame();
-  annKeeperSession.timer=setTimeout(()=>annKeeperLaunchShot(token),420);
+  if(!annKeeperSession.active||token!==annKeeperSession.token)return;annKeeperSession.locked=true;annKeeperSession.phase='preparing';annKeeperSession.targetZone=null;annKeeperSession.chosenZone=null;annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>Shot ${annKeeperSession.shot+1}:</b> ${annKeeperSpeedLabel()} speed…`);renderAnnKeeperGame();
+  const prepareDelay=Math.max(240,700-annKeeperSession.saves*28);annKeeperSession.timer=setTimeout(()=>annKeeperLaunchShot(token),prepareDelay);
 }
 function annKeeperLaunchShot(token){
   if(!annKeeperSession.active||token!==annKeeperSession.token)return;
-  const weighted=[0,0,3,3,6,6,1,4,7,2,2,5,5,8,8];annKeeperSession.targetZone=weighted[annRandom(weighted.length)];annKeeperSession.shotWindow=Math.max(680,900-annKeeperSession.shot*55);annKeeperSession.shotStarted=performance.now();annKeeperSession.locked=false;annKeeperSession.phase='flight';annKeeperDisableZones(false);
+  const weighted=[0,0,3,3,6,6,1,4,7,2,2,5,5,8,8];annKeeperSession.targetZone=weighted[annRandom(weighted.length)];annKeeperSession.shotWindow=Math.max(470,1500-annKeeperSession.saves*82);annKeeperSession.shotStarted=performance.now();annKeeperSession.locked=false;annKeeperSession.phase='flight';annKeeperDisableZones(false);
   const ball=document.getElementById('ann-gk-ball'),pos=annKeeperGoalPoint(annKeeperSession.targetZone);if(ball){ball.style.transition=`left ${annKeeperSession.shotWindow}ms linear,top ${annKeeperSession.shotWindow}ms linear,transform ${annKeeperSession.shotWindow}ms linear,opacity .2s`;void ball.offsetWidth;ball.classList.add('flying');ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
-  annKeeperSetComment('<b>SHOOT!</b> Tap inside the goal where the ball is going.');renderAnnKeeperGame();annTone(210,.05,'square');annHaptic(12);
+  annKeeperSetComment(`<b>SHOOT!</b> ${annKeeperSpeedLabel()} — tap where the ball is heading.`);renderAnnKeeperGame();annTone(210,.05,'square');annHaptic(12);
   annKeeperSession.timer=setTimeout(()=>annKeeperResolve(null,true,token),annKeeperSession.shotWindow+25);
 }
 function annKeeperChooseZone(zone){
@@ -1483,25 +1499,29 @@ function annKeeperResolve(chosenZone,timedOut,token){
   const target=annKeeperSession.targetZone,reaction=timedOut?annKeeperSession.shotWindow:Math.max(0,performance.now()-annKeeperSession.shotStarted);let outcome='goal',award=0;
   if(chosenZone!==null&&!Number.isNaN(chosenZone)){
     const targetLane=target%3,chosenLane=chosenZone%3,laneDistance=Math.abs(targetLane-chosenLane);const selected=document.querySelector(`[data-gk-zone="${chosenZone}"]`);if(selected)selected.classList.add('selected');
-    if(laneDistance===0){annKeeperMoveKeeper(target);outcome='save';annKeeperSession.streak++;const speed=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/4.2));award=300+speed+annKeeperSession.streak*55;}
-    else if(laneDistance===1&&reaction<=annKeeperSession.shotWindow*.34){annKeeperMoveKeeper(chosenZone);outcome='parry';annKeeperSession.streak++;const speed=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/6));award=170+speed+annKeeperSession.streak*30;}
+    if(laneDistance===0){annKeeperMoveKeeper(target);outcome='save';annKeeperSession.streak++;const reactionBonus=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/85));award=18+reactionBonus+Math.min(12,annKeeperSession.saves);}
+    else if(laneDistance===1&&reaction<=annKeeperSession.shotWindow*.28){annKeeperMoveKeeper(chosenZone);outcome='parry';annKeeperSession.streak++;const reactionBonus=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/120));award=8+reactionBonus+Math.min(6,Math.floor(annKeeperSession.saves/2));}
     else{annKeeperMoveKeeper(chosenZone);annKeeperSession.streak=0;}
   }else annKeeperSession.streak=0;
   const keeper=document.getElementById('ann-gk-keeper'),ball=document.getElementById('ann-gk-ball');
+  annKeeperSession.shot++;annRecord.keeperShots=(annRecord.keeperShots||0)+1;
   if(outcome==='save'||outcome==='parry'){
-    annKeeperSession.saves++;annKeeperSession.points+=award;annKeeperSession.bestStreak=Math.max(annKeeperSession.bestStreak,annKeeperSession.streak);if(keeper)keeper.classList.add('catch');if(ball){ball.classList.add('caught');const catchZone=chosenZone===null?target:chosenZone,pos=annKeeperGoalPoint(catchZone);ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
-    annKeeperShowResult('SAVED!','saved');annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> ${Math.round(reaction)} ms · <b>+${award} pts</b>`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
+    annKeeperSession.saves++;annKeeperSession.points+=award;annKeeperSession.bestStreak=Math.max(annKeeperSession.bestStreak,annKeeperSession.streak);annRecord.keeperSaves=(annRecord.keeperSaves||0)+1;if(keeper)keeper.classList.add('catch');if(ball){ball.classList.add('caught');const catchZone=chosenZone===null?target:chosenZone,pos=annKeeperGoalPoint(catchZone);ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
+    annKeeperShowResult('SAVED!','saved');annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> Save ${annKeeperSession.saves} · <b>+${award} pts</b> · next shot is faster.`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
+    annKeeperSession.outcomes.push(outcome);saveAnnRecord();renderAnnKeeperGame();
+    annKeeperSession.timer=setTimeout(()=>{if(annKeeperSession.active&&token===annKeeperSession.token)annKeeperPrepareShot(token);},Math.max(260,520-annKeeperSession.saves*12));
   }else{
-    if(ball)ball.classList.add('goal');annKeeperShowResult('OOPS, GOAL!','goal');annKeeperSetComment(timedOut?'<b>GOAL.</b> Too late — the ball reached the net.':'<b>GOAL.</b> Wrong area — follow the ball and tap where it is heading.');annTone(145,.2,'sawtooth');annHaptic(48);
+    if(ball)ball.classList.add('goal');annKeeperShowResult('OOPS, GOAL!','goal');annKeeperSession.outcomes.push('goal');annKeeperSetComment(timedOut?'<b>GOAL.</b> Too late — survival run over.':'<b>GOAL.</b> Wrong area — survival run over.');annTone(145,.2,'sawtooth');annHaptic(48);renderAnnKeeperGame();
+    annKeeperSession.timer=setTimeout(()=>finishAnnKeeperRound(),650);
   }
-  annKeeperSession.outcomes.push(outcome);annKeeperSession.shot++;annRecord.keeperShots=(annRecord.keeperShots||0)+1;if(outcome!=='goal')annRecord.keeperSaves=(annRecord.keeperSaves||0)+1;annRecord.keeperBestStreak=Math.max(annRecord.keeperBestStreak||0,annKeeperSession.streak);saveAnnRecord();renderAnnKeeperGame();
-  annKeeperSession.timer=setTimeout(()=>{if(!annKeeperSession.active||token!==annKeeperSession.token)return;if(annKeeperSession.shot>=annKeeperSession.maxShots)finishAnnKeeperRound();else annKeeperPrepareShot(token);},560);
 }
 function finishAnnKeeperRound(){
-  if(!annKeeperSession.active)return;annKeeperSession.active=false;annKeeperSession.locked=false;annKeeperSession.phase='finished';let cleanBonus=annKeeperSession.saves===5?1000:annKeeperSession.saves===4?400:0;const earned=annKeeperSession.points+cleanBonus;let spins=annKeeperSession.saves===5?2:annKeeperSession.saves>=3?1:0;
-  annRecord.bonusPoints+=earned;annRecord.freeSpins+=spins;annRecord.keeperMatches=(annRecord.keeperMatches||0)+1;annRecord.keeperBestSaves=Math.max(annRecord.keeperBestSaves||0,annKeeperSession.saves);annRecord.keeperBestStreak=Math.max(annRecord.keeperBestStreak||0,annKeeperSession.bestStreak);
-  const title=annKeeperSession.saves===5?'🧱 CLEAN SHEET':annKeeperSession.saves===4?'🧤 Goalkeeper masterclass':annKeeperSession.saves>=3?'🧤 Strong hands':annKeeperSession.saves>=1?'✋ One for the highlight reel':'🥅 Shooting practice';annRecord.keeperHistory=[{saves:annKeeperSession.saves,points:earned,spins,title,at:Date.now()},...(annRecord.keeperHistory||[])].slice(0,6);saveAnnRecord();
-  annKeeperSetComment(`<b>${esc(title)}</b> · ${annKeeperSession.saves}/5 saves · <b>+${earned} Grand Slam points</b>${cleanBonus?` · ${cleanBonus} clean-sheet bonus`:''}${spins?` · +${spins} free spin${spins===1?'':'s'}`:''}`);annKeeperDisableZones(true);const start=document.getElementById('ann-gk-start-btn');if(start)start.textContent='Play keeper again';if(annKeeperSession.saves>=4){annCelebrate(annKeeperSession.saves===5);annTone(660,.1,'sine');annTone(880,.12,'sine',.12);annTone(1100,.16,'sine',.25);}checkMilestones();renderBreakGame();
+  if(!annKeeperSession.active)return;annKeeperSession.active=false;annKeeperSession.locked=false;annKeeperSession.phase='finished';const earned=annKeeperSession.points;let spins=annKeeperSession.saves>=20?3:annKeeperSession.saves>=12?2:annKeeperSession.saves>=6?1:0;
+  annRecord.bonusPoints+=earned;annRecord.freeSpins+=spins;annRecord.keeperMatches=(annRecord.keeperMatches||0)+1;
+  const previousRecord=annRecord.keeperBestSaves||0,newRecord=annKeeperSession.saves>previousRecord;if(newRecord){annRecord.keeperBestSaves=annKeeperSession.saves;annRecord.keeperRecordAt=Date.now();}
+  annRecord.keeperBestStreak=Math.max(annRecord.keeperBestStreak||0,annKeeperSession.saves);
+  const title=newRecord?'🏅 NEW MAX-SAVES RECORD':annKeeperSession.saves>=20?'🧱 Legendary wall':annKeeperSession.saves>=12?'🧤 Keeper masterclass':annKeeperSession.saves>=6?'✋ Strong survival run':annKeeperSession.saves>=1?'🧤 Run completed':'🥅 First shot got through';annRecord.keeperHistory=[{saves:annKeeperSession.saves,points:earned,spins,title,at:Date.now()},...(annRecord.keeperHistory||[])].slice(0,8);saveAnnRecord();
+  annKeeperSetComment(`<b>${esc(title)}</b> · ${annKeeperSession.saves} save${annKeeperSession.saves===1?'':'s'} before the goal · <b>+${earned} Grand Slam points</b>${spins?` · +${spins} free spin${spins===1?'':'s'}`:''}`);annKeeperDisableZones(true);const start=document.getElementById('ann-gk-start-btn');if(start)start.textContent='Try keeper survival again';if(newRecord||annKeeperSession.saves>=12){annCelebrate(newRecord);annTone(660,.1,'sine');annTone(880,.12,'sine',.12);annTone(1100,.16,'sine',.25);}checkMilestones();renderBreakGame();
 }
 
 function finishAnnMatch(){
@@ -1599,7 +1619,7 @@ async function toggleAnnSound(){
 }
 function resetAnnRecords(){
   if(annSpinState.spinning)return;const anyActive=annSession.active||annKeeperSession.active;if(anyActive&&!window.confirm('A mini-game is active. Reset both games, free spins and all local records?'))return;if(!anyActive&&!window.confirm('Reset all local Ann’s Game records on this browser?'))return;
-  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annKeeperSession=defaultAnnKeeperSession();annKeeperSession.token=annKeeperToken;annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();annKeeperResetActors();annKeeperDisableZones(true);const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);annKeeperSetComment('<b>Ready?</b> Start the round, then tap inside the goal where the ball is going.');renderBreakGame();
+  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annKeeperSession=defaultAnnKeeperSession();annKeeperSession.token=annKeeperToken;annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();annKeeperResetActors();annKeeperDisableZones(true);const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);annKeeperSetComment('<b>Ready?</b> Start slow, save as many as possible, and survive until the first goal.');renderBreakGame();
 }
 function renderBreakGame(){
   const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};const player=annPlayerName();
