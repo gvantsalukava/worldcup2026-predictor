@@ -1,10 +1,12 @@
+<!-- Ann's Game update: penalty game first + balanced goalkeeper + direct-tap Keeper Challenge -->
 <!DOCTYPE html>
 
+<!-- Ann's Game update: balanced AI goalkeeper + fast three-side Goalkeeper Challenge -->
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>World Cup 2026 — Ann's Game · Simple Penalties</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>World Cup 2026 — Ann's Game · Fast Keeper Challenge + Penalties</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -538,199 +540,292 @@
 .ann-simple-note{font-size:11px;font-weight:900;color:#514650;text-align:center;background:#fffde8;border:1px solid #f0d900;border-radius:12px;padding:9px 10px}
 @media(max-width:560px){.ann-howto{display:grid;grid-template-columns:1fr}.ann-howto span{justify-content:flex-start;border-radius:12px}.ann-goal-celebration strong{font-size:46px}.ann-goal-celebration span{font-size:12px}}
 
+
+
+/* Goalkeeper Challenge — player controls the keeper and reacts to incoming shots */
+.ann-keeper-challenge-card{overflow:hidden;background:linear-gradient(145deg,#fff 0%,#f3fbff 48%,#f0ffe9 100%)}
+.ann-gk-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px}
+.ann-gk-head h3{color:var(--brand);font-size:21px;margin-bottom:5px}
+.ann-gk-head p{max-width:700px;color:#514650;font-size:12px;line-height:1.5}
+.ann-gk-badge{display:inline-flex;align-items:center;gap:6px;background:#101b34;color:#fff;border-radius:999px;padding:8px 11px;font-size:10px;font-weight:950;white-space:nowrap}
+.ann-gk-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(270px,.65fr);gap:14px;align-items:start}
+.ann-gk-scoreboard{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.ann-gk-scorebox{border:1px solid #b9e6f4;background:rgba(255,255,255,.88);border-radius:14px;padding:10px 6px;text-align:center}
+.ann-gk-scorebox strong{display:block;color:#101b34;font-size:20px;line-height:1.05}
+.ann-gk-scorebox span{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-top:4px;text-transform:uppercase}
+.ann-gk-stadium{position:relative;min-height:365px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#122344 0 17%,#275779 17% 31%,#16773f 31% 100%);border:2px solid #0f5d34;box-shadow:inset 0 -45px 80px rgba(0,0,0,.2)}
+.ann-gk-stadium:before{content:'';position:absolute;left:0;right:0;top:18%;height:12%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.86) 0 3px,transparent 3px 12px);opacity:.4}
+.ann-gk-crowd{position:absolute;left:0;right:0;top:9px;text-align:center;color:#fff;font-size:12px;font-weight:950;letter-spacing:.04em;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:3}
+.ann-gk-goal{position:absolute;left:7%;right:7%;top:67px;height:218px;border:8px solid #fff;border-bottom-width:10px;border-radius:7px 7px 2px 2px;box-shadow:0 6px 16px rgba(0,0,0,.25);background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(255,255,255,.34) 27px 29px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.34) 39px 41px),rgba(225,242,255,.1);z-index:2}
+.ann-gk-goal:after{content:'';position:absolute;left:-8px;right:-8px;bottom:-31px;height:25px;border:5px solid rgba(255,255,255,.62);border-top:0;transform:skewX(-9deg);opacity:.72}
+.ann-gk-zone-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr;z-index:6;touch-action:none}
+.ann-gk-zone{border:0;background:transparent;cursor:pointer;transition:background .1s;display:block;padding:0;touch-action:manipulation}.ann-gk-zone span,.ann-gk-zone b{display:none!important}
+.ann-gk-zone:not(:disabled):hover,.ann-gk-zone:not(:disabled):active{background:rgba(57,255,20,.13)}
+.ann-gk-zone.selected{background:rgba(255,242,0,.18);box-shadow:inset 0 0 0 2px rgba(255,242,0,.72)}
+.ann-gk-zone:disabled{cursor:not-allowed}
+.ann-gk-keeper{position:absolute;left:50%;top:52%;width:76px;height:104px;transform:translate(-50%,-50%);z-index:5;transition:left .18s cubic-bezier(.22,.75,.18,1),top .18s cubic-bezier(.22,.75,.18,1),transform .18s ease}
+.ann-gk-keeper.catch{filter:drop-shadow(0 0 9px rgba(57,255,20,.9))}
+.ann-gk-ball{position:absolute;left:50%;top:89%;width:34px;height:34px;transform:translate(-50%,-50%) rotate(0);border-radius:50%;display:grid;place-items:center;background:#fff;font-size:28px;line-height:1;z-index:8;filter:drop-shadow(0 5px 5px rgba(0,0,0,.38));transition:left .85s linear,top .85s linear,transform .85s linear,opacity .15s}
+.ann-gk-ball.flying{transform:translate(-50%,-50%) rotate(760deg) scale(.76)}
+.ann-gk-ball.caught{filter:drop-shadow(0 0 10px rgba(57,255,20,.95));transform:translate(-50%,-50%) rotate(760deg) scale(.62)}
+.ann-gk-ball.goal{filter:drop-shadow(0 0 8px rgba(236,0,140,.9))}
+.ann-gk-shooter{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);z-index:4;font-size:47px;filter:drop-shadow(0 4px 4px rgba(0,0,0,.35))}
+.ann-gk-controls{display:grid;gap:9px;margin-top:11px}
+.ann-gk-start{width:100%;min-height:47px;font-size:14px}
+.ann-gk-commentary{min-height:65px;border:1.5px solid #b9e6f4;background:rgba(255,255,255,.86);border-radius:15px;padding:12px 14px;text-align:center;font-size:13px;font-weight:850;color:#38434a;line-height:1.45}
+.ann-gk-commentary b{color:var(--brand)}
+.ann-gk-progress{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.ann-gk-dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f0f4f6;border:1px solid #ced9df;color:#738087;font-weight:950;font-size:12px}
+.ann-gk-dot.current{background:var(--yellow);border-color:#e4cf00;color:#4b3f00;box-shadow:0 0 0 4px rgba(255,242,0,.18)}
+.ann-gk-dot.save{background:var(--neon);border-color:#18d900;color:#0d4f00}
+.ann-gk-dot.parry{background:#dff9ff;border-color:#78ddeb;color:#155465}
+.ann-gk-dot.goal{background:#ffcee1;border-color:#ff8ebc;color:#8e164c}
+.ann-gk-side{display:grid;gap:10px}
+.ann-gk-tip{padding:11px 12px;border-radius:14px;background:#fffde8;border:1px solid #f0d900;color:#5a4300;font-size:11px;line-height:1.5;font-weight:850}
+.ann-gk-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.ann-gk-stat{border:1px solid #b9e6f4;background:rgba(255,255,255,.86);border-radius:13px;padding:10px 6px;text-align:center}
+.ann-gk-stat strong{display:block;color:#101b34;font-size:19px}.ann-gk-stat span{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-top:4px;text-transform:uppercase}
+.ann-gk-history{display:grid;gap:7px}
+.ann-gk-history-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:#fff;border:1px solid #dceef4;border-radius:12px;padding:9px 10px;font-size:11px}
+.ann-gk-history-row b{font-size:12px}.ann-gk-empty{padding:13px;text-align:center;color:var(--muted);font-size:11px;border:1px dashed #b9e6f4;border-radius:12px;background:rgba(255,255,255,.6)}
+.ann-mode-divider{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line);background:#101b34;color:#fff;border-radius:16px;font-size:14px;font-weight:950;letter-spacing:.02em;box-shadow:0 8px 18px rgba(16,27,52,.12)}
+@media(max-width:880px){.ann-gk-layout{grid-template-columns:1fr}.ann-gk-stadium{min-height:350px}}
+@media(max-width:560px){.ann-gk-head{display:block}.ann-gk-badge{margin-top:9px}.ann-gk-scoreboard{grid-template-columns:repeat(2,1fr)}.ann-gk-stadium{min-height:330px}.ann-gk-goal{left:5%;right:5%;top:63px;height:195px}.ann-gk-shooter{font-size:42px}.ann-gk-dot{width:31px;height:31px}}
+
 </style>
 </head>
 <body>
 <header class="topbar">
-  <div class="topbar-inner">
-    <div class="title"><h1>World Cup 2026 Predictor 🏆</h1><p>Quarter-final predictions · champion pick · live leaderboard</p></div>
-    <div class="timezone">🇬🇪 Georgia time<br>UTC+4</div>
-  </div>
+<div class="topbar-inner">
+<div class="title"><h1>World Cup 2026 Predictor 🏆</h1><p>Quarter-final predictions · champion pick · live leaderboard</p></div>
+<div class="timezone">🇬🇪 Georgia time<br/>UTC+4</div>
+</div>
 </header>
 <main class="container">
-  <section class="hero">
-    <div><h2>Quarter-finals are next, predictions in the same order.</h2><p>Quarter-final fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt group outcome</span><span class="pill">2 pts playoff outcome</span><span class="pill">+1 advance fallback</span></div>
-  </section>
-  <nav class="tabs" aria-label="Main navigation">
-    <button class="tab active" data-tab="schedule">🗺️ Quarter-finals</button>
-    <button class="tab" data-tab="breakgame">🎮 Ann's Game</button>
-    <button class="tab" data-tab="predict">✏️ Predict</button>
-    <button class="tab" data-tab="allpredictions">📋 Predictions</button>
-    <button class="tab" data-tab="leaderboard">🏅 Leaderboard</button>
-    <button class="tab" data-tab="results">✅ Admin</button>
-  </nav>
-  <section class="grid-3" id="stats-row"></section>
+<section class="hero">
+<div><h2>Quarter-finals are next, predictions in the same order.</h2><p>Quarter-final fixtures are shown chronologically in Georgia time. The Predict page follows the same fixture order so players can continue the game.</p></div>
+<div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt group outcome</span><span class="pill">2 pts playoff outcome</span><span class="pill">+1 advance fallback</span></div>
+</section>
+<nav aria-label="Main navigation" class="tabs">
+<button class="tab active" data-tab="schedule">🗺️ Quarter-finals</button>
+<button class="tab" data-tab="breakgame">🎮 Ann's Game</button>
+<button class="tab" data-tab="predict">✏️ Predict</button>
+<button class="tab" data-tab="allpredictions">📋 Predictions</button>
+<button class="tab" data-tab="leaderboard">🏅 Leaderboard</button>
+<button class="tab" data-tab="results">✅ Admin</button>
+</nav>
+<section class="grid-3" id="stats-row"></section>
+<section class="section" id="predict">
+<div class="card">
+<div class="section-title"><h3>1. Login / create player</h3><span class="tag" id="save-state">Not logged in</span></div>
+<p class="help">New player: enter a name and choose a password. Returning player: use the same name and password. Tick “Remember me” only on your own device.</p>
+<div class="login-panel">
+<input autocomplete="username" class="input" id="player-name" maxlength="24" placeholder="Player name"/>
+<input autocomplete="current-password" class="input" id="player-password" maxlength="32" placeholder="Player password" type="password"/>
+<button class="btn" id="login-btn">Join / Login</button>
+</div>
+<label class="remember-row"><input id="remember-login" type="checkbox"/> Remember me on this device</label>
+<div class="current-user" id="current-user-row"></div>
+</div>
+<div class="card" id="champion-card"></div>
+<div class="card">
+<div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 88 saved</span></div>
+<p class="help">By default, this list shows only upcoming/editable matches, including the Quarter-finals. Use “Show full schedule” if you need to review older or locked matches. For knockout matches, enter the 90-minute score first. If you predict a 90-minute draw, the penalties and advancing-team fields will appear. Empty matches are skipped. Press Save when finished.</p>
+<div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
+<div id="predict-content"></div>
+<button class="btn full" id="save-predictions">💾 Save champion, scores, penalties and advancing picks</button>
+</div>
+</section>
+<section class="section" id="allpredictions">
+<div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · <span class="score-points">3 pts</span></span><span class="chip outcome">Correct outcome · <span class="score-points">1 pt group / 2 pts playoff</span></span><span class="score-tag advance-tag">Advancing team · <span class="score-points">+1</span></span><span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · <span class="score-points">0 pts</span></span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button class="view-btn active" data-view="games" type="button">By games</button><button class="view-btn" data-view="players" type="button">By players</button></div><button class="btn secondary" id="toggle-previous-btn" type="button">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
+</section>
+<section class="section" id="leaderboard"><div class="card" id="leaderboard-content"></div></section>
+<section class="section active" id="schedule"><div id="schedule-content"></div></section>
+<section class="section" id="breakgame">
+<div class="ann-game-shell">
+<div class="card ann-hero">
+<span class="ann-eyebrow">👑 Race to the Grand Slam</span>
+<h3>Ann's Game</h3>
+<p>Score penalties first, then become the goalkeeper and make saves. Use free spins and reach <b>50,000</b> for the Grand Prize and <b>100,000</b> for the Grand Slam.</p>
+<div aria-label="How to play" class="ann-howto"><span><b>1</b> Play penalties</span><span><b>2</b> Save shots</span><span><b>3</b> Build 100K</span></div>
+<span class="ann-player-badge" id="ann-player-label">🎮 Playing as Guest Player</span>
+<div class="ann-prize-wrap">
+<div class="ann-prize-label"><span>👑 Grand Slam progress</span><span id="ann-prize-text">0 / 100,000</span></div>
+<div class="ann-prize-track"><div class="ann-prize-fill" id="ann-prize-fill"></div></div>
+<div aria-label="Game milestones" class="ann-milestones">
+<span class="ann-milestone" data-ann-milestone="tenK">⭐ 10K Club</span>
+<span class="ann-milestone" data-ann-milestone="elite">🔥 25K Elite</span>
+<span class="ann-milestone grand" data-ann-milestone="grandPrize">🏆 50K Prize</span>
+<span class="ann-milestone slam" data-ann-milestone="grandSlam">👑 100K Slam</span>
+</div>
+</div>
+</div>
 
-  <section id="predict" class="section">
-    <div class="card">
-      <div class="section-title"><h3>1. Login / create player</h3><span class="tag" id="save-state">Not logged in</span></div>
-      <p class="help">New player: enter a name and choose a password. Returning player: use the same name and password. Tick “Remember me” only on your own device.</p>
-      <div class="login-panel">
-        <input class="input" id="player-name" maxlength="24" autocomplete="username" placeholder="Player name" />
-        <input class="input" id="player-password" maxlength="32" type="password" autocomplete="current-password" placeholder="Player password" />
-        <button class="btn" id="login-btn">Join / Login</button>
-      </div>
-      <label class="remember-row"><input type="checkbox" id="remember-login" /> Remember me on this device</label>
-      <div class="current-user" id="current-user-row"></div>
-    </div>
-    <div class="card" id="champion-card"></div>
-    <div class="card">
-      <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 88 saved</span></div>
-      <p class="help">By default, this list shows only upcoming/editable matches, including the Quarter-finals. Use “Show full schedule” if you need to review older or locked matches. For knockout matches, enter the 90-minute score first. If you predict a 90-minute draw, the penalties and advancing-team fields will appear. Empty matches are skipped. Press Save when finished.</p>
-      <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
-      <div id="predict-content"></div>
-      <button class="btn full" id="save-predictions">💾 Save champion, scores, penalties and advancing picks</button>
-    </div>
-  </section>
 
-  <section id="allpredictions" class="section">
-    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · <span class="score-points">3 pts</span></span><span class="chip outcome">Correct outcome · <span class="score-points">1 pt group / 2 pts playoff</span></span><span class="score-tag advance-tag">Advancing team · <span class="score-points">+1</span></span><span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · <span class="score-points">0 pts</span></span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
-  </section>
 
-  <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
-  <section id="schedule" class="section active"><div id="schedule-content"></div></section>
-  <section id="breakgame" class="section">
-    <div class="ann-game-shell">
-      <div class="card ann-hero">
-        <span class="ann-eyebrow">👑 Race to the Grand Slam</span>
-        <h3>Ann's Game</h3>
-        <p>Score penalties and free spins. Reach <b>50,000</b> for the Grand Prize and <b>100,000</b> for the Grand Slam.</p>
-        <div class="ann-howto" aria-label="How to play"><span><b>1</b> Tap a target</span><span><b>2</b> Choose a kick</span><span><b>3</b> Shoot in green</span></div>
-        <span class="ann-player-badge" id="ann-player-label">🎮 Playing as Guest Player</span>
-        <div class="ann-prize-wrap">
-          <div class="ann-prize-label"><span>👑 Grand Slam progress</span><span id="ann-prize-text">0 / 100,000</span></div>
-          <div class="ann-prize-track"><div class="ann-prize-fill" id="ann-prize-fill"></div></div>
-          <div class="ann-milestones" aria-label="Game milestones">
-            <span class="ann-milestone" data-ann-milestone="tenK">⭐ 10K Club</span>
-            <span class="ann-milestone" data-ann-milestone="elite">🔥 25K Elite</span>
-            <span class="ann-milestone grand" data-ann-milestone="grandPrize">🏆 50K Prize</span>
-            <span class="ann-milestone slam" data-ann-milestone="grandSlam">👑 100K Slam</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="ann-game-layout">
-        <div class="card ann-arena-card">
-          <div class="ann-scoreboard">
-            <div class="ann-scorebox"><strong id="ann-shot-number">0/5</strong><span>Penalties</span></div>
-            <div class="ann-scorebox"><strong id="ann-match-goals">0</strong><span>Goals</span></div>
-            <div class="ann-scorebox"><strong id="ann-match-points">0</strong><span>Style points</span></div>
-            <div class="ann-scorebox"><strong id="ann-stage-name">Warm-up</strong><span>Pressure</span></div>
-          </div>
-
-          <div class="ann-stadium" id="ann-stadium">
-            <div class="ann-crowd" id="ann-crowd-text">THE STADIUM IS READY</div>
-            <div class="ann-goal-celebration" id="ann-goal-celebration" aria-hidden="true"><strong>GOOOAL!</strong><span id="ann-goal-celebration-text">+100 points</span></div>
-            <div class="ann-goal" id="ann-goal">
-              <div class="ann-zone-grid" id="ann-zone-grid" aria-label="Choose where to shoot">
-                <button class="ann-zone" type="button" data-zone="0" aria-label="Aim top left"></button>
-                <button class="ann-zone" type="button" data-zone="1" aria-label="Aim top centre"></button>
-                <button class="ann-zone" type="button" data-zone="2" aria-label="Aim top right"></button>
-                <button class="ann-zone" type="button" data-zone="3" aria-label="Aim middle left"></button>
-                <button class="ann-zone" type="button" data-zone="4" aria-label="Aim middle centre"></button>
-                <button class="ann-zone" type="button" data-zone="5" aria-label="Aim middle right"></button>
-                <button class="ann-zone" type="button" data-zone="6" aria-label="Aim bottom left"></button>
-                <button class="ann-zone" type="button" data-zone="7" aria-label="Aim bottom centre"></button>
-                <button class="ann-zone" type="button" data-zone="8" aria-label="Aim bottom right"></button>
-              </div>
-              <span class="ann-aim-reticle" id="ann-aim-reticle" aria-hidden="true"></span>
-              <div class="ann-keeper" id="ann-keeper" aria-hidden="true">
-                <span class="ann-keeper-head"></span><span class="ann-keeper-body"></span><span class="ann-keeper-legs"></span>
-              </div>
-            </div>
-            <div class="ann-ball" id="ann-ball" aria-hidden="true">⚽</div>
-            <div class="ann-pitch-line" aria-hidden="true"></div>
-          </div>
-
-          <div class="ann-controls">
-            <div class="ann-aim-row">
-              <span class="ann-selected-aim" id="ann-selected-aim">Aim: <b>tap inside the goal</b></span>
-              <span class="small">The green area is the best power.</span>
-            </div>
-            <div class="ann-style-picker" id="ann-style-picker" role="group" aria-label="Choose kick style">
-              <button class="ann-style-btn active" type="button" data-kick-style="placement"><b>🎯 Placement</b><span>Easiest</span></button>
-              <button class="ann-style-btn" type="button" data-kick-style="power"><b>💥 Power</b><span>Fast shot</span></button>
-              <button class="ann-style-btn" type="button" data-kick-style="panenka"><b>🪄 Panenka</b><span>Risk + bonus</span></button>
-            </div>
-            <div class="ann-meter-grid">
-              <div>
-                <div class="ann-power-label"><span>Press SHOOT in the green zone</span><span id="ann-power-number">50%</span></div>
-                <div class="ann-power-track"><div class="ann-power-fill" id="ann-power-fill"></div><span class="ann-power-sweet" id="ann-power-sweet"></span></div>
-              </div>
-            </div>
-            <div class="ann-buttons">
-              <button class="btn secondary" id="ann-start-btn" type="button">Start penalty match</button>
-              <button class="btn ann-shoot" id="ann-shoot-btn" type="button" disabled>⚽ SHOOT</button>
-              <button class="btn secondary" id="ann-sound-btn" type="button" aria-pressed="true">🔈 Enable sound</button>
-            </div>
-            <div class="ann-audio-status" id="ann-audio-status">Tap “Enable sound” once on mobile.</div>
-            <div class="ann-commentary" id="ann-commentary" aria-live="polite"><b>Ready?</b> Start the match, tap a target, and shoot in green.</div>
-          </div>
-          <span class="ann-local-note">🔒 No Firebase · no game login required · records stay only on this browser</span>
-        </div>
-
-        <div class="ann-side-stack">
-          <div class="card ann-spin-card">
-            <div class="section-title"><h3>🎡 Ann's Wheel</h3><span class="tag" id="ann-spin-count">3 spins</span></div>
-            <p class="small">Use free spins for points and bonuses. A shield blocks one bust.</p>
-            <div class="ann-wheel-shell" aria-label="Football bonus wheel">
-              <span class="ann-wheel-pointer" aria-hidden="true"></span>
-              <div class="ann-spin-wheel" id="ann-spin-wheel">
-                <span class="ann-wheel-label" style="--i:0">+100</span>
-                <span class="ann-wheel-label" style="--i:1">+250</span>
-                <span class="ann-wheel-label" style="--i:2">2×</span>
-                <span class="ann-wheel-label" style="--i:3">🛡️</span>
-                <span class="ann-wheel-label" style="--i:4">+2🎟</span>
-                <span class="ann-wheel-label dark" style="--i:5">500</span>
-                <span class="ann-wheel-label" style="--i:6">💥</span>
-                <span class="ann-wheel-label" style="--i:7">❓</span>
-              </div>
-            </div>
-            <button class="btn ann-spin-btn" id="ann-spin-btn" type="button">🎟️ USE FREE SPIN</button>
-            <div class="ann-spin-result" id="ann-spin-result"><b>Three welcome spins are ready.</b><br>Try the wheel now or save them for later.</div>
-            <div class="ann-bonus-stats">
-              <div class="ann-bonus-stat"><strong id="ann-bonus-points">0</strong><span>Bonus bank</span></div>
-              <div class="ann-bonus-stat"><strong id="ann-var-shields">0</strong><span>VAR shields</span></div>
-              <div class="ann-bonus-stat"><strong id="ann-next-multiplier">1×</strong><span>Next goal</span></div>
-              <div class="ann-bonus-stat"><strong id="ann-total-spins">0</strong><span>Spins used</span></div>
-            </div>
-            <div class="ann-spin-history" id="ann-spin-history"></div>
-            <div class="ann-earn-note">Finish a match: <b>+1 spin</b>. Score 4 or 5 goals for extra spins.</div>
-          </div>
-
-          <div class="card">
-            <div class="section-title"><h3>Local locker room</h3><span class="tag">Browser only</span></div>
-            <div class="ann-stats">
-              <div class="ann-stat"><strong id="ann-best-points">0</strong><span>Best points</span></div>
-              <div class="ann-stat"><strong id="ann-best-goals">0</strong><span>Best goals</span></div>
-              <div class="ann-stat"><strong id="ann-trophies">0</strong><span>Trophies</span></div>
-            </div>
-            <div class="small"><b>Crowd:</b> every goal fills the stadium meter.</div>
-            <div class="ann-crowd-meter"><div class="ann-crowd-fill" id="ann-crowd-fill"></div></div>
-            <div class="ann-progress" id="ann-shot-progress"></div>
-            <div class="divider"></div>
-            <div class="section-title"><h3>Recent matches</h3><span class="small" id="ann-match-count">0 played</span></div>
-            <div class="ann-history" id="ann-history"></div>
-            <button class="btn secondary ann-reset" id="ann-reset-btn" type="button">Reset local game records</button>
-            <div class="ann-simple-note">5/5 goals unlocks one Golden Ball bonus shot. Match scores and wheel points build your bank.</div>
-          </div>
-
-          <div class="card ann-champ-card">
-            <div class="section-title"><h3>🏆 Ann's Game Champions</h3><span class="tag" id="ann-champ-tag">Shared board</span></div>
-            <p class="small">Post your best bank. <b>50,000</b> earns the Grand Prize; <b>100,000</b> earns the Grand Slam.</p>
-            <button class="btn ann-post-btn" id="ann-post-btn" type="button">📤 Post my best score</button>
-            <div class="ann-champ-list" id="ann-champ-list"><div class="ann-history-empty">Loading champions…</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="results" class="section">
-    <div class="card" id="admin-login"><div class="section-title"><h3>Admin results</h3></div><p class="help">Only the game admin should enter official scores. This PIN only hides the page in the browser; Firebase rules are still important for real security.</p><div class="admin-grid"><input class="input" id="admin-pin" type="password" placeholder="Admin PIN" /><button class="btn" id="unlock-admin">Unlock</button></div></div>
-    <div id="admin-panel" class="hidden"><div class="warning">Admin mode is unlocked in this browser. Enter official results carefully; they update the leaderboard for everyone.</div><div id="results-content"></div><button class="btn full" id="save-results">💾 Save official results</button></div>
-  </section>
+<div class="ann-game-layout">
+<div class="card ann-arena-card">
+<div class="ann-scoreboard">
+<div class="ann-scorebox"><strong id="ann-shot-number">0/5</strong><span>Penalties</span></div>
+<div class="ann-scorebox"><strong id="ann-match-goals">0</strong><span>Goals</span></div>
+<div class="ann-scorebox"><strong id="ann-match-points">0</strong><span>Style points</span></div>
+<div class="ann-scorebox"><strong id="ann-stage-name">Warm-up</strong><span>Pressure</span></div>
+</div>
+<div class="ann-stadium" id="ann-stadium">
+<div class="ann-crowd" id="ann-crowd-text">THE STADIUM IS READY</div>
+<div aria-hidden="true" class="ann-goal-celebration" id="ann-goal-celebration"><strong>GOOOAL!</strong><span id="ann-goal-celebration-text">+100 points</span></div>
+<div class="ann-goal" id="ann-goal">
+<div aria-label="Choose where to shoot" class="ann-zone-grid" id="ann-zone-grid">
+<button aria-label="Aim top left" class="ann-zone" data-zone="0" type="button"></button>
+<button aria-label="Aim top centre" class="ann-zone" data-zone="1" type="button"></button>
+<button aria-label="Aim top right" class="ann-zone" data-zone="2" type="button"></button>
+<button aria-label="Aim middle left" class="ann-zone" data-zone="3" type="button"></button>
+<button aria-label="Aim middle centre" class="ann-zone" data-zone="4" type="button"></button>
+<button aria-label="Aim middle right" class="ann-zone" data-zone="5" type="button"></button>
+<button aria-label="Aim bottom left" class="ann-zone" data-zone="6" type="button"></button>
+<button aria-label="Aim bottom centre" class="ann-zone" data-zone="7" type="button"></button>
+<button aria-label="Aim bottom right" class="ann-zone" data-zone="8" type="button"></button>
+</div>
+<span aria-hidden="true" class="ann-aim-reticle" id="ann-aim-reticle"></span>
+<div aria-hidden="true" class="ann-keeper" id="ann-keeper">
+<span class="ann-keeper-head"></span><span class="ann-keeper-body"></span><span class="ann-keeper-legs"></span>
+</div>
+</div>
+<div aria-hidden="true" class="ann-ball" id="ann-ball">⚽</div>
+<div aria-hidden="true" class="ann-pitch-line"></div>
+</div>
+<div class="ann-controls">
+<div class="ann-aim-row">
+<span class="ann-selected-aim" id="ann-selected-aim">Aim: <b>tap inside the goal</b></span>
+<span class="small">The green area is the best power.</span>
+</div>
+<div aria-label="Choose kick style" class="ann-style-picker" id="ann-style-picker" role="group">
+<button class="ann-style-btn active" data-kick-style="placement" type="button"><b>🎯 Placement</b><span>Easiest</span></button>
+<button class="ann-style-btn" data-kick-style="power" type="button"><b>💥 Power</b><span>Fast shot</span></button>
+<button class="ann-style-btn" data-kick-style="panenka" type="button"><b>🪄 Panenka</b><span>Risk + bonus</span></button>
+</div>
+<div class="ann-meter-grid">
+<div>
+<div class="ann-power-label"><span>Press SHOOT in the green zone</span><span id="ann-power-number">50%</span></div>
+<div class="ann-power-track"><div class="ann-power-fill" id="ann-power-fill"></div><span class="ann-power-sweet" id="ann-power-sweet"></span></div>
+</div>
+</div>
+<div class="ann-buttons">
+<button class="btn secondary" id="ann-start-btn" type="button">Start penalty match</button>
+<button class="btn ann-shoot" disabled="" id="ann-shoot-btn" type="button">⚽ SHOOT</button>
+<button aria-pressed="true" class="btn secondary" id="ann-sound-btn" type="button">🔈 Enable sound</button>
+</div>
+<div class="ann-audio-status" id="ann-audio-status">Tap “Enable sound” once on mobile.</div>
+<div aria-live="polite" class="ann-commentary" id="ann-commentary"><b>Ready?</b> Start the match, tap a target, and shoot in green.</div>
+</div>
+<span class="ann-local-note">🔒 No Firebase · no game login required · records stay only on this browser</span>
+</div>
+<div class="ann-side-stack">
+<div class="card ann-spin-card">
+<div class="section-title"><h3>🎡 Ann's Wheel</h3><span class="tag" id="ann-spin-count">3 spins</span></div>
+<p class="small">Use free spins for points and bonuses. A shield blocks one bust.</p>
+<div aria-label="Football bonus wheel" class="ann-wheel-shell">
+<span aria-hidden="true" class="ann-wheel-pointer"></span>
+<div class="ann-spin-wheel" id="ann-spin-wheel">
+<span class="ann-wheel-label" style="--i:0">+100</span>
+<span class="ann-wheel-label" style="--i:1">+250</span>
+<span class="ann-wheel-label" style="--i:2">2×</span>
+<span class="ann-wheel-label" style="--i:3">🛡️</span>
+<span class="ann-wheel-label" style="--i:4">+2🎟</span>
+<span class="ann-wheel-label dark" style="--i:5">500</span>
+<span class="ann-wheel-label" style="--i:6">💥</span>
+<span class="ann-wheel-label" style="--i:7">❓</span>
+</div>
+</div>
+<button class="btn ann-spin-btn" id="ann-spin-btn" type="button">🎟️ USE FREE SPIN</button>
+<div class="ann-spin-result" id="ann-spin-result"><b>Three welcome spins are ready.</b><br/>Try the wheel now or save them for later.</div>
+<div class="ann-bonus-stats">
+<div class="ann-bonus-stat"><strong id="ann-bonus-points">0</strong><span>Bonus bank</span></div>
+<div class="ann-bonus-stat"><strong id="ann-var-shields">0</strong><span>VAR shields</span></div>
+<div class="ann-bonus-stat"><strong id="ann-next-multiplier">1×</strong><span>Next goal</span></div>
+<div class="ann-bonus-stat"><strong id="ann-total-spins">0</strong><span>Spins used</span></div>
+</div>
+<div class="ann-spin-history" id="ann-spin-history"></div>
+<div class="ann-earn-note">Finish a match: <b>+1 spin</b>. Score 4 or 5 goals for extra spins.</div>
+</div>
+<div class="card">
+<div class="section-title"><h3>Local locker room</h3><span class="tag">Browser only</span></div>
+<div class="ann-stats">
+<div class="ann-stat"><strong id="ann-best-points">0</strong><span>Best points</span></div>
+<div class="ann-stat"><strong id="ann-best-goals">0</strong><span>Best goals</span></div>
+<div class="ann-stat"><strong id="ann-trophies">0</strong><span>Trophies</span></div>
+</div>
+<div class="small"><b>Crowd:</b> every goal fills the stadium meter.</div>
+<div class="ann-crowd-meter"><div class="ann-crowd-fill" id="ann-crowd-fill"></div></div>
+<div class="ann-progress" id="ann-shot-progress"></div>
+<div class="divider"></div>
+<div class="section-title"><h3>Recent matches</h3><span class="small" id="ann-match-count">0 played</span></div>
+<div class="ann-history" id="ann-history"></div>
+<button class="btn secondary ann-reset" id="ann-reset-btn" type="button">Reset local game records</button>
+<div class="ann-simple-note">5/5 goals unlocks one Golden Ball bonus shot. Match scores and wheel points build your bank.</div>
+</div>
+<div class="card ann-champ-card">
+<div class="section-title"><h3>🏆 Ann's Game Champions</h3><span class="tag" id="ann-champ-tag">Shared board</span></div>
+<p class="small">Post your best bank. <b>50,000</b> earns the Grand Prize; <b>100,000</b> earns the Grand Slam.</p>
+<button class="btn ann-post-btn" id="ann-post-btn" type="button">📤 Post my best score</button>
+<div class="ann-champ-list" id="ann-champ-list"><div class="ann-history-empty">Loading champions…</div></div>
+</div>
+</div>
+</div><div class="ann-mode-divider">🧤 Goalkeeper Challenge</div><div class="card ann-keeper-challenge-card">
+<div class="ann-gk-head">
+<div>
+<h3>🧤 Goalkeeper Challenge</h3>
+<p>You are the goalkeeper. Press start, watch the ball, and tap directly inside the goal where the shot is heading.</p>
+</div>
+<span class="ann-gk-badge">Saves add to Grand Slam progress</span>
+</div>
+<div class="ann-gk-layout">
+<div>
+<div class="ann-gk-scoreboard">
+<div class="ann-gk-scorebox"><strong id="ann-gk-shot">0/5</strong><span>Shots</span></div>
+<div class="ann-gk-scorebox"><strong id="ann-gk-saves">0</strong><span>Saves</span></div>
+<div class="ann-gk-scorebox"><strong id="ann-gk-points">0</strong><span>Round points</span></div>
+<div class="ann-gk-scorebox"><strong id="ann-gk-streak">0</strong><span>Save streak</span></div>
+</div>
+<div class="ann-gk-stadium" id="ann-gk-stadium">
+<div class="ann-gk-crowd" id="ann-gk-crowd">KEEP YOUR EYES ON THE BALL</div>
+<div class="ann-gk-goal" id="ann-gk-goal">
+<div aria-label="Choose where the goalkeeper dives" class="ann-gk-zone-grid" id="ann-gk-zone-grid">
+<button aria-label="Dive left" class="ann-gk-zone" data-gk-zone="3" disabled="" type="button"></button>
+<button aria-label="Stay in the centre" class="ann-gk-zone" data-gk-zone="4" disabled="" type="button"></button>
+<button aria-label="Dive right" class="ann-gk-zone" data-gk-zone="5" disabled="" type="button"></button>
+</div>
+<div aria-hidden="true" class="ann-gk-keeper" id="ann-gk-keeper">
+<span class="ann-keeper-head"></span><span class="ann-keeper-body"></span><span class="ann-keeper-legs"></span>
+</div>
+</div>
+<div aria-hidden="true" class="ann-gk-ball" id="ann-gk-ball">⚽</div>
+<div aria-hidden="true" class="ann-gk-shooter">🧍</div>
+</div>
+<div class="ann-gk-controls">
+<button class="btn ann-gk-start" id="ann-gk-start-btn" type="button">🧤 Start Keeper Challenge</button>
+<div aria-live="polite" class="ann-gk-commentary" id="ann-gk-commentary"><b>Ready?</b> Start the round, then tap inside the goal where the ball is going.</div>
+<div class="ann-gk-progress" id="ann-gk-progress"></div>
+</div>
+</div>
+<div class="ann-gk-side">
+<div class="ann-gk-tip"><b>Easy controls:</b><br/>Tap directly inside the goal where the ball is heading. Five shots per round; a clean sheet gives a large bonus and two free spins.</div>
+<div class="ann-gk-stats">
+<div class="ann-gk-stat"><strong id="ann-gk-best">0</strong><span>Best saves</span></div>
+<div class="ann-gk-stat"><strong id="ann-gk-total-saves">0</strong><span>Total saves</span></div>
+<div class="ann-gk-stat"><strong id="ann-gk-best-streak">0</strong><span>Best streak</span></div>
+<div class="ann-gk-stat"><strong id="ann-gk-rounds">0</strong><span>Rounds played</span></div>
+</div>
+<div class="section-title"><h3>Recent keeper rounds</h3><span class="small">Browser only</span></div>
+<div class="ann-gk-history" id="ann-gk-history"><div class="ann-gk-empty">No goalkeeper rounds yet.</div></div>
+</div>
+</div>
+</div></div>
+</section>
+<section class="section" id="results">
+<div class="card" id="admin-login"><div class="section-title"><h3>Admin results</h3></div><p class="help">Only the game admin should enter official scores. This PIN only hides the page in the browser; Firebase rules are still important for real security.</p><div class="admin-grid"><input class="input" id="admin-pin" placeholder="Admin PIN" type="password"/><button class="btn" id="unlock-admin">Unlock</button></div></div>
+<div class="hidden" id="admin-panel"><div class="warning">Admin mode is unlocked in this browser. Enter official results carefully; they update the leaderboard for everyone.</div><div id="results-content"></div><button class="btn full" id="save-results">💾 Save official results</button></div>
+</section>
 </main>
 <div class="toast" id="toast"></div>
 <script>
@@ -1086,9 +1181,9 @@ const ANN_ZONE_POSITIONS = [
 ];
 const ANN_PRESSURE_STAGES = ['Friendly','Group stage','Knockout','Semi-final','FINAL','Golden Ball'];
 const ANN_KICK_STYLES = {
-  placement:{label:'Placement',icon:'🎯',ideal:[32,82],powerMid:57,miss:.003,save:-.05,points:15},
-  power:{label:'Power',icon:'💥',ideal:[58,94],powerMid:78,miss:.018,save:-.18,points:40},
-  panenka:{label:'Panenka',icon:'🪄',ideal:[28,66],powerMid:47,miss:.035,save:-.03,points:80}
+  placement:{label:'Placement',icon:'🎯',ideal:[32,82],powerMid:57,miss:.003,save:0,points:15},
+  power:{label:'Power',icon:'💥',ideal:[58,94],powerMid:78,miss:.018,save:-.10,points:40},
+  panenka:{label:'Panenka',icon:'🪄',ideal:[28,66],powerMid:47,miss:.035,save:-.01,points:80}
 };
 const ANN_GOAL_LINES = ['Brilliant finish!','The keeper went the wrong way.','Straight into the net!'];
 const ANN_SAVE_LINES = ['The keeper saves it.','Good shot, better save.','The keeper guessed correctly.'];
@@ -1105,7 +1200,7 @@ const ANN_SPIN_OUTCOMES = [
   {label:'Mystery reward',short:'Mystery',type:'mystery',value:0}
 ];
 
-function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',milestoneVersion:2,milestones:{tenK:false,elite:false,grandPrize:false,grandSlam:false},grandPrizeWon:false,grandSlamWon:false,submittedBest:0,pendingSpin:null};}
+function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',keeperMatches:0,keeperSaves:0,keeperShots:0,keeperBestSaves:0,keeperBestStreak:0,keeperHistory:[],milestoneVersion:2,milestones:{tenK:false,elite:false,grandPrize:false,grandSlam:false},grandPrizeWon:false,grandSlamWon:false,submittedBest:0,pendingSpin:null};}
 function loadAnnRecord(){
   try{
     const parsed=JSON.parse(safeLocalGet(ANN_GAME_STORAGE_KEY)||'null');
@@ -1117,6 +1212,7 @@ function loadAnnRecord(){
       history:Array.isArray(parsed.history)?parsed.history.slice(0,6):[],freeSpins:Math.max(0,Number(parsed.freeSpins)||0),bonusPoints:Number(parsed.bonusPoints)||0,
       varShields:Math.max(0,Number(parsed.varShields)||0),nextGoalMultiplier:Number(parsed.nextGoalMultiplier)===2?2:1,totalSpins:Number(parsed.totalSpins)||0,
       spinHistory:Array.isArray(parsed.spinHistory)?parsed.spinHistory.slice(0,6):[],lastSpin:String(parsed.lastSpin||'Free spins are ready.'),
+      keeperMatches:Number(parsed.keeperMatches)||0,keeperSaves:Number(parsed.keeperSaves)||0,keeperShots:Number(parsed.keeperShots)||0,keeperBestSaves:Number(parsed.keeperBestSaves)||0,keeperBestStreak:Number(parsed.keeperBestStreak)||0,keeperHistory:Array.isArray(parsed.keeperHistory)?parsed.keeperHistory.slice(0,6):[],
       milestoneVersion:2,
       milestones:(()=>{const bank=(Number(parsed.bonusPoints)||0)+(Number(parsed.bestPoints)||0);const modern=Number(parsed.milestoneVersion)>=2;const saved=modern&&parsed.milestones&&typeof parsed.milestones==='object'?parsed.milestones:{};return {tenK:saved.tenK===true||bank>=10000,elite:saved.elite===true||bank>=25000,grandPrize:saved.grandPrize===true||bank>=ANN_GRAND_PRIZE,grandSlam:saved.grandSlam===true||bank>=ANN_GRAND_SLAM};})(),
       grandPrizeWon:(Number(parsed.milestoneVersion)>=2&&parsed.grandPrizeWon===true)||((Number(parsed.bonusPoints)||0)+(Number(parsed.bestPoints)||0))>=ANN_GRAND_PRIZE,
@@ -1126,8 +1222,11 @@ function loadAnnRecord(){
   }catch(e){return defaultAnnRecord();}
 }
 function defaultAnnSession(previousRaf=0){return {active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,aimX:50,aimY:50,kickStyle:'placement',power:50,powerDirection:1,accuracy:50,accuracyDirection:-1,lastFrame:0,raf:previousRaf,outcomes:[],bonus:false,sideHistory:[]};}
+function defaultAnnKeeperSession(){return {active:false,locked:false,shot:0,maxShots:5,saves:0,points:0,streak:0,bestStreak:0,targetZone:null,chosenZone:null,shotStarted:0,shotWindow:1300,timer:0,phase:'idle',outcomes:[],token:0};}
 let annRecord=loadAnnRecord();
 let annSession=defaultAnnSession();
+let annKeeperSession=defaultAnnKeeperSession();
+let annKeeperToken=0;
 let annSpinState={spinning:false,rotation:0,raf:0,token:0,lastSector:null};
 let annAudioContext=null;
 let annAudioArmed=false;
@@ -1245,6 +1344,7 @@ function annResetActors(){
   if(keeper){keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='51%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
 }
 function startAnnMatch(){
+  if(annKeeperSession.active){annKeeperSetComment('<b>Finish the Goalkeeper Challenge first.</b>');return;}
   if(annSession.locked)return;annEnsureAudio(false).then(()=>{annTone(440,.07,'square');annTone(660,.09,'sine',.08);});
   const raf=annSession.raf;annSession=defaultAnnSession(raf);annSession.active=true;annSession.power=34+annRandom(38);annSession.accuracy=50;annSession.powerDirection=annChance(.5)?1:-1;annSession.accuracyDirection=1;
   annResetActors();document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.disabled=false);
@@ -1261,7 +1361,7 @@ function annShotQuality(power,accuracy,styleName){
 }
 function annShotResolution(target,power,accuracy,styleName){
   const pressure=Math.min(annSession.shot,5);const style=ANN_KICK_STYLES[styleName];const zone=annZoneFromAim(target.x,target.y);const side=target.x<36?0:target.x>64?2:1;
-  const repeats=annSession.sideHistory.slice(-2).filter(s=>s===side).length;const readChance=.08+pressure*.022+repeats*.055;
+  const repeats=annSession.sideHistory.slice(-2).filter(s=>s===side).length;const readChance=.30+pressure*.045+repeats*.10;
   let keeperZone;if(annChance(readChance)){const row=target.y<34?0:target.y<67?1:2;keeperZone=row*3+side;}else keeperZone=annRandom(9);
   const quality=annShotQuality(power,accuracy,styleName);const edge=Math.max(Math.abs(target.x-50)/50,Math.abs(target.y-50)/50);
   let missChance=style.miss+(1-quality.score)*.10;
@@ -1271,11 +1371,11 @@ function annShotResolution(target,power,accuracy,styleName){
   if(styleName==='panenka'&&(side!==1||target.y<24))missChance+=.07;
   if(annChance(missChance)){const woodwork=edge>.78&&annChance(.42);return {type:woodwork?'woodwork':'miss',keeperZone,style:0,panenka:false,varState:'none',quality,zone,target};}
   const zr=Math.floor(zone/3),zc=zone%3,kr=Math.floor(keeperZone/3),kc=keeperZone%3,distance=Math.abs(zr-kr)+Math.abs(zc-kc);
-  let saveChance=distance===0?.43+pressure*.014:distance===1?.10+pressure*.006:.01;
-  saveChance+=style.save;saveChance-=(quality.score-.5)*.22;saveChance-=edge*.08;if(power<24)saveChance+=.10;
+  let saveChance=distance===0?.68+pressure*.025:distance===1?.25+pressure*.012:.035;
+  saveChance+=style.save;saveChance-=(quality.score-.5)*.15;saveChance-=edge*.05;if(power<24)saveChance+=.12;
   let panenka=false;
-  if(styleName==='panenka'){panenka=true;const keeperStayed=[1,4,7].includes(keeperZone);saveChance=keeperStayed?.58+pressure*.01:.02;}
-  if(annChance(annClamp(saveChance,.005,.72)))return {type:'saved',keeperZone,style:0,panenka,varState:'none',quality,zone,target};
+  if(styleName==='panenka'){panenka=true;const keeperStayed=[1,4,7].includes(keeperZone);saveChance=keeperStayed?.68+pressure*.015:.05;}
+  if(annChance(annClamp(saveChance,.015,.86)))return {type:'saved',keeperZone,style:0,panenka,varState:'none',quality,zone,target};
   const cornerBonus=Math.round(edge*42);const topBonus=Math.round((1-target.y/100)*18);const perfectBonus=quality.label==='PERFECT'?60:quality.label==='Clean'?25:0;
   let stylePoints=100+style.points+cornerBonus+topBonus+perfectBonus+annSession.streak*18;
   let varState='none';if(annChance(.055)){const r=annRandom(100);varState=r<4?'disallowed':r<16?'retake':'confirmed';}
@@ -1323,6 +1423,73 @@ function prepareNextAnnShot(){
   annResetActors();document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});document.querySelectorAll('[data-kick-style]').forEach(btn=>btn.disabled=false);
   const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='⚽ SHOOT';}renderBreakGame();annUpdateAimUI();updateAnnPowerUI();
 }
+
+function annKeeperSetComment(html){const el=document.getElementById('ann-gk-commentary');if(el)el.innerHTML=html;}
+function annKeeperDisableZones(disabled=true){document.querySelectorAll('[data-gk-zone]').forEach(btn=>{btn.disabled=disabled;if(disabled)btn.classList.remove('selected');});}
+function annKeeperMoveKeeper(zone){const el=document.getElementById('ann-gk-keeper'),pos=ANN_ZONE_POSITIONS[zone];if(!el||!pos)return;el.style.left=`${pos.left}%`;el.style.top=`${pos.top}%`;}
+function annKeeperGoalPoint(zone){
+  const goal=document.getElementById('ann-gk-goal'),stadium=document.getElementById('ann-gk-stadium'),pos=ANN_ZONE_POSITIONS[zone];if(!goal||!stadium||!pos)return {left:50,top:45};
+  const gr=goal.getBoundingClientRect(),sr=stadium.getBoundingClientRect();return {left:((gr.left-sr.left)+(pos.left/100)*gr.width)/sr.width*100,top:((gr.top-sr.top)+(pos.top/100)*gr.height)/sr.height*100};
+}
+function annKeeperResetActors(){
+  const ball=document.getElementById('ann-gk-ball'),keeper=document.getElementById('ann-gk-keeper');
+  if(ball){ball.classList.remove('flying','caught','goal');ball.style.transition='none';ball.style.left='50%';ball.style.top='89%';ball.style.opacity='1';requestAnimationFrame(()=>requestAnimationFrame(()=>ball.style.transition=''));}
+  if(keeper){keeper.classList.remove('catch');keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='52%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
+}
+function renderAnnKeeperGame(){
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  set('ann-gk-shot',`${annKeeperSession.shot}/${annKeeperSession.maxShots}`);set('ann-gk-saves',annKeeperSession.saves);set('ann-gk-points',annKeeperSession.points);set('ann-gk-streak',annKeeperSession.streak);
+  set('ann-gk-best',annRecord.keeperBestSaves||0);set('ann-gk-total-saves',annRecord.keeperSaves||0);set('ann-gk-best-streak',annRecord.keeperBestStreak||0);set('ann-gk-rounds',annRecord.keeperMatches||0);
+  const start=document.getElementById('ann-gk-start-btn');if(start){start.disabled=annKeeperSession.phase==='preparing'||annKeeperSession.phase==='flight'||annKeeperSession.phase==='resolving';start.textContent=annKeeperSession.active?'Keeper round active':annKeeperSession.phase==='finished'?'🧤 Play keeper again':'🧤 Start Keeper Challenge';}
+  const crowd=document.getElementById('ann-gk-crowd');if(crowd)crowd.textContent=annKeeperSession.saves>=4?'THE WALL CANNOT BE BEATEN':annKeeperSession.streak>=2?'WHAT A SAVE STREAK!':annKeeperSession.phase==='flight'?'DIVE NOW!':annKeeperSession.active?'STAY READY':'KEEP YOUR EYES ON THE BALL';
+  const progress=document.getElementById('ann-gk-progress');if(progress){let html='';for(let i=0;i<annKeeperSession.maxShots;i++){const outcome=annKeeperSession.outcomes[i];const cls=outcome||(annKeeperSession.active&&i===annKeeperSession.shot?'current':'');const symbol=outcome==='save'?'🧤':outcome==='parry'?'✋':outcome==='goal'?'⚽':i+1;html+=`<span class="ann-gk-dot ${esc(cls)}">${esc(symbol)}</span>`;}progress.innerHTML=html;}
+  const history=document.getElementById('ann-gk-history');if(history)history.innerHTML=(annRecord.keeperHistory||[]).length?annRecord.keeperHistory.map(x=>`<div class="ann-gk-history-row"><span>${Number(x.saves)===5?'🧱':'🧤'}</span><div><b>${esc(x.title||'Keeper round')}</b><div class="small">${Number(x.saves)||0}/5 saves · +${Number(x.spins)||0} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-gk-empty">No goalkeeper rounds yet.</div>';
+}
+function startAnnKeeperRound(){
+  if(annSession.active){annKeeperSetComment('<b>Finish the penalty match first.</b> Then become the goalkeeper.');return;}
+  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annKeeperSession=defaultAnnKeeperSession();annKeeperSession.active=true;annKeeperSession.phase='preparing';annKeeperSession.token=annKeeperToken;annEnsureAudio(false);annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>${esc(annPlayerName())}</b>, gloves on. Five shots are coming.`);renderAnnKeeperGame();annTone(360,.07,'square');annTone(540,.09,'sine',.07);annHaptic([15,30,15]);setTimeout(()=>annKeeperPrepareShot(annKeeperSession.token),320);
+}
+function annKeeperPrepareShot(token){
+  if(!annKeeperSession.active||token!==annKeeperSession.token)return;annKeeperSession.locked=true;annKeeperSession.phase='preparing';annKeeperSession.targetZone=null;annKeeperSession.chosenZone=null;annKeeperResetActors();annKeeperDisableZones(true);annKeeperSetComment(`<b>Shot ${annKeeperSession.shot+1}:</b> the striker is preparing…`);renderAnnKeeperGame();
+  annKeeperSession.timer=setTimeout(()=>annKeeperLaunchShot(token),420);
+}
+function annKeeperLaunchShot(token){
+  if(!annKeeperSession.active||token!==annKeeperSession.token)return;
+  const weighted=[0,0,3,3,6,6,1,4,7,2,2,5,5,8,8];annKeeperSession.targetZone=weighted[annRandom(weighted.length)];annKeeperSession.shotWindow=Math.max(680,900-annKeeperSession.shot*55);annKeeperSession.shotStarted=performance.now();annKeeperSession.locked=false;annKeeperSession.phase='flight';annKeeperDisableZones(false);
+  const ball=document.getElementById('ann-gk-ball'),pos=annKeeperGoalPoint(annKeeperSession.targetZone);if(ball){ball.style.transition=`left ${annKeeperSession.shotWindow}ms linear,top ${annKeeperSession.shotWindow}ms linear,transform ${annKeeperSession.shotWindow}ms linear,opacity .2s`;void ball.offsetWidth;ball.classList.add('flying');ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
+  annKeeperSetComment('<b>SHOOT!</b> Tap inside the goal where the ball is going.');renderAnnKeeperGame();annTone(210,.05,'square');annHaptic(12);
+  annKeeperSession.timer=setTimeout(()=>annKeeperResolve(null,true,token),annKeeperSession.shotWindow+25);
+}
+function annKeeperChooseZone(zone){
+  if(!annKeeperSession.active||annKeeperSession.phase!=='flight'||annKeeperSession.locked)return;annKeeperResolve(Number(zone),false,annKeeperSession.token);
+}
+function annKeeperResolve(chosenZone,timedOut,token){
+  if(!annKeeperSession.active||token!==annKeeperSession.token||annKeeperSession.phase!=='flight')return;
+  annKeeperSession.locked=true;annKeeperSession.phase='resolving';if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperDisableZones(true);annKeeperSession.chosenZone=chosenZone;
+  const target=annKeeperSession.targetZone,reaction=timedOut?annKeeperSession.shotWindow:Math.max(0,performance.now()-annKeeperSession.shotStarted);let outcome='goal',award=0;
+  if(chosenZone!==null&&!Number.isNaN(chosenZone)){
+    const targetLane=target%3,chosenLane=chosenZone%3,laneDistance=Math.abs(targetLane-chosenLane);const selected=document.querySelector(`[data-gk-zone="${chosenZone}"]`);if(selected)selected.classList.add('selected');
+    if(laneDistance===0){annKeeperMoveKeeper(target);outcome='save';annKeeperSession.streak++;const speed=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/4.2));award=300+speed+annKeeperSession.streak*55;}
+    else if(laneDistance===1&&reaction<=annKeeperSession.shotWindow*.34){annKeeperMoveKeeper(chosenZone);outcome='parry';annKeeperSession.streak++;const speed=Math.max(0,Math.round((annKeeperSession.shotWindow-reaction)/6));award=170+speed+annKeeperSession.streak*30;}
+    else{annKeeperMoveKeeper(chosenZone);annKeeperSession.streak=0;}
+  }else annKeeperSession.streak=0;
+  const keeper=document.getElementById('ann-gk-keeper'),ball=document.getElementById('ann-gk-ball');
+  if(outcome==='save'||outcome==='parry'){
+    annKeeperSession.saves++;annKeeperSession.points+=award;annKeeperSession.bestStreak=Math.max(annKeeperSession.bestStreak,annKeeperSession.streak);if(keeper)keeper.classList.add('catch');if(ball){ball.classList.add('caught');const catchZone=chosenZone===null?target:chosenZone,pos=annKeeperGoalPoint(catchZone);ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
+    annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> ${Math.round(reaction)} ms · <b>+${award} pts</b>`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
+  }else{
+    if(ball)ball.classList.add('goal');annKeeperSetComment(timedOut?'<b>GOAL.</b> Too late — the ball reached the net.':'<b>GOAL.</b> Wrong area — follow the ball and tap where it is heading.');annTone(145,.2,'sawtooth');annHaptic(48);
+  }
+  annKeeperSession.outcomes.push(outcome);annKeeperSession.shot++;annRecord.keeperShots=(annRecord.keeperShots||0)+1;if(outcome!=='goal')annRecord.keeperSaves=(annRecord.keeperSaves||0)+1;annRecord.keeperBestStreak=Math.max(annRecord.keeperBestStreak||0,annKeeperSession.streak);saveAnnRecord();renderAnnKeeperGame();
+  annKeeperSession.timer=setTimeout(()=>{if(!annKeeperSession.active||token!==annKeeperSession.token)return;if(annKeeperSession.shot>=annKeeperSession.maxShots)finishAnnKeeperRound();else annKeeperPrepareShot(token);},560);
+}
+function finishAnnKeeperRound(){
+  if(!annKeeperSession.active)return;annKeeperSession.active=false;annKeeperSession.locked=false;annKeeperSession.phase='finished';let cleanBonus=annKeeperSession.saves===5?1000:annKeeperSession.saves===4?400:0;const earned=annKeeperSession.points+cleanBonus;let spins=annKeeperSession.saves===5?2:annKeeperSession.saves>=3?1:0;
+  annRecord.bonusPoints+=earned;annRecord.freeSpins+=spins;annRecord.keeperMatches=(annRecord.keeperMatches||0)+1;annRecord.keeperBestSaves=Math.max(annRecord.keeperBestSaves||0,annKeeperSession.saves);annRecord.keeperBestStreak=Math.max(annRecord.keeperBestStreak||0,annKeeperSession.bestStreak);
+  const title=annKeeperSession.saves===5?'🧱 CLEAN SHEET':annKeeperSession.saves===4?'🧤 Goalkeeper masterclass':annKeeperSession.saves>=3?'🧤 Strong hands':annKeeperSession.saves>=1?'✋ One for the highlight reel':'🥅 Shooting practice';annRecord.keeperHistory=[{saves:annKeeperSession.saves,points:earned,spins,title,at:Date.now()},...(annRecord.keeperHistory||[])].slice(0,6);saveAnnRecord();
+  annKeeperSetComment(`<b>${esc(title)}</b> · ${annKeeperSession.saves}/5 saves · <b>+${earned} Grand Slam points</b>${cleanBonus?` · ${cleanBonus} clean-sheet bonus`:''}${spins?` · +${spins} free spin${spins===1?'':'s'}`:''}`);annKeeperDisableZones(true);const start=document.getElementById('ann-gk-start-btn');if(start)start.textContent='Play keeper again';if(annKeeperSession.saves>=4){annCelebrate(annKeeperSession.saves===5);annTone(660,.1,'sine');annTone(880,.12,'sine',.12);annTone(1100,.16,'sine',.25);}checkMilestones();renderBreakGame();
+}
+
 function finishAnnMatch(){
   annSession.active=false;annSession.locked=false;const trophy=annSession.goals>=4;let earnedSpins=1;if(annSession.goals>=4)earnedSpins++;if(annSession.goals>=5)earnedSpins++;
   annRecord.freeSpins+=earnedSpins;annRecord.matches++;if(trophy)annRecord.trophies++;annRecord.bestGoals=Math.max(annRecord.bestGoals,annSession.goals);annRecord.bestPoints=Math.max(annRecord.bestPoints,annSession.points);
@@ -1417,8 +1584,8 @@ async function toggleAnnSound(){
   annRecord.sound=true;saveAnnRecord();const ok=await annEnsureAudio(true);if(!ok){annAudioState='blocked';renderBreakGame();}
 }
 function resetAnnRecords(){
-  if(annSpinState.spinning)return;if(annSession.active&&!window.confirm('A penalty match is active. Reset the match, free spins and all local records?'))return;if(!annSession.active&&!window.confirm('Reset all local penalty and free-spin records on this browser?'))return;
-  annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);renderBreakGame();
+  if(annSpinState.spinning)return;const anyActive=annSession.active||annKeeperSession.active;if(anyActive&&!window.confirm('A mini-game is active. Reset both games, free spins and all local records?'))return;if(!anyActive&&!window.confirm('Reset all local Ann’s Game records on this browser?'))return;
+  if(annKeeperSession.timer)clearTimeout(annKeeperSession.timer);annKeeperToken++;annRecord=defaultAnnRecord();saveAnnRecord();annSession=defaultAnnSession(annSession.raf);annKeeperSession=defaultAnnKeeperSession();annKeeperSession.token=annKeeperToken;annSpinState={spinning:false,rotation:0,raf:0,token:annSpinState.token+1,lastSector:null};annPendingRecovered=false;annResetActors();annKeeperResetActors();annKeeperDisableZones(true);const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);annKeeperSetComment('<b>Ready?</b> Start the round, then tap inside the goal where the ball is going.');renderBreakGame();
 }
 function renderBreakGame(){
   const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};const player=annPlayerName();
@@ -1438,7 +1605,7 @@ function renderBreakGame(){
   const history=document.getElementById('ann-history');if(history)history.innerHTML=annRecord.history.length?annRecord.history.map(x=>`<div class="ann-history-row"><span>${Number(x.goals)>=4?'🏆':'⚽'}</span><div><b>${esc(x.title||'Penalty match')}</b><div class="small">${Number(x.goals)||0}/${Number(x.shots)||5} goals · +${Number(x.spins)||1} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-history-empty">No completed matches yet. The locker room is dramatically empty.</div>';
   const spinHistory=document.getElementById('ann-spin-history');if(spinHistory)spinHistory.innerHTML=annRecord.spinHistory.length?annRecord.spinHistory.map(x=>`<span class="ann-spin-chip">🎡 ${esc(x)}</span>`).join(''):'<span class="ann-spin-chip">Welcome spins ready</span>';
   const bank=annBank(),pct=Math.min(100,(bank/ANN_GRAND_SLAM)*100);const prizeText=document.getElementById('ann-prize-text');if(prizeText)prizeText.textContent=annRecord.grandSlamWon?'👑 GRAND SLAM WON':`${bank.toLocaleString()} / ${ANN_GRAND_SLAM.toLocaleString()}`;const prizeFill=document.getElementById('ann-prize-fill');if(prizeFill){prizeFill.style.width=`${pct}%`;prizeFill.classList.toggle('won',annRecord.grandSlamWon);}document.querySelectorAll('[data-ann-milestone]').forEach(el=>{const milestone=ANN_MILESTONES.find(m=>m.key===el.dataset.annMilestone);if(milestone)el.classList.toggle('reached',bank>=milestone.threshold||annRecord.milestones?.[milestone.key]===true);});
-  renderAnnChampions();annUpdateAimUI();updateAnnPowerUI();if(!annPendingRecovered&&!annSpinState.spinning&&annRecord.pendingSpin)setTimeout(recoverAnnPendingSpin,0);
+  renderAnnChampions();renderAnnKeeperGame();annUpdateAimUI();updateAnnPowerUI();if(!annPendingRecovered&&!annSpinState.spinning&&annRecord.pendingSpin)setTimeout(recoverAnnPendingSpin,0);
 }
 
 function getSavedLogin(){try{return JSON.parse(safeLocalGet('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
@@ -1724,6 +1891,8 @@ document.getElementById('ann-sound-btn').onclick=toggleAnnSound;
 document.getElementById('ann-reset-btn').onclick=resetAnnRecords;
 document.getElementById('ann-spin-btn').onclick=spinAnnWheel;
 document.getElementById('ann-post-btn').onclick=postAnnScore;
+document.getElementById('ann-gk-start-btn').onclick=startAnnKeeperRound;
+document.getElementById('ann-gk-zone-grid').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-gk-zone]');if(b){e.preventDefault();annKeeperChooseZone(Number(b.dataset.gkZone));}});
 document.getElementById('ann-goal').addEventListener('pointerdown',annAimFromPointer);
 document.getElementById('ann-style-picker').addEventListener('click',e=>{const b=e.target.closest('[data-kick-style]');if(b){annEnsureAudio(false);annSetKickStyle(b.dataset.kickStyle);}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&annRecord.sound&&annAudioArmed)annEnsureAudio(false);});
