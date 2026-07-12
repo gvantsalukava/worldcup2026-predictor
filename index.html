@@ -458,7 +458,7 @@
 .ann-spin-wheel{position:absolute;inset:0;border-radius:50%;border:8px solid #101b34;background:conic-gradient(from -22.5deg,#ec008c 0 45deg,#fff200 45deg 90deg,#39ff14 90deg 135deg,#ff86c7 135deg 180deg,#8eeaff 180deg 225deg,#101b34 225deg 270deg,#ffb52e 270deg 315deg,#b88cff 315deg 360deg);transition:transform 3s cubic-bezier(.12,.78,.12,1);will-change:transform;overflow:hidden}
 .ann-spin-wheel:before{content:'';position:absolute;inset:10px;border-radius:50%;border:2px dashed rgba(255,255,255,.72)}
 .ann-spin-wheel:after{content:'⚽';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#fff;border:7px solid #101b34;font-size:31px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
-.ann-wheel-label{position:absolute;left:50%;top:50%;z-index:3;width:46px;margin-left:-23px;margin-top:-10px;text-align:center;font-size:12px;font-weight:950;color:#101b34;text-shadow:0 1px 0 rgba(255,255,255,.75);transform:rotate(calc(var(--i) * 45deg)) translateY(-91px) rotate(calc(var(--i) * -45deg));pointer-events:none}
+.ann-wheel-label{position:absolute;left:50%;top:50%;z-index:3;width:46px;margin-left:-23px;margin-top:-10px;text-align:center;font-size:12px;font-weight:950;color:#101b34;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.75);transform:rotate(calc(var(--i) * 45deg)) translateY(-91px) rotate(calc(var(--i) * -45deg));pointer-events:none}
 .ann-wheel-label.dark{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.7)}
 .ann-spin-btn{width:100%;min-height:48px;font-size:15px;margin-top:4px}
 .ann-spin-btn:disabled{opacity:.55}
@@ -471,7 +471,7 @@
 .ann-spin-history{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:9px}
 .ann-spin-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;color:#544850}
 .ann-earn-note{margin-top:9px;padding:9px 10px;border-radius:12px;background:#fffde8;border:1px solid #f0d900;color:#5a4300;font-size:10px;line-height:1.4;font-weight:850}
-@media(max-width:560px){.ann-wheel-shell{width:222px;height:222px}.ann-wheel-label{transform:rotate(calc(var(--i) * 45deg)) translateY(-80px) rotate(calc(var(--i) * -45deg));font-size:11px}.ann-spin-wheel:after{width:58px;height:58px;font-size:27px}}
+@media(max-width:560px){.ann-wheel-shell{width:230px;height:230px}.ann-wheel-label{width:40px;margin-left:-20px;transform:rotate(calc(var(--i) * 45deg)) translateY(-84px) rotate(calc(var(--i) * -45deg));font-size:10px;letter-spacing:-.02em}.ann-spin-wheel:after{width:50px;height:50px;font-size:23px}}
 @media(prefers-reduced-motion:reduce){.ann-spin-wheel{transition-duration:.25s}}
 
 </style>
@@ -600,9 +600,9 @@
                 <span class="ann-wheel-label" style="--i:1">+250</span>
                 <span class="ann-wheel-label" style="--i:2">2×</span>
                 <span class="ann-wheel-label" style="--i:3">🛡️</span>
-                <span class="ann-wheel-label" style="--i:4">+2🎟️</span>
-                <span class="ann-wheel-label dark" style="--i:5">💰500</span>
-                <span class="ann-wheel-label" style="--i:6">💥BUST</span>
+                <span class="ann-wheel-label" style="--i:4">+2🎟</span>
+                <span class="ann-wheel-label dark" style="--i:5">500</span>
+                <span class="ann-wheel-label" style="--i:6">💥</span>
                 <span class="ann-wheel-label" style="--i:7">❓</span>
               </div>
             </div>
@@ -1307,7 +1307,7 @@ function spinAnnWheel(){
   if(annRecord.freeSpins<=0){const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>No free spins left.</b><br>Complete a penalty match to earn another.';annTone(150,.14,'square');return;}
   annRecord.freeSpins--;annRecord.totalSpins++;saveAnnRecord();annSpinState.spinning=true;
   const index=annRandom(ANN_SPIN_OUTCOMES.length);const current=((annSpinState.rotation%360)+360)%360;const target=(360-index*45)%360;const delta=(target-current+360)%360;
-  annSpinState.rotation+=1800+delta;
+  const extraTurns=8+annRandom(3);annSpinState.rotation+=extraTurns*360+delta;
   const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform=`rotate(${annSpinState.rotation}deg)`;
   const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>Spinning…</b><br>The football gods are reviewing the request.';
   annTone(260,.05,'square');for(let i=1;i<7;i++)annTone(260+i*28,.04,'square',i*.11);
