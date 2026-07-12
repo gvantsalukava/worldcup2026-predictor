@@ -1062,10 +1062,22 @@ function annTone(freq,duration=0.09,type='sine',delay=0){
   if(!annRecord.sound) return;
   try{
     annAudioContext=annAudioContext||new (window.AudioContext||window.webkitAudioContext)();
+    if(annAudioContext.state==='suspended'){annAudioContext.resume();}
     const now=annAudioContext.currentTime+delay;
     const osc=annAudioContext.createOscillator();const gain=annAudioContext.createGain();
     osc.type=type;osc.frequency.setValueAtTime(freq,now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.13,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
     osc.connect(gain);gain.connect(annAudioContext.destination);osc.start(now);osc.stop(now+duration+.02);
+  }catch(e){}
+}
+function annUnlockAudio(){
+  try{
+    annAudioContext=annAudioContext||new (window.AudioContext||window.webkitAudioContext)();
+    if(annAudioContext.state==='suspended'){annAudioContext.resume();}
+    // play a silent blip inside the user gesture to fully arm audio on iOS/Android
+    const osc=annAudioContext.createOscillator();const gain=annAudioContext.createGain();
+    gain.gain.setValueAtTime(.00001,annAudioContext.currentTime);
+    osc.connect(gain);gain.connect(annAudioContext.destination);
+    osc.start();osc.stop(annAudioContext.currentTime+.01);
   }catch(e){}
 }
 function annCelebrate(big=false){
@@ -1622,6 +1634,12 @@ document.getElementById('ann-sound-btn').onclick=toggleAnnSound;
 document.getElementById('ann-reset-btn').onclick=resetAnnRecords;
 document.getElementById('ann-spin-btn').onclick=spinAnnWheel;
 document.getElementById('ann-post-btn').onclick=postAnnScore;
+(function armAnnAudio(){
+  const unlock=()=>{annUnlockAudio();document.removeEventListener('touchstart',unlock);document.removeEventListener('pointerdown',unlock);document.removeEventListener('click',unlock);};
+  document.addEventListener('touchstart',unlock,{passive:true});
+  document.addEventListener('pointerdown',unlock,{passive:true});
+  document.addEventListener('click',unlock);
+})();
 document.getElementById('ann-zone-grid').addEventListener('click',e=>{const b=e.target.closest('[data-zone]');if(b)annAim(Number(b.dataset.zone));});
 document.getElementById('clear-empty-btn').onclick=()=>{predictMode = predictMode==='upcoming' ? 'all' : 'upcoming'; renderPredict();};
 document.getElementById('prediction-view-toggle').addEventListener('click',e=>{const b=e.target.closest('[data-view]'); if(!b)return; publicView=b.dataset.view; document.querySelectorAll('#prediction-view-toggle .view-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===publicView)); renderPublicPredictions();});
