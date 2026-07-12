@@ -555,6 +555,13 @@
 .ann-gk-scorebox span{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-top:4px;text-transform:uppercase}
 .ann-gk-stadium{position:relative;min-height:365px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#122344 0 17%,#275779 17% 31%,#16773f 31% 100%);border:2px solid #0f5d34;box-shadow:inset 0 -45px 80px rgba(0,0,0,.2)}
 .ann-gk-stadium:before{content:'';position:absolute;left:0;right:0;top:18%;height:12%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.86) 0 3px,transparent 3px 12px);opacity:.4}
+.ann-gk-result-flash{position:absolute;inset:0;z-index:20;display:grid;place-items:center;pointer-events:none;opacity:0;transform:scale(.72)}
+.ann-gk-result-flash strong{font-size:clamp(36px,9vw,72px);line-height:.95;color:#fff;text-align:center;text-shadow:0 4px 0 #101b34,0 8px 20px rgba(0,0,0,.5);letter-spacing:-.04em}
+.ann-gk-result-flash.saved{background:radial-gradient(circle,rgba(57,255,20,.58),rgba(57,255,20,.12) 55%,transparent 74%)}
+.ann-gk-result-flash.saved strong{color:#fff;text-shadow:0 4px 0 #0d7a00,0 8px 20px rgba(0,0,0,.5)}
+.ann-gk-result-flash.goal{background:radial-gradient(circle,rgba(236,0,140,.62),rgba(236,0,140,.16) 55%,transparent 74%)}
+.ann-gk-result-flash.show{animation:ann-gk-result-pop .82s ease both}
+@keyframes ann-gk-result-pop{0%{opacity:0;transform:scale(.55)}18%{opacity:1;transform:scale(1.08)}72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.13)}}
 .ann-gk-crowd{position:absolute;left:0;right:0;top:9px;text-align:center;color:#fff;font-size:12px;font-weight:950;letter-spacing:.04em;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:3}
 .ann-gk-goal{position:absolute;left:7%;right:7%;top:67px;height:218px;border:8px solid #fff;border-bottom-width:10px;border-radius:7px 7px 2px 2px;box-shadow:0 6px 16px rgba(0,0,0,.25);background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(255,255,255,.34) 27px 29px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.34) 39px 41px),rgba(225,242,255,.1);z-index:2}
 .ann-gk-goal:after{content:'';position:absolute;left:-8px;right:-8px;bottom:-31px;height:25px;border:5px solid rgba(255,255,255,.62);border-top:0;transform:skewX(-9deg);opacity:.72}
@@ -789,6 +796,7 @@
 </div>
 <div class="ann-gk-stadium" id="ann-gk-stadium">
 <div class="ann-gk-crowd" id="ann-gk-crowd">KEEP YOUR EYES ON THE BALL</div>
+<div aria-live="polite" class="ann-gk-result-flash" id="ann-gk-result-flash"><strong id="ann-gk-result-text"></strong></div>
 <div class="ann-gk-goal" id="ann-gk-goal">
 <div aria-label="Choose where the goalkeeper dives" class="ann-gk-zone-grid" id="ann-gk-zone-grid">
 <button aria-label="Dive left" class="ann-gk-zone" data-gk-zone="3" disabled="" type="button"></button>
@@ -1425,6 +1433,11 @@ function prepareNextAnnShot(){
 }
 
 function annKeeperSetComment(html){const el=document.getElementById('ann-gk-commentary');if(el)el.innerHTML=html;}
+function annKeeperShowResult(text,type){
+  const flash=document.getElementById('ann-gk-result-flash'),label=document.getElementById('ann-gk-result-text');if(!flash||!label)return;
+  label.textContent=text;flash.classList.remove('show','saved','goal');void flash.offsetWidth;flash.classList.add(type,'show');
+  setTimeout(()=>flash.classList.remove('show','saved','goal'),850);
+}
 function annKeeperDisableZones(disabled=true){document.querySelectorAll('[data-gk-zone]').forEach(btn=>{btn.disabled=disabled;if(disabled)btn.classList.remove('selected');});}
 function annKeeperMoveKeeper(zone){const el=document.getElementById('ann-gk-keeper'),pos=ANN_ZONE_POSITIONS[zone];if(!el||!pos)return;el.style.left=`${pos.left}%`;el.style.top=`${pos.top}%`;}
 function annKeeperGoalPoint(zone){
@@ -1435,6 +1448,7 @@ function annKeeperResetActors(){
   const ball=document.getElementById('ann-gk-ball'),keeper=document.getElementById('ann-gk-keeper');
   if(ball){ball.classList.remove('flying','caught','goal');ball.style.transition='none';ball.style.left='50%';ball.style.top='89%';ball.style.opacity='1';requestAnimationFrame(()=>requestAnimationFrame(()=>ball.style.transition=''));}
   if(keeper){keeper.classList.remove('catch');keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='52%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
+  const flash=document.getElementById('ann-gk-result-flash');if(flash)flash.classList.remove('show','saved','goal');
 }
 function renderAnnKeeperGame(){
   const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
@@ -1476,9 +1490,9 @@ function annKeeperResolve(chosenZone,timedOut,token){
   const keeper=document.getElementById('ann-gk-keeper'),ball=document.getElementById('ann-gk-ball');
   if(outcome==='save'||outcome==='parry'){
     annKeeperSession.saves++;annKeeperSession.points+=award;annKeeperSession.bestStreak=Math.max(annKeeperSession.bestStreak,annKeeperSession.streak);if(keeper)keeper.classList.add('catch');if(ball){ball.classList.add('caught');const catchZone=chosenZone===null?target:chosenZone,pos=annKeeperGoalPoint(catchZone);ball.style.left=`${pos.left}%`;ball.style.top=`${pos.top}%`;}
-    annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> ${Math.round(reaction)} ms · <b>+${award} pts</b>`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
+    annKeeperShowResult('SAVED!','saved');annKeeperSetComment(`<b>${outcome==='save'?'CAUGHT!':'PARRIED!'}</b> ${Math.round(reaction)} ms · <b>+${award} pts</b>`);annTone(outcome==='save'?760:590,.1,'sine');annTone(940,.1,'sine',.08);annHaptic([16,20,28]);
   }else{
-    if(ball)ball.classList.add('goal');annKeeperSetComment(timedOut?'<b>GOAL.</b> Too late — the ball reached the net.':'<b>GOAL.</b> Wrong area — follow the ball and tap where it is heading.');annTone(145,.2,'sawtooth');annHaptic(48);
+    if(ball)ball.classList.add('goal');annKeeperShowResult('OOPS, GOAL!','goal');annKeeperSetComment(timedOut?'<b>GOAL.</b> Too late — the ball reached the net.':'<b>GOAL.</b> Wrong area — follow the ball and tap where it is heading.');annTone(145,.2,'sawtooth');annHaptic(48);
   }
   annKeeperSession.outcomes.push(outcome);annKeeperSession.shot++;annRecord.keeperShots=(annRecord.keeperShots||0)+1;if(outcome!=='goal')annRecord.keeperSaves=(annRecord.keeperSaves||0)+1;annRecord.keeperBestStreak=Math.max(annRecord.keeperBestStreak||0,annKeeperSession.streak);saveAnnRecord();renderAnnKeeperGame();
   annKeeperSession.timer=setTimeout(()=>{if(!annKeeperSession.active||token!==annKeeperSession.token)return;if(annKeeperSession.shot>=annKeeperSession.maxShots)finishAnnKeeperRound();else annKeeperPrepareShot(token);},560);
