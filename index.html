@@ -4,10 +4,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>World Cup 2026 — Prediction Game</title>
+<title>World Cup 2026 — Prediction Game · Ann's Game</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <style>
   :root{
     --bg:#fff6fa; --card:#ffffff; --text:#17151c; --muted:#6f6874;
@@ -25,7 +24,7 @@
   .container{max-width:1040px;margin:-14px auto 0;padding:0 16px 44px}
   .hero{background:rgba(255,255,255,.92);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:20px;padding:18px;margin-bottom:14px;display:grid;grid-template-columns:1.4fr .6fr;gap:16px;align-items:center}
   .hero h2{font-size:20px;line-height:1.25;color:var(--brand);margin-bottom:7px}.hero p{color:#3a333d;line-height:1.5}.rules{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{border:1px solid var(--line);background:var(--soft);color:var(--brand);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;white-space:nowrap}
-  .tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:14px;position:sticky;top:0;z-index:50;box-shadow:0 8px 22px rgba(194,24,91,.06)}
+  .tabs{display:grid;grid-template-columns:repeat(6,1fr);background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:14px;position:sticky;top:0;z-index:50;box-shadow:0 8px 22px rgba(194,24,91,.06)}
   .tab{border:0;background:transparent;padding:13px 8px;cursor:pointer;color:#5d5660;font-weight:800;font-size:13px}.tab.active{background:var(--brand);color:white}.tab:hover:not(.active){background:#fff0f6}
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center;box-shadow:0 8px 18px rgba(194,24,91,.05)}.stat strong{display:block;color:var(--brand);font-size:27px}.stat span{font-size:12px;color:var(--muted)}
   .section{display:none}.section.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 8px 18px rgba(194,24,91,.04)}
@@ -350,6 +349,130 @@
   }
 }
 
+
+/* Ann vs VAR: Penalty Chaos — entirely local, no Firebase */
+.ann-game-shell{display:grid;gap:14px}
+.ann-hero{position:relative;overflow:hidden;text-align:center;background:linear-gradient(145deg,#fff 0%,#fff7fb 60%,#fffde4 100%)}
+.ann-hero:before,.ann-hero:after{content:'';position:absolute;border-radius:50%;pointer-events:none}
+.ann-hero:before{width:230px;height:230px;left:-110px;top:-135px;background:rgba(236,0,140,.10)}
+.ann-hero:after{width:190px;height:190px;right:-85px;bottom:-120px;background:rgba(57,255,20,.13)}
+.ann-eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--soft);border:1px solid var(--line);color:var(--brand);border-radius:999px;padding:7px 11px;font-size:11px;font-weight:950;letter-spacing:.06em;text-transform:uppercase;position:relative;z-index:1}
+.ann-hero h3{font-size:27px;color:var(--brand);margin:11px 0 7px;letter-spacing:-.04em;position:relative;z-index:1}
+.ann-hero p{max-width:720px;margin:0 auto;color:#4e424b;font-size:13px;line-height:1.5;position:relative;z-index:1}
+.ann-owner{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 12px;border-radius:999px;background:#101b34;color:#fff;font-size:11px;font-weight:950;position:relative;z-index:1}
+.ann-game-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:14px;align-items:start}
+.ann-arena-card{overflow:hidden}
+.ann-scoreboard{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.ann-scorebox{border:1px solid var(--line);background:#fff9fc;border-radius:14px;padding:10px 6px;text-align:center}
+.ann-scorebox strong{display:block;color:var(--brand);font-size:20px;line-height:1.05}
+.ann-scorebox span{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+.ann-stadium{position:relative;min-height:390px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#122344 0 16%,#264e6f 16% 31%,#16773f 31% 100%);border:2px solid #0f5d34;box-shadow:inset 0 -45px 80px rgba(0,0,0,.18)}
+.ann-stadium:before{content:'';position:absolute;left:0;right:0;top:18%;height:13%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.85) 0 3px,transparent 3px 12px);opacity:.42;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.ann-crowd{position:absolute;left:0;right:0;top:8px;text-align:center;color:#fff;font-size:13px;font-weight:950;letter-spacing:.03em;text-shadow:0 2px 4px rgba(0,0,0,.45);z-index:2}
+.ann-goal{position:absolute;left:7%;right:7%;top:77px;height:228px;border:8px solid #fff;border-bottom-width:10px;border-radius:7px 7px 2px 2px;box-shadow:0 6px 16px rgba(0,0,0,.25);background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(255,255,255,.36) 27px 29px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.36) 39px 41px),rgba(225,242,255,.10);z-index:2}
+.ann-goal:after{content:'';position:absolute;left:-8px;right:-8px;bottom:-32px;height:26px;border:5px solid rgba(255,255,255,.62);border-top:0;transform:skewX(-9deg);opacity:.72}
+.ann-zone-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);z-index:5}
+.ann-zone{border:1px dashed rgba(255,255,255,.13);background:transparent;cursor:crosshair;position:relative;transition:background .15s,border-color .15s,box-shadow .15s}
+.ann-zone:hover{background:rgba(255,242,0,.13);border-color:rgba(255,242,0,.7)}
+.ann-zone.selected{background:rgba(255,242,0,.25);border:2px solid var(--yellow);box-shadow:inset 0 0 0 2px rgba(236,0,140,.35)}
+.ann-zone.selected:after{content:'🎯';position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);font-size:25px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.ann-zone:disabled{cursor:not-allowed}
+.ann-keeper{position:absolute;left:50%;top:51%;width:76px;height:104px;transform:translate(-50%,-50%);z-index:4;transition:left .45s cubic-bezier(.22,.75,.18,1),top .45s cubic-bezier(.22,.75,.18,1),transform .45s ease}
+.ann-keeper-head{position:absolute;left:27px;top:0;width:23px;height:23px;border-radius:50%;background:#d8a077;border:2px solid #3d241d}
+.ann-keeper-body{position:absolute;left:17px;top:23px;width:42px;height:48px;border-radius:12px 12px 7px 7px;background:var(--brand);border:3px solid #fff}
+.ann-keeper-body:before,.ann-keeper-body:after{content:'';position:absolute;top:9px;width:43px;height:12px;border-radius:999px;background:#fff200;border:3px solid #fff;transform-origin:center}
+.ann-keeper-body:before{right:31px;transform:rotate(-24deg)}
+.ann-keeper-body:after{left:31px;transform:rotate(24deg)}
+.ann-keeper-legs{position:absolute;left:17px;top:66px;width:42px;height:37px;border-left:12px solid #101b34;border-right:12px solid #101b34;transform:skewX(-8deg)}
+.ann-ball{position:absolute;left:50%;top:87%;width:34px;height:34px;transform:translate(-50%,-50%) rotate(0);border-radius:50%;display:grid;place-items:center;background:#fff;font-size:28px;line-height:1;z-index:7;filter:drop-shadow(0 5px 5px rgba(0,0,0,.35));transition:left .62s cubic-bezier(.18,.76,.22,1),top .62s cubic-bezier(.18,.76,.22,1),transform .62s ease,opacity .25s}
+.ann-ball.shooting{transform:translate(-50%,-50%) rotate(620deg) scale(.72)}
+.ann-ball.missed{opacity:.45}
+.ann-pitch-line{position:absolute;left:18%;right:18%;bottom:-48px;height:145px;border:3px solid rgba(255,255,255,.6);border-radius:50%;z-index:1}
+.ann-controls{display:grid;gap:10px;margin-top:13px}
+.ann-aim-row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.ann-selected-aim{font-size:12px;color:#514650;font-weight:900}
+.ann-selected-aim b{color:var(--brand)}
+.ann-power-label{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:900;color:var(--muted)}
+.ann-power-track{height:19px;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:linear-gradient(90deg,#dbe3ea 0 20%,#9cff8f 20% 55%,#39ff14 55% 84%,#fff200 84% 93%,#ff9abf 93% 100%);position:relative}
+.ann-power-fill{height:100%;width:50%;background:rgba(16,27,52,.34);border-right:4px solid #101b34;transition:width .025s linear}
+.ann-power-sweet{position:absolute;left:55%;width:29%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.95);border-right:2px solid rgba(255,255,255,.95);pointer-events:none}
+.ann-buttons{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px}
+.ann-buttons .btn{min-height:46px}
+.ann-shoot{font-size:16px}
+.ann-commentary{min-height:67px;border:1.5px solid var(--line);background:#fff9fc;border-radius:15px;padding:12px 14px;text-align:center;font-size:13px;font-weight:850;color:#4c4149;line-height:1.45}
+.ann-commentary b{color:var(--brand)}
+.ann-progress{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:13px 0 5px}
+.ann-shot-dot{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:#f4edf1;border:1px solid #e5d8df;color:#8b7f86;font-weight:950;font-size:12px}
+.ann-shot-dot.current{background:var(--yellow);border-color:#e4cf00;color:#4b3f00;box-shadow:0 0 0 4px rgba(255,242,0,.18)}
+.ann-shot-dot.goal{background:var(--neon);border-color:#18d900;color:#0d4f00}
+.ann-shot-dot.saved{background:#dfe3e8;border-color:#bbc2ca;color:#4f5660}
+.ann-shot-dot.miss{background:#ffcee1;border-color:#ff8ebc;color:#8e164c}
+.ann-shot-dot.retake{background:#dff9ff;border-color:#78ddeb;color:#155465}
+.ann-local-note{display:inline-flex;align-items:center;gap:7px;margin-top:11px;padding:7px 10px;border-radius:999px;background:#f8f4f7;border:1px solid #e8dce3;color:#6b6067;font-size:11px;font-weight:850}
+.ann-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
+.ann-stat{border:1px solid var(--line);background:#fff9fc;border-radius:14px;padding:11px 6px;text-align:center}
+.ann-stat strong{display:block;color:var(--brand);font-size:21px;line-height:1.05}
+.ann-stat span{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-top:4px}
+.ann-crowd-meter{height:10px;background:#f0e8ed;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:6px}
+.ann-crowd-fill{height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--yellow),var(--neon));transition:width .35s ease}
+.ann-history{display:grid;gap:7px;margin-top:9px}
+.ann-history-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;border:1px solid var(--soft);background:#fff;border-radius:12px;padding:9px 10px;font-size:11px}
+.ann-history-row b{font-size:12px}
+.ann-history-empty{padding:14px;text-align:center;color:var(--muted);font-size:11px;border:1px dashed var(--line);border-radius:12px}
+.ann-rules{display:grid;gap:7px;margin-top:12px}
+.ann-rule{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--soft);font-size:11px;color:#514650}
+.ann-rule:last-child{border-bottom:0}
+.ann-reset{width:100%;margin-top:12px}
+.ann-confetti{position:fixed;z-index:500;top:-18px;width:10px;height:16px;border-radius:2px;pointer-events:none;animation:ann-confetti-fall 1.5s ease-in forwards}
+@keyframes ann-confetti-fall{to{transform:translate3d(var(--drift),110vh,0) rotate(720deg);opacity:.15}}
+@keyframes ann-goal-pulse{0%,100%{box-shadow:0 6px 16px rgba(0,0,0,.25)}50%{box-shadow:0 0 0 8px rgba(57,255,20,.28),0 6px 20px rgba(0,0,0,.25)}}
+.ann-goal.goal-flash{animation:ann-goal-pulse .65s ease}
+@media(max-width:880px){.ann-game-layout{grid-template-columns:1fr}.ann-stadium{min-height:375px}}
+@media(max-width:560px){.ann-hero h3{font-size:23px}.ann-scoreboard{grid-template-columns:repeat(2,1fr)}.ann-stadium{min-height:335px}.ann-goal{left:5%;right:5%;top:69px;height:195px}.ann-keeper{width:70px;height:96px}.ann-ball{top:88%}.ann-buttons{grid-template-columns:1fr 1fr}.ann-buttons #ann-sound-btn{grid-column:1/-1}.ann-stats{gap:5px}.ann-stat strong{font-size:18px}.ann-shot-dot{width:31px;height:31px}}
+@media(prefers-reduced-motion:reduce){.ann-ball,.ann-keeper{transition-duration:.18s}.ann-confetti{display:none}}
+.ann-prize-wrap{position:relative;z-index:1;max-width:520px;margin:14px auto 0}
+.ann-prize-label{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:950;color:var(--brand);margin-bottom:5px}
+.ann-prize-track{height:15px;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:#fff0f6}
+.ann-prize-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--yellow),var(--neon));transition:width .5s ease}
+.ann-prize-fill.won{background:linear-gradient(90deg,#39ff14,#fff200,#39ff14)}
+.ann-champ-card .ann-post-btn{width:100%;margin:4px 0 12px}
+.ann-champ-list{display:grid;gap:7px}
+.ann-champ-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--soft);background:#fff;border-radius:12px;padding:9px 11px;font-size:12px}
+.ann-champ-row.you{border-color:var(--brand);background:#fff4f9;box-shadow:0 4px 12px rgba(236,0,140,.1)}
+.ann-champ-row.first{background:#fff9e0;border-color:#f4df00}
+.ann-champ-rank{font-weight:950;font-size:15px;min-width:26px;text-align:center;color:var(--brand)}
+.ann-champ-name{font-weight:900;color:#181319;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ann-champ-name .ann-champ-sub{display:block;font-size:10px;font-weight:800;color:var(--muted)}
+.ann-champ-score{font-weight:950;color:var(--brand);font-size:15px}
+.ann-champ-crown{font-size:10px;font-weight:900;color:#8a6d00;background:#fff200;border-radius:999px;padding:2px 6px;margin-left:5px}
+
+
+/* Penalty Chaos + Free Spins — local browser mini-game, independent of Firebase */
+.ann-side-stack{display:grid;gap:14px}
+.ann-player-badge{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 12px;border-radius:999px;background:#101b34;color:#fff;font-size:11px;font-weight:950;position:relative;z-index:1}
+.ann-spin-card{overflow:hidden;background:linear-gradient(145deg,#fff 0%,#fff9e7 52%,#f0ffe9 100%)}
+.ann-spin-card .section-title{margin-bottom:7px}
+.ann-wheel-shell{position:relative;width:246px;height:246px;margin:17px auto 12px;filter:drop-shadow(0 12px 18px rgba(16,27,52,.18))}
+.ann-wheel-pointer{position:absolute;z-index:8;left:50%;top:-10px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:0;border-bottom:31px solid #101b34;filter:drop-shadow(0 3px 2px rgba(0,0,0,.22))}
+.ann-spin-wheel{position:absolute;inset:0;border-radius:50%;border:8px solid #101b34;background:conic-gradient(from -22.5deg,#ec008c 0 45deg,#fff200 45deg 90deg,#39ff14 90deg 135deg,#ff86c7 135deg 180deg,#8eeaff 180deg 225deg,#101b34 225deg 270deg,#ffb52e 270deg 315deg,#b88cff 315deg 360deg);transition:transform 3s cubic-bezier(.12,.78,.12,1);will-change:transform;overflow:hidden}
+.ann-spin-wheel:before{content:'';position:absolute;inset:10px;border-radius:50%;border:2px dashed rgba(255,255,255,.72)}
+.ann-spin-wheel:after{content:'⚽';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#fff;border:7px solid #101b34;font-size:31px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.ann-wheel-label{position:absolute;left:50%;top:50%;z-index:3;width:46px;margin-left:-23px;margin-top:-10px;text-align:center;font-size:12px;font-weight:950;color:#101b34;text-shadow:0 1px 0 rgba(255,255,255,.75);transform:rotate(calc(var(--i) * 45deg)) translateY(-91px) rotate(calc(var(--i) * -45deg));pointer-events:none}
+.ann-wheel-label.dark{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.ann-spin-btn{width:100%;min-height:48px;font-size:15px;margin-top:4px}
+.ann-spin-btn:disabled{opacity:.55}
+.ann-spin-result{min-height:61px;margin-top:10px;padding:11px 12px;border-radius:14px;border:1.5px solid var(--line);background:rgba(255,255,255,.82);text-align:center;font-size:12px;font-weight:850;line-height:1.45;color:#4c4149}
+.ann-spin-result b{color:var(--brand)}
+.ann-bonus-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:11px}
+.ann-bonus-stat{border:1px solid rgba(16,27,52,.14);background:rgba(255,255,255,.76);border-radius:13px;padding:9px 6px;text-align:center}
+.ann-bonus-stat strong{display:block;font-size:18px;color:#101b34;line-height:1.05}
+.ann-bonus-stat span{display:block;font-size:9px;color:#6f6874;font-weight:900;margin-top:4px;text-transform:uppercase}
+.ann-spin-history{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:9px}
+.ann-spin-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;color:#544850}
+.ann-earn-note{margin-top:9px;padding:9px 10px;border-radius:12px;background:#fffde8;border:1px solid #f0d900;color:#5a4300;font-size:10px;line-height:1.4;font-weight:850}
+@media(max-width:560px){.ann-wheel-shell{width:222px;height:222px}.ann-wheel-label{transform:rotate(calc(var(--i) * 45deg)) translateY(-80px) rotate(calc(var(--i) * -45deg));font-size:11px}.ann-spin-wheel:after{width:58px;height:58px;font-size:27px}}
+@media(prefers-reduced-motion:reduce){.ann-spin-wheel{transition-duration:.25s}}
+
 </style>
 </head>
 <body>
@@ -366,6 +489,7 @@
   </section>
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="schedule">🗺️ Quarter-finals</button>
+    <button class="tab" data-tab="breakgame">🎮 Ann's Game</button>
     <button class="tab" data-tab="predict">✏️ Predict</button>
     <button class="tab" data-tab="allpredictions">📋 Predictions</button>
     <button class="tab" data-tab="leaderboard">🏅 Leaderboard</button>
@@ -401,6 +525,131 @@
 
   <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
   <section id="schedule" class="section active"><div id="schedule-content"></div></section>
+  <section id="breakgame" class="section">
+    <div class="ann-game-shell">
+      <div class="card ann-hero">
+        <span class="ann-eyebrow">🏆 Race to the Grand Prize</span>
+        <h3>Ann's Game</h3>
+        <p>Score penalties, survive VAR, and gamble your bank on the wheel. First to reach the <b>10,000-point Grand Prize</b> wins — but the wheel bites back, so every spin is a real risk. Post your best score to the shared Champions board and see who's actually on top.</p>
+        <span class="ann-player-badge" id="ann-player-label">🎮 Playing as Guest Player</span>
+        <div class="ann-prize-wrap">
+          <div class="ann-prize-label"><span>🏆 Grand Prize progress</span><span id="ann-prize-text">0 / 10,000</span></div>
+          <div class="ann-prize-track"><div class="ann-prize-fill" id="ann-prize-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="ann-game-layout">
+        <div class="card ann-arena-card">
+          <div class="ann-scoreboard">
+            <div class="ann-scorebox"><strong id="ann-shot-number">0/5</strong><span>Penalties</span></div>
+            <div class="ann-scorebox"><strong id="ann-match-goals">0</strong><span>Goals</span></div>
+            <div class="ann-scorebox"><strong id="ann-match-points">0</strong><span>Style points</span></div>
+            <div class="ann-scorebox"><strong id="ann-stage-name">Warm-up</strong><span>Pressure</span></div>
+          </div>
+
+          <div class="ann-stadium" id="ann-stadium">
+            <div class="ann-crowd" id="ann-crowd-text">THE STADIUM IS READY</div>
+            <div class="ann-goal" id="ann-goal">
+              <div class="ann-zone-grid" id="ann-zone-grid" aria-label="Choose where to shoot">
+                <button class="ann-zone" type="button" data-zone="0" aria-label="Aim top left"></button>
+                <button class="ann-zone" type="button" data-zone="1" aria-label="Aim top centre"></button>
+                <button class="ann-zone" type="button" data-zone="2" aria-label="Aim top right"></button>
+                <button class="ann-zone" type="button" data-zone="3" aria-label="Aim middle left"></button>
+                <button class="ann-zone" type="button" data-zone="4" aria-label="Aim middle centre"></button>
+                <button class="ann-zone" type="button" data-zone="5" aria-label="Aim middle right"></button>
+                <button class="ann-zone" type="button" data-zone="6" aria-label="Aim bottom left"></button>
+                <button class="ann-zone" type="button" data-zone="7" aria-label="Aim bottom centre"></button>
+                <button class="ann-zone" type="button" data-zone="8" aria-label="Aim bottom right"></button>
+              </div>
+              <div class="ann-keeper" id="ann-keeper" aria-hidden="true">
+                <span class="ann-keeper-head"></span><span class="ann-keeper-body"></span><span class="ann-keeper-legs"></span>
+              </div>
+            </div>
+            <div class="ann-ball" id="ann-ball" aria-hidden="true">⚽</div>
+            <div class="ann-pitch-line" aria-hidden="true"></div>
+          </div>
+
+          <div class="ann-controls">
+            <div class="ann-aim-row">
+              <span class="ann-selected-aim" id="ann-selected-aim">Aim: <b>choose a target</b></span>
+              <span class="small">Green power is controlled. Pink power is pure chaos.</span>
+            </div>
+            <div>
+              <div class="ann-power-label"><span>Power</span><span id="ann-power-number">50%</span></div>
+              <div class="ann-power-track"><div class="ann-power-fill" id="ann-power-fill"></div><span class="ann-power-sweet"></span></div>
+            </div>
+            <div class="ann-buttons">
+              <button class="btn secondary" id="ann-start-btn" type="button">Start penalty match</button>
+              <button class="btn ann-shoot" id="ann-shoot-btn" type="button" disabled>⚽ SHOOT</button>
+              <button class="btn secondary" id="ann-sound-btn" type="button" aria-pressed="true">🔊 Sound</button>
+            </div>
+            <div class="ann-commentary" id="ann-commentary" aria-live="polite"><b>Guest Player</b>, the stadium is ready. The referee is already nervous.</div>
+          </div>
+          <span class="ann-local-note">🔒 No Firebase · no game login required · records stay only on this browser</span>
+        </div>
+
+        <div class="ann-side-stack">
+          <div class="card ann-spin-card">
+            <div class="section-title"><h3>🎡 Ann's Wheel</h3><span class="tag" id="ann-spin-count">3 spins</span></div>
+            <p class="small">Spin to grow your bank toward the Grand Prize — but the wheel can <b>bust</b> and cost you. Big banks are worth more, so quit while you're ahead. Complete matches to earn more spins.</p>
+            <div class="ann-wheel-shell" aria-label="Football bonus wheel">
+              <span class="ann-wheel-pointer" aria-hidden="true"></span>
+              <div class="ann-spin-wheel" id="ann-spin-wheel">
+                <span class="ann-wheel-label" style="--i:0">+100</span>
+                <span class="ann-wheel-label" style="--i:1">+250</span>
+                <span class="ann-wheel-label" style="--i:2">2×</span>
+                <span class="ann-wheel-label" style="--i:3">🛡️</span>
+                <span class="ann-wheel-label" style="--i:4">+2🎟️</span>
+                <span class="ann-wheel-label dark" style="--i:5">💰500</span>
+                <span class="ann-wheel-label" style="--i:6">💥BUST</span>
+                <span class="ann-wheel-label" style="--i:7">❓</span>
+              </div>
+            </div>
+            <button class="btn ann-spin-btn" id="ann-spin-btn" type="button">🎟️ USE FREE SPIN</button>
+            <div class="ann-spin-result" id="ann-spin-result"><b>Three welcome spins are ready.</b><br>Try the wheel now or save them for later.</div>
+            <div class="ann-bonus-stats">
+              <div class="ann-bonus-stat"><strong id="ann-bonus-points">0</strong><span>Bonus bank</span></div>
+              <div class="ann-bonus-stat"><strong id="ann-var-shields">0</strong><span>VAR shields</span></div>
+              <div class="ann-bonus-stat"><strong id="ann-next-multiplier">1×</strong><span>Next goal</span></div>
+              <div class="ann-bonus-stat"><strong id="ann-total-spins">0</strong><span>Spins used</span></div>
+            </div>
+            <div class="ann-spin-history" id="ann-spin-history"></div>
+            <div class="ann-earn-note">Every completed match earns <b>1 spin</b> (4+ goals adds another, 5+ one more). The wheel can hand you <b>500</b> or <b>bust 40%</b> of your bank — a VAR shield blocks one bust.</div>
+          </div>
+
+          <div class="card">
+            <div class="section-title"><h3>Local locker room</h3><span class="tag">Browser only</span></div>
+            <div class="ann-stats">
+              <div class="ann-stat"><strong id="ann-best-points">0</strong><span>Best points</span></div>
+              <div class="ann-stat"><strong id="ann-best-goals">0</strong><span>Best goals</span></div>
+              <div class="ann-stat"><strong id="ann-trophies">0</strong><span>Trophies</span></div>
+            </div>
+            <div class="small"><b>Crowd confidence</b> grows with every goal and collapses whenever VAR remembers it exists.</div>
+            <div class="ann-crowd-meter"><div class="ann-crowd-fill" id="ann-crowd-fill"></div></div>
+            <div class="ann-progress" id="ann-shot-progress"></div>
+            <div class="divider"></div>
+            <div class="section-title"><h3>Recent matches</h3><span class="small" id="ann-match-count">0 played</span></div>
+            <div class="ann-history" id="ann-history"></div>
+            <button class="btn secondary ann-reset" id="ann-reset-btn" type="button">Reset local game records</button>
+            <div class="ann-rules">
+              <div class="ann-rule"><span>Grand Prize</span><b>Reach 10,000 points</b></div>
+              <div class="ann-rule"><span>Perfect 5/5</span><b>Golden Ball bonus shot</b></div>
+              <div class="ann-rule"><span>Wheel bust</span><b>−40% bank (shield blocks)</b></div>
+              <div class="ann-rule"><span>Compete</span><b>Post to Champions board</b></div>
+            </div>
+          </div>
+
+          <div class="card ann-champ-card">
+            <div class="section-title"><h3>🏆 Ann's Game Champions</h3><span class="tag" id="ann-champ-tag">Shared board</span></div>
+            <p class="small">This board is shared across everyone. Post your best bank to compete for the top spot — first to <b>10,000</b> wins the Grand Prize.</p>
+            <button class="btn ann-post-btn" id="ann-post-btn" type="button">📤 Post my best score</button>
+            <div class="ann-champ-list" id="ann-champ-list"><div class="ann-history-empty">Loading champions…</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="results" class="section">
     <div class="card" id="admin-login"><div class="section-title"><h3>Admin results</h3></div><p class="help">Only the game admin should enter official scores. This PIN only hides the page in the browser; Firebase rules are still important for real security.</p><div class="admin-grid"><input class="input" id="admin-pin" type="password" placeholder="Admin PIN" /><button class="btn" id="unlock-admin">Unlock</button></div></div>
     <div id="admin-panel" class="hidden"><div class="warning">Admin mode is unlocked in this browser. Enter official results carefully; they update the leaderboard for everyone.</div><div id="results-content"></div><button class="btn full" id="save-results">💾 Save official results</button></div>
@@ -740,6 +989,344 @@ function safeLocalRemove(key){try{window.localStorage.removeItem(key);return tru
 function safeSessionGet(key){try{return window.sessionStorage.getItem(key);}catch(e){return null;}}
 function safeSessionSet(key,value){try{window.sessionStorage.setItem(key,value);return true;}catch(e){return false;}}
 function safeSessionRemove(key){try{window.sessionStorage.removeItem(key);return true;}catch(e){return false;}}
+
+
+const ANN_GAME_STORAGE_KEY = 'wc2026_annsGame_v3';
+const ANN_GRAND_PRIZE = 10000;
+const ANN_ZONE_NAMES = ['top left','top centre','top right','middle left','middle centre','middle right','bottom left','bottom centre','bottom right'];
+const ANN_ZONE_POSITIONS = [
+  {left:18,top:18},{left:50,top:18},{left:82,top:18},
+  {left:18,top:49},{left:50,top:49},{left:82,top:49},
+  {left:18,top:80},{left:50,top:80},{left:82,top:80}
+];
+const ANN_PRESSURE_STAGES = ['Friendly','Group stage','Knockout','Semi-final','FINAL','Golden Ball'];
+const ANN_GOAL_LINES = [
+  'The goalkeeper has been sent into another postcode.',
+  'Top-class finish. The net has filed a complaint.',
+  'Goal. VAR is checking whether confidence is legal.',
+  'Cold finish. Completely unreasonable composure.',
+  'The goalkeeper guessed. The player simply disagreed.'
+];
+const ANN_SAVE_LINES = [
+  'Saved. The goalkeeper celebrates like this was not mostly luck.',
+  'Denied. The appeal paperwork has already started.',
+  'The keeper read it. Disturbing behaviour, honestly.',
+  'Saved, but the intimidation campaign continues.'
+];
+const ANN_MISS_LINES = [
+  'Wide. That ball is now somebody else’s problem.',
+  'Over the bar. NASA has been notified.',
+  'Missed. A tactical warning shot to the parking area.',
+  'The goal remained completely unharmed.'
+];
+const ANN_SPIN_OUTCOMES = [
+  {label:'+100 bonus points',short:'+100',type:'points',value:100},
+  {label:'+250 bonus points',short:'+250',type:'points',value:250},
+  {label:'2× points on the next goal',short:'2× goal',type:'multiplier',value:2},
+  {label:'VAR shield',short:'VAR shield',type:'shield',value:1},
+  {label:'+2 free spins',short:'+2 spins',type:'spins',value:2},
+  {label:'JACKPOT: +500 bonus points',short:'Jackpot',type:'points',value:500},
+  {label:'BUST — lose 40% of your bank',short:'Bust',type:'bust',value:0.4},
+  {label:'Mystery reward',short:'Mystery',type:'mystery',value:0}
+];
+
+function defaultAnnRecord(){return {matches:0,trophies:0,totalGoals:0,totalShots:0,bestGoals:0,bestPoints:0,bestStreak:0,sound:true,history:[],freeSpins:3,bonusPoints:0,varShields:0,nextGoalMultiplier:1,totalSpins:0,spinHistory:[],lastSpin:'Three welcome spins are ready.',grandPrizeWon:false,submittedBest:0};}
+function loadAnnRecord(){
+  try{
+    const parsed=JSON.parse(safeLocalGet(ANN_GAME_STORAGE_KEY)||'null');
+    if(!parsed||typeof parsed!=='object') return defaultAnnRecord();
+    return {
+      matches:Number(parsed.matches)||0,trophies:Number(parsed.trophies)||0,totalGoals:Number(parsed.totalGoals)||0,totalShots:Number(parsed.totalShots)||0,
+      bestGoals:Number(parsed.bestGoals)||0,bestPoints:Number(parsed.bestPoints)||0,bestStreak:Number(parsed.bestStreak)||0,sound:parsed.sound!==false,
+      history:Array.isArray(parsed.history)?parsed.history.slice(0,6):[],freeSpins:Math.max(0,Number(parsed.freeSpins)||0),bonusPoints:Number(parsed.bonusPoints)||0,
+      varShields:Math.max(0,Number(parsed.varShields)||0),nextGoalMultiplier:Number(parsed.nextGoalMultiplier)===2?2:1,totalSpins:Number(parsed.totalSpins)||0,
+      spinHistory:Array.isArray(parsed.spinHistory)?parsed.spinHistory.slice(0,6):[],lastSpin:String(parsed.lastSpin||'Free spins are ready.'),
+      grandPrizeWon:parsed.grandPrizeWon===true,submittedBest:Number(parsed.submittedBest)||0
+    };
+  }catch(e){return defaultAnnRecord();}
+}
+let annRecord=loadAnnRecord();
+let annSession={active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,power:50,powerDirection:1,lastFrame:0,raf:0,outcomes:[],bonus:false};
+let annSpinState={spinning:false,rotation:0};
+let annAudioContext=null;
+function saveAnnRecord(){safeLocalSet(ANN_GAME_STORAGE_KEY,JSON.stringify(annRecord));}
+function annPlayerName(){try{return currentUser&&String(currentUser).trim()?String(currentUser).trim():'Guest Player';}catch(e){return 'Guest Player';}}
+function annRandom(max){
+  if(window.crypto&&window.crypto.getRandomValues){const a=new Uint32Array(1);window.crypto.getRandomValues(a);return a[0]%max;}
+  return Math.floor(Math.random()*max);
+}
+function annChance(probability){return annRandom(10000)<Math.round(probability*10000);}
+function annPick(list){return list[annRandom(list.length)];}
+function annTone(freq,duration=0.09,type='sine',delay=0){
+  if(!annRecord.sound) return;
+  try{
+    annAudioContext=annAudioContext||new (window.AudioContext||window.webkitAudioContext)();
+    const now=annAudioContext.currentTime+delay;
+    const osc=annAudioContext.createOscillator();const gain=annAudioContext.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(freq,now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.13,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    osc.connect(gain);gain.connect(annAudioContext.destination);osc.start(now);osc.stop(now+duration+.02);
+  }catch(e){}
+}
+function annCelebrate(big=false){
+  const pieces=['#ec008c','#fff200','#39ff14','#ff86c7','#ffffff','#101b34'];
+  const count=big?58:24;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('i');p.className='ann-confetti';p.style.left=`${Math.random()*100}vw`;p.style.background=pieces[i%pieces.length];p.style.setProperty('--drift',`${Math.round((Math.random()-.5)*260)}px`);p.style.animationDelay=`${Math.random()*.28}s`;document.body.appendChild(p);setTimeout(()=>p.remove(),1950);
+  }
+}
+function annPowerLoop(timestamp){
+  if(!annSession.active||annSession.locked){annSession.lastFrame=timestamp;annSession.raf=requestAnimationFrame(annPowerLoop);return;}
+  const dt=annSession.lastFrame?Math.min(40,timestamp-annSession.lastFrame):16;annSession.lastFrame=timestamp;
+  annSession.power+=annSession.powerDirection*dt*.072;
+  if(annSession.power>=100){annSession.power=100;annSession.powerDirection=-1;}
+  if(annSession.power<=0){annSession.power=0;annSession.powerDirection=1;}
+  updateAnnPowerUI();annSession.raf=requestAnimationFrame(annPowerLoop);
+}
+function updateAnnPowerUI(){
+  const fill=document.getElementById('ann-power-fill');const num=document.getElementById('ann-power-number');
+  if(fill) fill.style.width=`${Math.max(0,Math.min(100,annSession.power))}%`;
+  if(num) num.textContent=`${Math.round(annSession.power)}%`;
+}
+function annStage(){return ANN_PRESSURE_STAGES[Math.min(annSession.shot,ANN_PRESSURE_STAGES.length-1)];}
+function annSetComment(html){const el=document.getElementById('ann-commentary');if(el)el.innerHTML=html;}
+function annAim(zone){
+  if(!annSession.active||annSession.locked) return;
+  annSession.selectedZone=zone;
+  document.querySelectorAll('.ann-zone').forEach(btn=>btn.classList.toggle('selected',Number(btn.dataset.zone)===zone));
+  const label=document.getElementById('ann-selected-aim');if(label)label.innerHTML=`Aim: <b>${esc(ANN_ZONE_NAMES[zone])}</b>`;
+  const shoot=document.getElementById('ann-shoot-btn');if(shoot)shoot.disabled=false;
+  annTone(330,.045,'sine');
+}
+function annMoveActor(id,zone){
+  const el=document.getElementById(id);const pos=ANN_ZONE_POSITIONS[zone];if(!el||!pos)return;
+  el.style.left=`${pos.left}%`;el.style.top=`${pos.top}%`;
+}
+function annResetActors(){
+  const ball=document.getElementById('ann-ball');const keeper=document.getElementById('ann-keeper');
+  if(ball){ball.classList.remove('shooting','missed');ball.style.transition='none';ball.style.left='50%';ball.style.top='87%';requestAnimationFrame(()=>requestAnimationFrame(()=>ball.style.transition=''));}
+  if(keeper){keeper.style.transition='none';keeper.style.left='50%';keeper.style.top='51%';requestAnimationFrame(()=>requestAnimationFrame(()=>keeper.style.transition=''));}
+}
+function startAnnMatch(){
+  if(annSession.locked)return;
+  annSession={active:true,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,power:28+annRandom(45),powerDirection:1,lastFrame:0,raf:annSession.raf,outcomes:[],bonus:false};
+  annResetActors();
+  document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});
+  const start=document.getElementById('ann-start-btn');if(start)start.textContent='Restart match';
+  annSetComment(`<b>${esc(annPlayerName())}</b>, choose a target. The goalkeeper has studied absolutely no footage.`);
+  renderBreakGame();updateAnnPowerUI();
+  if(!annSession.raf)annSession.raf=requestAnimationFrame(annPowerLoop);
+  annTone(440,.07,'square');annTone(660,.09,'sine',.08);
+}
+function annShotResolution(zone,power){
+  const pressure=Math.min(annSession.shot,4);
+  let keeperZone=annChance(.20+pressure*.075)?zone:annRandom(9);
+  const corner=[0,2,6,8].includes(zone);const top=[0,1,2].includes(zone);const sweet=power>=55&&power<=84;
+  const panenka=[4,7].includes(zone)&&power>=42&&power<=62&&annChance(.34);
+  let missChance=.025;
+  if(power>94)missChance=.52;else if(power>89)missChance=.18;else if(power<14)missChance=.22;else if(power<23)missChance=.10;
+  if(top&&power>86)missChance+=.09;
+  if(annChance(missChance))return {type:'miss',keeperZone,style:0,panenka:false,varState:'none'};
+  const zr=Math.floor(zone/3),zc=zone%3,kr=Math.floor(keeperZone/3),kc=keeperZone%3;
+  const distance=Math.abs(zr-kr)+Math.abs(zc-kc);
+  let saveChance=distance===0?.69+pressure*.035:distance===1?.16+pressure*.012:.025;
+  if(sweet)saveChance-=.18;if(corner)saveChance-=.08;if(power<28)saveChance+=.19;if(panenka)saveChance=.06;
+  if(annChance(Math.max(.015,Math.min(.88,saveChance))))return {type:'saved',keeperZone,style:0,panenka:false,varState:'none'};
+  let style=100+(sweet?35:0)+(corner?25:0)+(top?15:0)+(panenka?75:0)+annSession.streak*20;
+  let varState='none';
+  if(annChance(.13)){const r=annRandom(100);varState=r<10?'disallowed':r<31?'retake':'confirmed';}
+  return {type:'goal',keeperZone,style,panenka,varState};
+}
+function shootAnnPenalty(){
+  if(!annSession.active||annSession.locked||annSession.selectedZone===null)return;
+  annSession.locked=true;
+  const zone=annSession.selectedZone;const power=Math.round(annSession.power);const shotNo=annSession.shot+1;
+  const outcome=annShotResolution(zone,power);
+  document.querySelectorAll('.ann-zone').forEach(btn=>btn.disabled=true);
+  const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='In flight…';}
+  annSetComment(`<b>Shot ${shotNo}:</b> ${esc(ANN_ZONE_NAMES[zone])} at ${power}% power. The stadium has stopped breathing.`);
+  annMoveActor('ann-keeper',outcome.keeperZone);
+  const ball=document.getElementById('ann-ball');if(ball){ball.classList.add('shooting');annMoveActor('ann-ball',zone);}
+  annTone(180,.045,'square');annTone(285,.06,'sine',.04);
+  setTimeout(()=>resolveAnnPenalty(outcome,zone,power),720);
+}
+function resolveAnnPenalty(outcome,zone,power){
+  const goal=document.getElementById('ann-goal');const ball=document.getElementById('ann-ball');
+  let counted=true;let resultType=outcome.type;let line='';let shieldUsed=false;let boostUsed=false;
+  if(outcome.type==='goal'&&outcome.varState==='disallowed'&&annRecord.varShields>0){annRecord.varShields--;outcome.varState='shielded';shieldUsed=true;}
+  if(outcome.type==='goal'){
+    if(outcome.varState==='disallowed'){
+      resultType='miss';line='📺 VAR has disallowed it for excessive excellence. This institution will answer for its crimes.';annTone(150,.22,'sawtooth');
+    }else if(outcome.varState==='retake'){
+      counted=false;resultType='retake';line='📺 VAR orders a retake. Apparently the goalkeeper moved, breathed, or displayed an opinion.';annTone(520,.06,'square');annTone(520,.06,'square',.12);
+    }else{
+      annSession.goals++;annSession.streak++;
+      let award=outcome.style;
+      if(annRecord.nextGoalMultiplier===2){award*=2;annRecord.nextGoalMultiplier=1;boostUsed=true;}
+      annSession.points+=award;
+      line=`${outcome.panenka?'🪄 PANENKA. ':''}${annPick(ANN_GOAL_LINES)}${outcome.varState==='confirmed'?' VAR reluctantly confirms it.':''}${shieldUsed?' 🛡️ The VAR shield blocks the cancellation.':''}${boostUsed?' ✨ The 2× boost doubles this goal’s style points.':''}`;
+      if(goal){goal.classList.remove('goal-flash');void goal.offsetWidth;goal.classList.add('goal-flash');}
+      annTone(660,.09,'sine');annTone(880,.13,'sine',.08);annCelebrate(false);
+    }
+  }else if(outcome.type==='saved'){
+    annSession.streak=0;line=annPick(ANN_SAVE_LINES);if(ball)ball.classList.add('missed');annTone(170,.18,'square');
+  }else{
+    annSession.streak=0;line=annPick(ANN_MISS_LINES);if(ball){ball.classList.add('missed');ball.style.top=zone<3?'4%':ball.style.top;}annTone(120,.22,'sawtooth');
+  }
+  if(counted){annSession.outcomes.push(resultType);annSession.shot++;annRecord.totalShots++;if(resultType==='goal')annRecord.totalGoals++;annRecord.bestStreak=Math.max(annRecord.bestStreak,annSession.streak);saveAnnRecord();}
+  else annSession.outcomes.push('retake');
+  annSetComment(`<b>${resultType==='goal'?'GOAL!':resultType==='saved'?'SAVED':resultType==='retake'?'RETAKE':'MISS'}:</b> ${esc(line)}`);
+  renderBreakGame();
+  const perfectFive=annSession.shot===5&&annSession.goals===5&&!annSession.bonus;
+  if(perfectFive){
+    annSession.bonus=true;annSession.maxShots=6;
+    setTimeout(()=>{annSetComment('<b>5/5!</b> The secret Golden Ball penalty is unlocked. This shot is for unnecessary greatness.');prepareNextAnnShot();annTone(880,.1,'sine');annTone(1100,.15,'sine',.1);},1200);
+  }else if(counted&&annSession.shot>=annSession.maxShots){
+    setTimeout(finishAnnMatch,1250);
+  }else{
+    setTimeout(prepareNextAnnShot,counted?1050:1250);
+  }
+}
+function prepareNextAnnShot(){
+  if(!annSession.active)return;
+  annSession.locked=false;annSession.selectedZone=null;annSession.power=22+annRandom(56);annSession.powerDirection=annChance(.5)?1:-1;
+  annResetActors();
+  document.querySelectorAll('.ann-zone').forEach(btn=>{btn.disabled=false;btn.classList.remove('selected');});
+  const aim=document.getElementById('ann-selected-aim');if(aim)aim.innerHTML='Aim: <b>choose a target</b>';
+  const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='⚽ SHOOT';}
+  renderBreakGame();updateAnnPowerUI();
+}
+function finishAnnMatch(){
+  annSession.active=false;annSession.locked=false;
+  const trophy=annSession.goals>=4;
+  let earnedSpins=1;if(annSession.goals>=4)earnedSpins++;if(annSession.goals>=5)earnedSpins++;
+  annRecord.freeSpins+=earnedSpins;annRecord.matches++;if(trophy)annRecord.trophies++;
+  annRecord.bestGoals=Math.max(annRecord.bestGoals,annSession.goals);annRecord.bestPoints=Math.max(annRecord.bestPoints,annSession.points);
+  const title=annSession.goals>=6?'👑 ABSOLUTE CHAOS':annSession.goals===5?'🏆 Stadium conquered':annSession.goals===4?'🏆 Trophy secured':annSession.goals===3?'⚽ Respectable chaos':'📺 VAR-controlled outcome';
+  annRecord.history=[{goals:annSession.goals,shots:annSession.maxShots,points:annSession.points,title,spins:earnedSpins,at:Date.now()},...annRecord.history].slice(0,6);saveAnnRecord();
+  annSetComment(`<b>${esc(title)}</b><br>Final score: ${annSession.goals}/${annSession.maxShots}, ${annSession.points} style points. You earned <b>${earnedSpins} free spin${earnedSpins===1?'':'s'}</b>.${trophy?' The trophy room has been updated.':' The comeback narrative begins immediately.'}`);
+  const start=document.getElementById('ann-start-btn');if(start)start.textContent='Play again';
+  const shoot=document.getElementById('ann-shoot-btn');if(shoot){shoot.disabled=true;shoot.textContent='Match finished';}
+  document.querySelectorAll('.ann-zone').forEach(btn=>btn.disabled=true);
+  if(trophy){annCelebrate(true);annTone(660,.12,'sine');annTone(880,.12,'sine',.13);annTone(1100,.2,'sine',.27);}
+  checkGrandPrize();
+  renderBreakGame();
+}
+function applyAnnSpinReward(index){
+  const reward=ANN_SPIN_OUTCOMES[index];let message='';let historyLabel=reward.short;
+  if(reward.type==='points'){annRecord.bonusPoints+=reward.value;message=`You won <b>${reward.value} bonus points</b>. The local bank is feeling healthier.`;}
+  else if(reward.type==='multiplier'){annRecord.nextGoalMultiplier=2;message='<b>2× GOAL BOOST!</b> The next successful penalty earns double style points.';}
+  else if(reward.type==='shield'){annRecord.varShields++;message='<b>VAR SHIELD!</b> It will automatically rescue one goal that VAR tries to disallow.';}
+  else if(reward.type==='spins'){annRecord.freeSpins+=reward.value;message=`The wheel gives back <b>${reward.value} free spins</b>. Suspiciously generous.`;}
+  else if(reward.type==='bust'){
+    const before=annRecord.bonusPoints;const lost=Math.round(before*reward.value);annRecord.bonusPoints=Math.max(0,before-lost);
+    if(annRecord.varShields>0){annRecord.varShields--;annRecord.bonusPoints=before;message='<b>💥 BUST!</b> A VAR shield absorbs the disaster — your bank is safe this time.';historyLabel='Bust blocked';}
+    else{message=lost>0?`<b>💥 BUST!</b> The wheel eats <b>${lost} points</b>. Should have banked it.`:'<b>💥 BUST!</b> Nothing to lose — an empty bank is its own shield.';}
+  }
+  else{
+    const mystery=annRandom(3);
+    if(mystery===0){annRecord.bonusPoints+=300;message='<b>MYSTERY: +300 bonus points!</b>';historyLabel='Mystery +300';}
+    else if(mystery===1){annRecord.freeSpins+=1;message='<b>MYSTERY: +1 free spin!</b>';historyLabel='Mystery spin';}
+    else{annRecord.varShields+=1;message='<b>MYSTERY: +1 VAR shield!</b>';historyLabel='Mystery shield';}
+  }
+  annRecord.lastSpin=message.replace(/<[^>]*>/g,'');
+  annRecord.spinHistory=[historyLabel,...annRecord.spinHistory].slice(0,6);saveAnnRecord();
+  annSpinState.spinning=false;
+  const result=document.getElementById('ann-spin-result');if(result)result.innerHTML=message;
+  if(reward.type==='bust'){annTone(160,.28,'sawtooth');annTone(120,.3,'sawtooth',.06);}
+  else if(reward.value>=500||reward.type==='multiplier'||reward.type==='shield'){annCelebrate(true);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);annTone(1100,.18,'sine',.2);}
+  else{annTone(620,.08,'sine');annTone(820,.11,'sine',.09);}
+  checkGrandPrize();
+  renderBreakGame();
+}
+function annBank(){return annRecord.bonusPoints+annRecord.bestPoints;}
+function checkGrandPrize(){
+  if(annRecord.grandPrizeWon)return;
+  if(annBank()>=ANN_GRAND_PRIZE){
+    annRecord.grandPrizeWon=true;saveAnnRecord();
+    annCelebrate(true);setTimeout(()=>annCelebrate(true),400);setTimeout(()=>annCelebrate(true),800);
+    annTone(660,.14,'sine');annTone(880,.16,'sine',.14);annTone(1100,.22,'sine',.3);annTone(1320,.3,'sine',.5);
+    const result=document.getElementById('ann-spin-result');
+    if(result)result.innerHTML=`<b>🏆 GRAND PRIZE!</b> ${esc(annPlayerName())} crossed ${ANN_GRAND_PRIZE.toLocaleString()} points and wins Ann's Game. Submit your score to the Champions board!`;
+  }
+}
+let annChampions={};
+function annChampKey(name){return String(name).replace(/[.#$/\[\]]/g,'_').slice(0,40)||'guest';}
+function initAnnChampions(){
+  try{
+    if(!db)return;
+    db.ref('annsGameChampions').on('value',snap=>{annChampions=snap.val()||{};renderAnnChampions();});
+  }catch(e){console.error(e);}
+}
+function postAnnScore(){
+  const score=annBank();
+  if(score<=0){const r=document.getElementById('ann-spin-result');if(r)r.innerHTML='<b>Nothing to post yet.</b><br>Score some goals or spin the wheel first.';return;}
+  if(!db){toast('Champions board is offline right now');return;}
+  const name=annPlayerName();const key=annChampKey(name);
+  const existing=annChampions[key];
+  if(existing&&Number(existing.score)>=score){toast(`Your posted best is already ${Number(existing.score).toLocaleString()}`);return;}
+  db.ref('annsGameChampions/'+key).set({name:name,score:score,won:annRecord.grandPrizeWon,at:Date.now()})
+    .then(()=>{annRecord.submittedBest=score;saveAnnRecord();toast(`Posted ${score.toLocaleString()} to the Champions board`);annTone(660,.1,'sine');annTone(880,.12,'sine',.1);})
+    .catch(err=>{console.error(err);toast('Could not post score');});
+}
+function renderAnnChampions(){
+  const el=document.getElementById('ann-champ-list');if(!el)return;
+  const rows=Object.keys(annChampions).map(k=>annChampions[k]).filter(x=>x&&Number(x.score)>0).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,10);
+  const me=annChampKey(annPlayerName());
+  if(!rows.length){el.innerHTML='<div class="ann-history-empty">No champions posted yet. Be the first to claim the top spot.</div>';return;}
+  el.innerHTML=rows.map((r,i)=>{
+    const isYou=annChampKey(r.name)===me;const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    return `<div class="ann-champ-row${i===0?' first':''}${isYou?' you':''}"><span class="ann-champ-rank">${medal}</span><span class="ann-champ-name">${esc(r.name)}${r.won?'<span class="ann-champ-crown">GRAND PRIZE</span>':''}${isYou?'<span class="ann-champ-sub">that\'s you</span>':''}</span><span class="ann-champ-score">${Number(r.score).toLocaleString()}</span></div>`;
+  }).join('');
+}
+function spinAnnWheel(){
+  if(annSpinState.spinning)return;
+  if(annRecord.freeSpins<=0){const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>No free spins left.</b><br>Complete a penalty match to earn another.';annTone(150,.14,'square');return;}
+  annRecord.freeSpins--;annRecord.totalSpins++;saveAnnRecord();annSpinState.spinning=true;
+  const index=annRandom(ANN_SPIN_OUTCOMES.length);const current=((annSpinState.rotation%360)+360)%360;const target=(360-index*45)%360;const delta=(target-current+360)%360;
+  annSpinState.rotation+=1800+delta;
+  const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform=`rotate(${annSpinState.rotation}deg)`;
+  const result=document.getElementById('ann-spin-result');if(result)result.innerHTML='<b>Spinning…</b><br>The football gods are reviewing the request.';
+  annTone(260,.05,'square');for(let i=1;i<7;i++)annTone(260+i*28,.04,'square',i*.11);
+  renderBreakGame();
+  setTimeout(()=>applyAnnSpinReward(index),3050);
+}
+function toggleAnnSound(){annRecord.sound=!annRecord.sound;saveAnnRecord();renderBreakGame();if(annRecord.sound)annTone(660,.08,'sine');}
+function resetAnnRecords(){
+  if(annSpinState.spinning)return;
+  if(annSession.active&&!window.confirm('A penalty match is active. Reset the match, free spins and all local records?'))return;
+  if(!annSession.active&&!window.confirm('Reset all local penalty and free-spin records on this browser?'))return;
+  annRecord=defaultAnnRecord();saveAnnRecord();annSession={active:false,locked:false,shot:0,maxShots:5,goals:0,points:0,streak:0,selectedZone:null,power:50,powerDirection:1,lastFrame:0,raf:annSession.raf,outcomes:[],bonus:false};annSpinState={spinning:false,rotation:0};annResetActors();const wheel=document.getElementById('ann-spin-wheel');if(wheel)wheel.style.transform='rotate(0deg)';annSetComment(`<b>Fresh stadium.</b> ${esc(annPlayerName())} has three new welcome spins.`);renderBreakGame();
+}
+function renderBreakGame(){
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  const player=annPlayerName();
+  set('ann-shot-number',`${annSession.shot}/${annSession.maxShots}`);set('ann-match-goals',annSession.goals);set('ann-match-points',annSession.points);set('ann-stage-name',annSession.active?annStage():'Warm-up');
+  set('ann-best-points',annRecord.bestPoints);set('ann-best-goals',annRecord.bestGoals);set('ann-trophies',annRecord.trophies);set('ann-match-count',`${annRecord.matches} played`);
+  set('ann-spin-count',`${annRecord.freeSpins} spin${annRecord.freeSpins===1?'':'s'}`);set('ann-bonus-points',annRecord.bonusPoints);set('ann-var-shields',annRecord.varShields);set('ann-next-multiplier',`${annRecord.nextGoalMultiplier}×`);set('ann-total-spins',annRecord.totalSpins);
+  const playerLabel=document.getElementById('ann-player-label');if(playerLabel)playerLabel.textContent=`🎮 Playing as ${player}`;
+  const sound=document.getElementById('ann-sound-btn');if(sound){sound.textContent=annRecord.sound?'🔊 Sound':'🔇 Muted';sound.setAttribute('aria-pressed',String(annRecord.sound));}
+  const spin=document.getElementById('ann-spin-btn');if(spin){spin.disabled=annSpinState.spinning||annRecord.freeSpins<=0;spin.textContent=annSpinState.spinning?'🎡 SPINNING…':annRecord.freeSpins>0?'🎟️ USE FREE SPIN':'🔒 EARN A SPIN';}
+  const crowd=document.getElementById('ann-crowd-fill');if(crowd)crowd.style.width=`${Math.min(100,(annSession.goals/Math.max(1,annSession.maxShots))*100)}%`;
+  const crowdText=document.getElementById('ann-crowd-text');if(crowdText)crowdText.textContent=annSession.goals>=4?`${player.toUpperCase()} OWNS THIS STADIUM`:annSession.streak>=2?`${player.toUpperCase()}! ${player.toUpperCase()}!`:annSession.active?'NO PRESSURE. ABSOLUTELY NONE.':'THE STADIUM IS READY';
+  const progress=document.getElementById('ann-shot-progress');
+  if(progress){
+    const slots=annSession.maxShots;let html='';
+    for(let i=0;i<slots;i++){
+      const outcome=annSession.outcomes[i];const cls=outcome?outcome:(annSession.active&&i===annSession.shot?'current':'');const symbol=outcome==='goal'?'⚽':outcome==='saved'?'🧤':outcome==='miss'?'✕':outcome==='retake'?'VAR':i+1;
+      html+=`<span class="ann-shot-dot ${esc(cls)}">${esc(symbol)}</span>`;
+    }
+    progress.innerHTML=html;
+  }
+  const history=document.getElementById('ann-history');
+  if(history)history.innerHTML=annRecord.history.length?annRecord.history.map(x=>`<div class="ann-history-row"><span>${Number(x.goals)>=4?'🏆':'⚽'}</span><div><b>${esc(x.title||'Penalty match')}</b><div class="small">${Number(x.goals)||0}/${Number(x.shots)||5} goals · +${Number(x.spins)||1} spin${Number(x.spins)===1?'':'s'}</div></div><b>${Number(x.points)||0} pts</b></div>`).join(''):'<div class="ann-history-empty">No completed matches yet. The locker room is dramatically empty.</div>';
+  const spinHistory=document.getElementById('ann-spin-history');
+  if(spinHistory)spinHistory.innerHTML=annRecord.spinHistory.length?annRecord.spinHistory.map(x=>`<span class="ann-spin-chip">🎡 ${esc(x)}</span>`).join(''):'<span class="ann-spin-chip">Welcome spins ready</span>';
+  const bank=annBank();const pct=Math.min(100,(bank/ANN_GRAND_PRIZE)*100);
+  const prizeText=document.getElementById('ann-prize-text');if(prizeText)prizeText.textContent=annRecord.grandPrizeWon?'🏆 GRAND PRIZE WON':`${bank.toLocaleString()} / ${ANN_GRAND_PRIZE.toLocaleString()}`;
+  const prizeFill=document.getElementById('ann-prize-fill');if(prizeFill){prizeFill.style.width=`${pct}%`;prizeFill.classList.toggle('won',annRecord.grandPrizeWon);}
+  renderAnnChampions();
+  updateAnnPowerUI();
+}
 function getSavedLogin(){try{return JSON.parse(safeLocalGet('wc2026_savedLogin')||'null')||{};}catch(e){return {};}}
 const savedLogin=getSavedLogin();
 let currentUser=savedLogin.user || safeLocalGet('wc2026_currentUser') || '';
@@ -989,33 +1576,23 @@ function pushState(){
 
 function initFirebase(){
   try{
-    firebase.initializeApp(firebaseConfig);
-    db=firebase.database();
-    firebase.auth().signInAnonymously().then(()=>{
-      db.ref('wc2026').on('value', snap=>{
-        const data=snap.val()||{};
-        state.users=uniqueUsers(normalizeUsersFromFirebase(data.users));
-        state.predictions=data.predictions||{};
-        state.results=data.results||{};
-        state.champion=data.champion||{};
-        state.playerPasswords=data.playerPasswords || data.playerPins || {};
-        if(currentUser && !state.users.includes(currentUser)) logout(false);
-        if(currentUser && state.playerPasswords[currentUser] && state.playerPasswords[currentUser]!==currentPassword) logout(false);
-        renderAll();
-      }, err=>{
-        console.error('Firebase read failed:', err);
-        toast('Cannot read database — check Firebase rules');
-        renderAll();
-      });
-    }).catch(err=>{
-      console.error('Anonymous sign-in failed:', err);
-      toast('Connection sign-in failed');
+    firebase.initializeApp(firebaseConfig); db=firebase.database();
+    db.ref('wc2026').on('value',snap=>{
+      const data=snap.val()||{};
+      state.users=uniqueUsers(normalizeUsersFromFirebase(data.users));
+      state.predictions=data.predictions||{};
+      state.results=data.results||{};
+      state.champion=data.champion||{};
+      state.playerPasswords=data.playerPasswords || data.playerPins || {};
+      if(currentUser && !state.users.includes(currentUser)) logout(false);
+      if(currentUser && state.playerPasswords[currentUser] && state.playerPasswords[currentUser]!==currentPassword) logout(false);
       renderAll();
     });
-  }catch(e){console.error(e);toast('Firebase connection failed');}
-  renderAll();
+    initAnnChampions();
+  }catch(e){console.error(e);toast('Firebase connection failed');renderAll();}
 }
- function switchTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');renderAll();}
+
+function switchTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');renderAll();}
 document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('.tab'); if(b) switchTab(b.dataset.tab);});
 document.getElementById('login-btn').onclick=login;
 document.getElementById('player-name').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
@@ -1024,11 +1601,18 @@ document.getElementById('player-password').addEventListener('keydown',e=>{if(e.k
 document.getElementById('save-predictions').onclick=savePredictions;
 document.getElementById('unlock-admin').onclick=unlockAdmin;
 document.getElementById('save-results').onclick=saveResults;
+document.getElementById('ann-start-btn').onclick=startAnnMatch;
+document.getElementById('ann-shoot-btn').onclick=shootAnnPenalty;
+document.getElementById('ann-sound-btn').onclick=toggleAnnSound;
+document.getElementById('ann-reset-btn').onclick=resetAnnRecords;
+document.getElementById('ann-spin-btn').onclick=spinAnnWheel;
+document.getElementById('ann-post-btn').onclick=postAnnScore;
+document.getElementById('ann-zone-grid').addEventListener('click',e=>{const b=e.target.closest('[data-zone]');if(b)annAim(Number(b.dataset.zone));});
 document.getElementById('clear-empty-btn').onclick=()=>{predictMode = predictMode==='upcoming' ? 'all' : 'upcoming'; renderPredict();};
 document.getElementById('prediction-view-toggle').addEventListener('click',e=>{const b=e.target.closest('[data-view]'); if(!b)return; publicView=b.dataset.view; document.querySelectorAll('#prediction-view-toggle .view-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===publicView)); renderPublicPredictions();});
 const previousBtnInit=document.getElementById('toggle-previous-btn');
 
-function renderAll(){renderStats();renderCurrentUser();renderChampionPicker();renderPredictFilters();renderPredict();renderPublicFilters();renderPublicPredictions();renderLeaderboard();renderSchedule();renderAdmin();renderResults();}
+function renderAll(){renderStats();renderCurrentUser();renderChampionPicker();renderPredictFilters();renderPredict();renderPublicFilters();renderPublicPredictions();renderLeaderboard();renderSchedule();renderBreakGame();renderAdmin();renderResults();}
 function renderStats(){const played=MATCHES.filter(m=>state.results[m.id]).length;const submitted=state.users.filter(u=>predictionCount(u)>0).length;document.getElementById('stats-row').innerHTML=`<div class="stat"><strong>${state.users.length}</strong><span>Players</span></div><div class="stat"><strong>${submitted}</strong><span>Submitted scores</span></div><div class="stat"><strong>${played}/${MATCHES.length}</strong><span>Results in</span></div>`;}
 
 async function login(){
