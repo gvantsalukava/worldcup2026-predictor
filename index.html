@@ -604,10 +604,10 @@
     <div class="card" id="champion-card"></div>
     <div class="card">
       <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 88 saved</span></div>
-      <p class="help">By default, this list shows only the Third Place Play-off and the Final. Enter the 90-minute score first. If you predict a draw, choose whether penalties will happen and select the eventual winner. The Final awards 2 points for the correct World Champion; the Third Place winner remains worth 1 point.</p>
+      <p class="help">By default, this list shows only the Third Place Play-off and the Final. Enter the 90-minute score first. A winner pick appears only when you predict a draw. Then choose whether penalties will happen and select the eventual winner. The Final awards 2 points for the correct World Champion; the Third Place winner remains worth 1 point.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
-      <button class="btn full" id="save-predictions">💾 Save scores, penalties and winner picks</button>
+      <button class="btn full" id="save-predictions">💾 Save predictions</button>
     </div>
   </section>
 
@@ -922,7 +922,7 @@ const TEAM_FLAGS = {
 const FINAL_WEEKEND_MESSAGES = [
   "Final Weekend is here.\nTwo matches. One trophy.",
   "Third place first.\nThen the World Champion.",
-  "One last prediction.\nMake it count. 🏆"
+  "One last prediction.\nMake it count. 🏆",
   "The final whistle is close.\nChoose wisely.",
   "Bronze on Saturday.\nGold on Sunday.",
   "No more warm-ups.\nThis is the Final Weekend.",
@@ -1367,8 +1367,7 @@ function updateKnockoutExtraVisibility(m,prefix,clearHidden=true){
   const hn=Number(hv), an=Number(av);
   const hasScore=hv!=='' && av!=='' && Number.isFinite(hn) && Number.isFinite(an);
   const isDraw=hasScore && hn===an;
-  const alwaysPickWinner=isFinalWeekend(m);
-  extra.classList.toggle('hidden',!(isDraw || alwaysPickWinner));
+  extra.classList.toggle('hidden',!isDraw);
   const pen=document.getElementById(`${prefix}pen_${m.id}`);
   if(pen){
     const penRow=pen.closest('.penalty-pick');
@@ -1376,7 +1375,7 @@ function updateKnockoutExtraVisibility(m,prefix,clearHidden=true){
     if(!isDraw && clearHidden) pen.value='';
   }
   const adv=document.getElementById(`${prefix}adv_${m.id}`);
-  if(adv && !isDraw && !alwaysPickWinner && clearHidden) adv.value='';
+  if(adv && !isDraw && clearHidden) adv.value='';
 }
 function attachKnockoutExtraHandlers(prefix){
   MATCHES.filter(isKnockoutMatch).forEach(m=>{
@@ -1408,14 +1407,10 @@ function calcAdvancePts(pred,result,m){
   const resultAdv=inferredAdvanceTeam(m,result);
   if(!validAdvanceTeam(m,predAdv)||!validAdvanceTeam(m,resultAdv)||predAdv!==resultAdv) return 0;
 
-  // Draw bonus: when both predicted and official 90-minute scores are draws,
-  // the advancing-team pick is an extra knockout prediction.
+  // Winner bonus is available only when both the predicted and official
+  // 90-minute scores are draws and an eventual winner had to be selected.
   if(scoreIsDraw(pred) && scoreIsDraw(result)) return isWorldCupFinal(m) ? 2 : 1;
-
-  // Fallback point: if the 90-minute scenario is wrong, but the player still
-  // picked the team that advances, award 1 point. Do not duplicate points when
-  // the 90-minute winner/outcome was already correct.
-  return calcScorePts(pred,result,m)===0 ? (isWorldCupFinal(m) ? 2 : 1) : 0;
+  return 0;
 }
 function calcPenaltyPts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
@@ -1694,12 +1689,12 @@ function renderPredict(){
       const dm=displayMatch(m);
       const p=preds[m.id]||{h:'',a:''}; const locked=matchStarted(m); const waiting=!matchTeamsReady(m);
       const saved=completePrediction(p);
-      const showExtra=isKnockoutMatch(m) && (scoreIsDraw(p) || isFinalWeekend(m));
+      const showExtra=isKnockoutMatch(m) && scoreIsDraw(p);
       const penHtml=penaltyPickHtml(m,penaltyValue(p),locked||waiting,'ppen');
       const advHtml=advancingPickHtml(m,p.advance||'',locked||waiting,'padv');
       const extraHtml=isKnockoutMatch(m)?`<div class="knockout-extra ${showExtra?'':'hidden'}" id="pextra_${m.id}">${penHtml}${advHtml}</div>`:'';
       const lockNote=locked?'<div class="locked">Locked — match has started.</div>':(waiting?'<div class="locked">Waiting for previous-round winner.</div>':'');
-      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(dm.home)} <span class="dash">vs</span> ${esc(dm.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(dm.venue)}${saved?' · Saved':''}${isFinalWeekend(m)?' · 90-min score; always pick the match winner; penalties appear for a draw':(isKnockoutMatch(m)?' · 90-min score; draw opens penalties + advancing team':'')}${lockNote}</div></div><div class="prediction-inputs"><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked||waiting?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked||waiting?'disabled':''}/></div>${extraHtml}</div></div>`;
+      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(dm.home)} <span class="dash">vs</span> ${esc(dm.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(dm.venue)}${saved?' · Saved':''}${isKnockoutMatch(m)?' · 90-min score; draw opens penalties + winner pick':''}${lockNote}</div></div><div class="prediction-inputs"><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked||waiting?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked||waiting?'disabled':''}/></div>${extraHtml}</div></div>`;
     });
     html+='</div></details>';
   });
@@ -1747,12 +1742,6 @@ function savePredictions(){
           return;
         }
         saved.penalties=pen;
-        saved.advance=adv;
-      }else if(isFinalWeekend(m)){
-        if(!validAdvanceTeam(m,adv)){
-          errors.push(`${label} — choose the match winner`);
-          return;
-        }
         saved.advance=adv;
       }else{
         saved.advance=hn>an ? dm.home : dm.away;
