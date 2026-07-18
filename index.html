@@ -1232,8 +1232,8 @@ const savedLogin=getSavedLogin();
 let currentUser=savedLogin.user || safeLocalGet('wc2026_currentUser') || '';
 let currentPassword=savedLogin.pass || safeSessionGet('wc2026_playerPassword') || '';
 let adminUnlocked=safeSessionGet('wc2026_admin')==='1';
-let predictGroup='SF';
-let publicGroup='SF';
+let predictGroup='FW';
+let publicGroup='FW';
 let publicView='games';
 let scheduleView='fixtures';
 let scheduleMode='upcoming';
@@ -1243,12 +1243,12 @@ let championEditorVisible=false;
 let adminResultsMode = (function(){try{return safeLocalGet('wc2026_adminResultsMode') || 'unfilled';}catch(e){return 'unfilled';}})();
 let showPreviousPredictions = (function(){try{return safeLocalGet('wc2026_showPreviousPredictions')!=='0';}catch(e){return true;}})();
 let showPreviousPlayoffSchedule = (function(){try{return safeLocalGet('wc2026_showPreviousPlayoffSchedule')==='1' || safeLocalGet('wc2026_showPreviousR32Schedule')==='1';}catch(e){return false;}})();
-let leaderboardStage = (function(){try{const saved=safeLocalGet('wc2026_leaderboardStage'); return saved && saved!=='qf' ? saved : 'sf';}catch(e){return 'sf';}})();
+let leaderboardStage = (function(){try{const saved=safeLocalGet('wc2026_leaderboardStage'); return saved && saved!=='qf' ? saved : 'fw';}catch(e){return 'fw';}})();
 
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
 function matchShortLabel(m){return m.stage ? `M${m.id} · ${m.stage}` : `Group ${m.group}`;}
-function matchFilterPass(m,active){return active==='ALL' || (active==='SF' ? FINAL_WEEKEND_IDS.includes(Number(m.id)) : active==='QF' ? m.stage==='Quarter-final' : active==='R16' ? m.stage==='Round of 16' : active==='R32' ? m.stage==='Round of 32' : m.group===active);}
+function matchFilterPass(m,active){return active==='ALL' || (active==='FW' ? isFinalWeekend(m) : active==='SF' ? isSemiFinal(m) : active==='QF' ? m.stage==='Quarter-final' : active==='R16' ? m.stage==='Round of 16' : active==='R32' ? m.stage==='Round of 32' : m.group===active);}
 function isRoundOf32(m){return m.stage==='Round of 32';}
 function isRoundOf16(m){return m.stage==='Round of 16';}
 function isQuarterFinal(m){return m.stage==='Quarter-final';}
@@ -1347,7 +1347,7 @@ function predictionPenaltyNote(p,m){
 function predictionAdvanceNote(p,m){
   const adv=inferredAdvanceTeam(m,p);
   if(!isKnockoutMatch(m) || !adv) return '';
-  return ` <span class="advance-note">· Advances: ${esc(adv)}</span>`;
+  return ` <span class="advance-note">· ${isWorldCupFinal(m)?'World Champion':(Number(m.id)===103?'Third Place Winner':'Advances')}: ${esc(adv)}</span>`;
 }
 function resultPenaltyNote(r,m){
   const pen=actualPenaltyValue(r);
@@ -1357,7 +1357,7 @@ function resultPenaltyNote(r,m){
 function resultAdvanceNote(r,m){
   const adv=inferredAdvanceTeam(m,r);
   if(!isKnockoutMatch(m) || !adv) return '';
-  return ` · Advances: <b>${esc(adv)}</b>`;
+  return ` · ${isWorldCupFinal(m)?'World Champion':(Number(m.id)===103?'Third Place Winner':'Advances')}: <b>${esc(adv)}</b>`;
 }
 function updateKnockoutExtraVisibility(m,prefix,clearHidden=true){
   const h=document.getElementById(`${prefix}h_${m.id}`), a=document.getElementById(`${prefix}a_${m.id}`);
@@ -1365,14 +1365,18 @@ function updateKnockoutExtraVisibility(m,prefix,clearHidden=true){
   if(!h||!a||!extra) return;
   const hv=h.value.trim(), av=a.value.trim();
   const hn=Number(hv), an=Number(av);
-  const show=hv!=='' && av!=='' && Number.isFinite(hn) && Number.isFinite(an) && hn===an;
-  extra.classList.toggle('hidden',!show);
-  if(!show && clearHidden){
-    const pen=document.getElementById(`${prefix}pen_${m.id}`);
-    const adv=document.getElementById(`${prefix}adv_${m.id}`);
-    if(pen) pen.value='';
-    if(adv) adv.value='';
+  const hasScore=hv!=='' && av!=='' && Number.isFinite(hn) && Number.isFinite(an);
+  const isDraw=hasScore && hn===an;
+  const alwaysPickWinner=isFinalWeekend(m);
+  extra.classList.toggle('hidden',!(isDraw || alwaysPickWinner));
+  const pen=document.getElementById(`${prefix}pen_${m.id}`);
+  if(pen){
+    const penRow=pen.closest('.penalty-pick');
+    if(penRow) penRow.classList.toggle('hidden',!isDraw);
+    if(!isDraw && clearHidden) pen.value='';
   }
+  const adv=document.getElementById(`${prefix}adv_${m.id}`);
+  if(adv && !isDraw && !alwaysPickWinner && clearHidden) adv.value='';
 }
 function attachKnockoutExtraHandlers(prefix){
   MATCHES.filter(isKnockoutMatch).forEach(m=>{
@@ -1627,7 +1631,7 @@ function renderChampionPicker(){
 }
 function makeFilter(containerId, active, setter){
   const el=document.getElementById(containerId); if(!el)return;
-  const filters=[{key:'SF',label:'SF'},{key:'QF',label:'QF'},{key:'R16',label:'R16'},{key:'R32',label:'R32'},{key:'ALL',label:'All'},...Object.keys(GROUPS).map(g=>({key:g,label:g}))];
+  const filters=[{key:'FW',label:'Final Weekend'},{key:'SF',label:'SF'},{key:'QF',label:'QF'},{key:'R16',label:'R16'},{key:'R32',label:'R32'},{key:'ALL',label:'All'},...Object.keys(GROUPS).map(g=>({key:g,label:g}))];
   let html='';
   filters.forEach(f=>{html+=`<button type="button" class="filter-btn ${active===f.key?'active':''}" data-group="${f.key}">${f.label}</button>`;});
   el.innerHTML=html;
@@ -1690,12 +1694,12 @@ function renderPredict(){
       const dm=displayMatch(m);
       const p=preds[m.id]||{h:'',a:''}; const locked=matchStarted(m); const waiting=!matchTeamsReady(m);
       const saved=completePrediction(p);
-      const showExtra=isKnockoutMatch(m) && scoreIsDraw(p);
+      const showExtra=isKnockoutMatch(m) && (scoreIsDraw(p) || isFinalWeekend(m));
       const penHtml=penaltyPickHtml(m,penaltyValue(p),locked||waiting,'ppen');
       const advHtml=advancingPickHtml(m,p.advance||'',locked||waiting,'padv');
       const extraHtml=isKnockoutMatch(m)?`<div class="knockout-extra ${showExtra?'':'hidden'}" id="pextra_${m.id}">${penHtml}${advHtml}</div>`:'';
       const lockNote=locked?'<div class="locked">Locked — match has started.</div>':(waiting?'<div class="locked">Waiting for previous-round winner.</div>':'');
-      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(dm.home)} <span class="dash">vs</span> ${esc(dm.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(dm.venue)}${saved?' · Saved':''}${isKnockoutMatch(m)?' · 90-min score; draw opens penalties + advancing team':''}${lockNote}</div></div><div class="prediction-inputs"><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked||waiting?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked||waiting?'disabled':''}/></div>${extraHtml}</div></div>`;
+      html+=`<div class="match"><div><div class="teams"><span class="time">${esc(matchShortLabel(m))}</span>${esc(dm.home)} <span class="dash">vs</span> ${esc(dm.away)}</div><div class="meta"><span class="time">${geTime(m.utc)} Georgia</span>${esc(dm.venue)}${saved?' · Saved':''}${isFinalWeekend(m)?' · 90-min score; always pick the match winner; penalties appear for a draw':(isKnockoutMatch(m)?' · 90-min score; draw opens penalties + advancing team':'')}${lockNote}</div></div><div class="prediction-inputs"><div class="score-inputs"><input type="number" min="0" max="20" inputmode="numeric" id="ph_${m.id}" value="${esc(p.h)}" ${locked||waiting?'disabled':''}/><span class="dash">–</span><input type="number" min="0" max="20" inputmode="numeric" id="pa_${m.id}" value="${esc(p.a)}" ${locked||waiting?'disabled':''}/></div>${extraHtml}</div></div>`;
     });
     html+='</div></details>';
   });
@@ -1739,10 +1743,16 @@ function savePredictions(){
           return;
         }
         if(!validAdvanceTeam(m,adv)){
-          errors.push(`${label} — choose who advances`);
+          errors.push(`${label} — choose the match winner`);
           return;
         }
         saved.penalties=pen;
+        saved.advance=adv;
+      }else if(isFinalWeekend(m)){
+        if(!validAdvanceTeam(m,adv)){
+          errors.push(`${label} — choose the match winner`);
+          return;
+        }
         saved.advance=adv;
       }else{
         saved.advance=hn>an ? dm.home : dm.away;
@@ -1833,16 +1843,18 @@ function leaderboardStageConfig(stage){
     r32:{key:'r32',label:'Round of 32',title:'Round of 32 leaderboard',description:'Round of 32 matches only', empty:'No Round of 32 score predictions submitted yet.', joinedStatus:'No saved Round of 32 predictions'},
     r16:{key:'r16',label:'Round of 16',title:'Round of 16 leaderboard',description:'Round of 16 matches only', empty:'No Round of 16 score predictions submitted yet.', joinedStatus:'No saved Round of 16 predictions'},
     qf:{key:'qf',label:'Quarter-finals',title:'Quarter-final leaderboard',description:'Quarter-final matches only', empty:'No quarter-final score predictions submitted yet.', joinedStatus:'No saved quarter-final predictions'},
-    sf:{key:'sf',label:'Final Weekend',title:'Final Weekend leaderboard',description:'Third Place and Final only', empty:'No Final Weekend score predictions submitted yet.', joinedStatus:'No saved Final Weekend predictions'}
+    sf:{key:'sf',label:'Semi-finals',title:'Semi-final leaderboard',description:'Semi-final matches only', empty:'No semi-final score predictions submitted yet.', joinedStatus:'No saved semi-final predictions'},
+    fw:{key:'fw',label:'Final Weekend',title:'Final Weekend leaderboard',description:'Third Place and Final only', empty:'No Final Weekend score predictions submitted yet.', joinedStatus:'No saved Final Weekend predictions'}
   };
-  return configs[stage] || configs.sf;
+  return configs[stage] || configs.fw;
 }
 function leaderboardMatches(stage){
   if(stage==='group') return MATCHES.filter(m=>!m.stage);
   if(stage==='r32') return MATCHES.filter(m=>m.stage==='Round of 32');
   if(stage==='r16') return MATCHES.filter(m=>m.stage==='Round of 16');
   if(stage==='qf') return MATCHES.filter(m=>m.stage==='Quarter-final');
-  if(stage==='sf') return MATCHES.filter(isFinalWeekend);
+  if(stage==='sf') return MATCHES.filter(isSemiFinal);
+  if(stage==='fw') return MATCHES.filter(isFinalWeekend);
   return MATCHES;
 }
 function predictionCountForMatches(user,matches){
@@ -1883,7 +1895,7 @@ function renderLeaderboard(){
     a.name.localeCompare(b.name)
   );
 
-  const stageButtons=['sf','qf','r16','r32','group','overall'].map(key=>{
+  const stageButtons=['fw','sf','qf','r16','r32','group','overall'].map(key=>{
     const c=leaderboardStageConfig(key);
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
