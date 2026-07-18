@@ -460,7 +460,7 @@
 @media(prefers-reduced-motion:reduce){.ann-spin-wheel{transition-duration:.25s}}
 
 
-/* Semi-final refresh */
+/* Final Weekend refresh */
 .toast.greeting{white-space:pre-line}
 .semi-final-spotlight{
   display:grid;
@@ -570,17 +570,17 @@
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="title"><h1>World Cup 2026 Predictor 🏆</h1><p>Semi-final predictions · champion pick · live leaderboard</p></div>
+    <div class="title"><h1>World Cup 2026 Predictor 🏆</h1><p>Final Weekend predictions · champion pick · live leaderboard</p></div>
     <div class="timezone">🇬🇪 Georgia time<br>UTC+4</div>
   </div>
 </header>
 <main class="container">
   <section class="hero">
-    <div><h2>Two games from the final. Semi-finals are here.</h2><p>France face Spain, then England face Argentina. Semi-final fixtures are shown in Georgia time, with previous schedules hidden by default.</p></div>
-    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">1 pt group outcome</span><span class="pill">2 pts playoff outcome</span><span class="pill">+1 advance fallback</span></div>
+    <div><h2>One last weekend. Two final predictions.</h2><p>France face England for third place, then Spain face Argentina for the World Cup. Fixtures are shown in Georgia time, with previous schedules hidden by default.</p></div>
+    <div class="rules"><span class="pill">3 pts exact score</span><span class="pill">2 pts playoff outcome</span><span class="pill">+1 penalty bonus</span><span class="pill">👑 +2 World Champion</span></div>
   </section>
   <nav class="tabs" aria-label="Main navigation">
-    <button class="tab active" data-tab="schedule">🔥 Semi-finals</button>
+    <button class="tab active" data-tab="schedule">🏆 Final Weekend</button>
     <button class="tab" data-tab="breakgame">🎮 Ann's Game</button>
     <button class="tab" data-tab="predict">✏️ Predict</button>
     <button class="tab" data-tab="allpredictions">📋 Predictions</button>
@@ -604,15 +604,15 @@
     <div class="card" id="champion-card"></div>
     <div class="card">
       <div class="section-title"><h3>3. Match predictions</h3><span class="tag" id="progress-tag">0 / 88 saved</span></div>
-      <p class="help">By default, this list shows only upcoming/editable matches, including the Semi-finals. Use “Show full schedule” if you need to review older or locked matches. For knockout matches, enter the 90-minute score first. If you predict a 90-minute draw, the penalties and advancing-team fields will appear. Empty matches are skipped. Press Save when finished.</p>
+      <p class="help">By default, this list shows only the Third Place Play-off and the Final. Enter the 90-minute score first. If you predict a draw, choose whether penalties will happen and select the eventual winner. The Final awards 2 points for the correct World Champion; the Third Place winner remains worth 1 point.</p>
       <div class="toolbar"><div class="group-filter" id="predict-filter"></div><button class="btn secondary" id="clear-empty-btn" type="button">Show full schedule</button></div>
       <div id="predict-content"></div>
-      <button class="btn full" id="save-predictions">💾 Save champion, scores, penalties and advancing picks</button>
+      <button class="btn full" id="save-predictions">💾 Save scores, penalties and winner picks</button>
     </div>
   </section>
 
   <section id="allpredictions" class="section">
-    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · <span class="score-points">3 pts</span></span><span class="chip outcome">Correct outcome · <span class="score-points">1 pt group / 2 pts playoff</span></span><span class="score-tag advance-tag">Advancing team · <span class="score-points">+1</span></span><span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · <span class="score-points">0 pts</span></span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
+    <div class="card"><div class="section-title"><h3>Everyone’s saved predictions</h3></div><p class="help">Future predictions stay hidden until match time. Use the button to hide or show previous/locked predictions in this tab.</p><div class="legend"><span class="chip exact">Exact score · <span class="score-points">3 pts</span></span><span class="chip outcome">Correct outcome · <span class="score-points">1 pt group / 2 pts playoff</span></span><span class="score-tag advance-tag">Winner · <span class="score-points">+1</span></span><span class="score-tag advance-tag">World Champion · <span class="score-points">+2</span></span><span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span><span class="chip upcoming">Locked / waiting result</span><span class="chip hiddenlocked">Hidden before lock</span><span class="chip miss">Wrong · <span class="score-points">0 pts</span></span></div><div class="toolbar predictions-toolbar"><div class="segmented" id="prediction-view-toggle"><button type="button" class="view-btn active" data-view="games">By games</button><button type="button" class="view-btn" data-view="players">By players</button></div><button type="button" class="btn secondary" id="toggle-previous-btn">🙈 Hide previous predictions</button><div class="group-filter" id="public-filter"></div></div><div id="all-predictions-content"></div></div>
   </section>
 
   <section id="leaderboard" class="section"><div class="card" id="leaderboard-content"></div></section>
@@ -873,15 +873,20 @@ const MATCHES = [
   {id:99,group:'QF',stage:'Quarter-final',home:'Norway',away:'England',homeFrom:91,awayFrom:92,utc:'2026-07-11T21:00',venue:'Miami Stadium'},
   {id:100,group:'QF',stage:'Quarter-final',home:'Argentina',away:'Switzerland',homeFrom:95,awayFrom:96,utc:'2026-07-12T01:00',venue:'Kansas City Stadium'},
 
-  // Semi-final fixtures. UTC values display as 23:00 in Georgia.
+  // Semi-finals (kept for results, bracket history and Firebase compatibility).
   {id:101,group:'SF',stage:'Semi-final',home:'France',away:'Spain',homeFrom:97,awayFrom:98,utc:'2026-07-14T19:00',venue:'Dallas Stadium'},
-  {id:102,group:'SF',stage:'Semi-final',home:'England',away:'Argentina',homeFrom:99,awayFrom:100,utc:'2026-07-15T19:00',venue:'Atlanta Stadium'}
+  {id:102,group:'SF',stage:'Semi-final',home:'England',away:'Argentina',homeFrom:99,awayFrom:100,utc:'2026-07-15T19:00',venue:'Atlanta Stadium'},
+
+  // Final Weekend. Match 103 is the bronze match; Match 104 crowns the World Champion.
+  {id:103,group:'FW',stage:'Third-place play-off',home:'France',away:'England',homeLoserFrom:101,awayLoserFrom:102,utc:'2026-07-18T21:00',venue:'Miami Stadium'},
+  {id:104,group:'FW',stage:'Final',home:'Spain',away:'Argentina',homeFrom:101,awayFrom:102,utc:'2026-07-19T19:00',venue:'New York New Jersey Stadium'}
 ];
 const TEAMS = Object.values(GROUPS).flat();
 const ROUND_OF_32_IDS = Array.from({length:16},(_,i)=>73+i);
 const ROUND_OF_16_IDS = Array.from({length:8},(_,i)=>89+i);
 const QUARTER_FINAL_IDS = Array.from({length:4},(_,i)=>97+i);
 const SEMI_FINAL_IDS = [101,102];
+const FINAL_WEEKEND_IDS = [103,104];
 const R32_PATHS = [
   {r16:90,left:73,right:75},
   {r16:89,left:74,right:77},
@@ -914,130 +919,19 @@ const TEAM_FLAGS = {
 };
 
 
-const SEMI_FINAL_MESSAGES = { 
-  franceSpain: [
-    "Pass. Pass. Pass.\nLose.",
-    "Spain has the ball.\nFrance has the plan.",
-    "Possession wins statistics.\nFrance wins matches.",
-    "Tiki. Taka.\nAu revoir.",
-    "Keep the ball.\nWe’ll keep the final.",
-    "Spain paints.\nFrance finishes.",
-    "One counter.\nOne goal.\nOne broken Spanish heart.",
-    "Beautiful football.\nBeautiful exit.",
-    "Merci for the possession.\nWe’ll take the result.",
-    "No panic.\nJust Mbappé-shaped problems.",
-
-    "Spain will pass it left,\nSpain will pass it right,\nSpain will keep the football\nFor the entire night.\n\nEighty percent possession,\nA thousand touches made—\nThen France gets one counterattack\nAnd sends them on parade. 🇫🇷",
-
-    "Dear Spain,\n\nMay your passes be beautiful.\nMay your possession be endless.\nMay your midfield complete 947 passes.\n\nAnd may France score with their first shot.\n\nAmen. 🇫🇷",
-
-    "You can tiki.\nYou can taka.\nYou can dance around the ball.\n\nBut when France starts running at you—\nBonne nuit. That’s all. 🇫🇷",
-
-    "Step one: Keep the ball.\nStep two: Keep the ball.\nStep three: Keep the ball.\nStep four: Realize France has scored.",
-
-    "Spain brings technique,\nSpain brings flair,\nSpain brings passes everywhere.\n\nFrance brings speed,\nFrance brings pain—\nAnd sends the tiki-taka home to Spain. 🇫🇷",
-
-    "ALLEZ LES BLEUS,\nBREAK THEIR RHYTHM,\nTAKE THEIR BALL,\nSEND THEM HOME!",
-
-    "PASS IT LEFT,\nPASS IT RIGHT,\nFRANCE WILL END\nYOUR NIGHT!",
-
-    "BLUE SHIRTS.\nCOLD BLOOD.\nFINAL BOUND.",
-
-    "SPAIN CAN DANCE,\nFRANCE CAN SCORE!",
-
-    "TIKI-TAKA,\nBYE-BYE SPAIN!"
-  ],
-
-  englandArgentina: [
-    "No speeches.\nJust go home.",
-    "Argentina has drama.\nEngland has business.",
-    "Cry later.\nPlay now.",
-    "Three Lions.\nOne ticket.\nNo Argentina.",
-    "Talk less.\nLose quietly.",
-    "England scores.\nArgentina investigates.",
-    "One foul.\nFourteen complaints.",
-    "Lose the game.\nBlame the universe.",
-    "Argentina brings passion.\nEngland brings the boarding pass.",
-    "Keep arguing.\nThe final is leaving.",
-    "England to the final.\nArgentina to the microphones.",
-    "No conspiracy.\nJust elimination.",
-
-    "Football, dear football,\nFor once, be kind.\n\nNo penalties.\nNo trauma.\nNo national psychological collapse.\n\nJust beat Argentina.\n\nThat’s all we ask. 🏴",
-
-    "Argentina has passion.\nArgentina has fire.\nArgentina has a nation\nThat never seems to tire.\n\nBut England has one mission,\nOne job left to be done:\n\nSurvive the drama.\nScore the goals.\nAnd ruin everyone’s fun. 🏴",
-
-    "A foul: national emergency.\nA yellow card: international conspiracy.\nA defeat: seventeen documentaries.\n\nEngland, please.\nJust win. We cannot survive the speeches.",
-
-    "The drums will beat,\nThe crowd will sing,\nArgentina will argue\nWith everything.\n\nThe tackles will fly,\nThe tension will rise—\nThen England scores.\n\nAnd suddenly, silence. How nice. 🏴",
-
-    "Argentina will shout.\nArgentina will fight.\nEngland will score.\nGoodnight.",
-
-    "They brought the noise.\nEngland brought the result.",
-
-    "Argentina argues with destiny.\nEngland books the final.",
-
-    "The whistle blows.\nThe Lions roar.\nArgentina talks\nfor three hours more.",
-
-    "England wins.\nArgentina explains.",
-
-    "THREE LIONS ROAR,\nONE GAME MORE!",
-
-    "ENGLAND RISE,\nARGENTINA BYE!",
-
-    "NO FEAR,\nNO TEARS,\nTHE FINAL’S NEAR!",
-
-    "SING IT LOUD,\nSING IT CLEAR—\nARGENTINA,\nYOUR FLIGHT IS NEAR!",
-
-    "ONE MORE WIN,\nONE MORE NIGHT,\nENGLAND MARCHES\nTO THE FINAL!"
-  ],
-
-  combo: [
-    "France tonight.\nEngland tomorrow.\nEveryone else: sorrow.",
-    "Blue today.\nWhite tomorrow.\nChaos forever.",
-    "Spain out.\nArgentina out.\nPerfect tournament.",
-    "First: au revoir Spain.\nThen: goodbye Argentina.",
-    "France handles the football.\nEngland handles the noise.",
-    "Two semifinals.\nTwo missions.\nTwo very annoying exits.",
-    "France in the final.\nEngland in the final.\nPeace restored.",
-    "No Spain.\nNo Argentina.\nJust vibes.",
-    "Our agenda is simple:\nFrance wins.\nEngland wins.\nEveryone else complains.",
-    "Tonight: allez.\nTomorrow: come on England.",
-
-    "France in blue.\nEngland in white.\nSpain sent home.\nArgentina in flight.\n\nNo tiki-taka.\nNo endless debate.\n\nFrance. England.\nSee you at the final gate. 🏆",
-
-    "Tonight we are French. 🇫🇷\nTomorrow we are English. 🏴\nBy the final—\nwe become completely unbearable.",
-
-    "Possession merchant detected.",
-    "Drama merchant detected.",
-    "Pass completed.\nTournament not.",
-    "Argue harder.",
-    "Boarding now.",
-    "Semi-final.\nFull-time.\nAu revoir.",
-    "Semi-final.\nFull-time.\nCheers, mate.",
-    "Spain: 900 passes.\nFrance: still here.",
-    "Argentina: 900 complaints.\nEngland: still here.",
-    "Respectfully: leave.",
-    "Unrespectfully: leave faster.",
-    "The final has standards.",
-    "Wrong gate.\nFinal’s that way."
-  ]
-};
-
-function getSemiFinalMessage(type = "random"){
-  if(type === "random"){
-    const all = [
-      ...SEMI_FINAL_MESSAGES.franceSpain,
-      ...SEMI_FINAL_MESSAGES.englandArgentina,
-      ...SEMI_FINAL_MESSAGES.combo
-    ];
-    return all[Math.floor(Math.random() * all.length)];
-  }
-  const list = SEMI_FINAL_MESSAGES[type] || SEMI_FINAL_MESSAGES.combo;
-  return list[Math.floor(Math.random() * list.length)];
-}
+const FINAL_WEEKEND_MESSAGES = [
+  "Final Weekend is here.\nTwo matches. One trophy.",
+  "Third place first.\nThen the World Champion.",
+  "One last prediction.\nMake it count. 🏆",
+  "The final whistle is close.\nChoose wisely.",
+  "Bronze on Saturday.\nGold on Sunday.",
+  "No more warm-ups.\nThis is the Final Weekend.",
+  "One trophy.\nOne champion.\nOne last leaderboard shake-up.",
+  "Final Weekend unlocked.\nGood luck. You may need it."
+];
 
 function getPlayerGreeting(){
-  return getSemiFinalMessage("random");
+  return FINAL_WEEKEND_MESSAGES[Math.floor(Math.random() * FINAL_WEEKEND_MESSAGES.length)];
 }
 
 const ADMIN_PIN = "1363";
@@ -1058,7 +952,7 @@ const ANN_ZONE_POSITIONS = [
   {left:18,top:49},{left:50,top:49},{left:82,top:49},
   {left:18,top:80},{left:50,top:80},{left:82,top:80}
 ];
-const ANN_PRESSURE_STAGES = ['Friendly','Group stage','Knockout','Semi-final','FINAL','Golden Ball'];
+const ANN_PRESSURE_STAGES = ['Friendly','Group stage','Knockout','Final Weekend','FINAL','Golden Ball'];
 const ANN_GOAL_LINES = [
   'The goalkeeper has been sent into another postcode.',
   'Top-class finish. The net has filed a complaint.',
@@ -1354,11 +1248,13 @@ let leaderboardStage = (function(){try{const saved=safeLocalGet('wc2026_leaderbo
 function esc(s){return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function matchStageLabel(m){return m.stage || `Group ${m.group}`;}
 function matchShortLabel(m){return m.stage ? `M${m.id} · ${m.stage}` : `Group ${m.group}`;}
-function matchFilterPass(m,active){return active==='ALL' || (active==='SF' ? m.stage==='Semi-final' : active==='QF' ? m.stage==='Quarter-final' : active==='R16' ? m.stage==='Round of 16' : active==='R32' ? m.stage==='Round of 32' : m.group===active);}
+function matchFilterPass(m,active){return active==='ALL' || (active==='SF' ? FINAL_WEEKEND_IDS.includes(Number(m.id)) : active==='QF' ? m.stage==='Quarter-final' : active==='R16' ? m.stage==='Round of 16' : active==='R32' ? m.stage==='Round of 32' : m.group===active);}
 function isRoundOf32(m){return m.stage==='Round of 32';}
 function isRoundOf16(m){return m.stage==='Round of 16';}
 function isQuarterFinal(m){return m.stage==='Quarter-final';}
 function isSemiFinal(m){return m.stage==='Semi-final';}
+function isFinalWeekend(m){return FINAL_WEEKEND_IDS.includes(Number(m.id));}
+function isWorldCupFinal(m){return Number(m.id)===104;}
 function isKnockoutMatch(m){return !!m.stage;}
 function matchById(id){return MATCHES.find(x=>Number(x.id)===Number(id));}
 function rawScoreReady(score){
@@ -1383,12 +1279,22 @@ function sourceWinnerLabel(matchId){
 function sourceTeamLabel(matchId,fallback=''){
   return sourceWinnerLabel(matchId) || fallback || `Winner M${matchId}`;
 }
+function sourceLoserLabel(matchId,fallback=''){
+  const m=matchById(matchId);
+  const r=m ? state.results[m.id] : null;
+  if(!m || !rawScoreReady(r)) return fallback || `Runner-up M${matchId}`;
+  const dm=displayMatch(m);
+  const winner=sourceWinnerLabel(matchId);
+  if(winner===dm.home) return dm.away;
+  if(winner===dm.away) return dm.home;
+  return fallback || `Runner-up M${matchId}`;
+}
 function displayMatch(m){
   if(!m) return m;
   return {
     ...m,
-    home: m.homeFrom ? sourceTeamLabel(m.homeFrom,m.home) : m.home,
-    away: m.awayFrom ? sourceTeamLabel(m.awayFrom,m.away) : m.away
+    home: m.homeLoserFrom ? sourceLoserLabel(m.homeLoserFrom,m.home) : (m.homeFrom ? sourceTeamLabel(m.homeFrom,m.home) : m.home),
+    away: m.awayLoserFrom ? sourceLoserLabel(m.awayLoserFrom,m.away) : (m.awayFrom ? sourceTeamLabel(m.awayFrom,m.away) : m.away)
   };
 }
 function matchTeamsReady(m){
@@ -1417,7 +1323,8 @@ function advancingPickHtml(m,current='',disabled=false,prefix='adv'){
   const ready=matchTeamsReady(m);
   const c=validAdvanceTeam(m,current)?current:'';
   const isDisabled=disabled || !ready;
-  return `<label class="advance-pick"><span>Advances</span><select class="advance-select" id="${prefix}_${m.id}" ${isDisabled?'disabled':''}><option value="">${ready?'Pick team':'Waiting winner'}</option><option value="${esc(dm.home)}" ${c===dm.home?'selected':''}>${esc(dm.home)}</option><option value="${esc(dm.away)}" ${c===dm.away?'selected':''}>${esc(dm.away)}</option></select></label>`;
+  const winnerLabel=isWorldCupFinal(m)?'World Champion':(Number(m.id)===103?'Third Place Winner':'Advances');
+  return `<label class="advance-pick"><span>${winnerLabel}</span><select class="advance-select" id="${prefix}_${m.id}" ${isDisabled?'disabled':''}><option value="">${ready?'Pick team':'Waiting winner'}</option><option value="${esc(dm.home)}" ${c===dm.home?'selected':''}>${esc(dm.home)}</option><option value="${esc(dm.away)}" ${c===dm.away?'selected':''}>${esc(dm.away)}</option></select></label>`;
 }
 function scoreIsDraw(score){return completePrediction(score) && Number(score.h)===Number(score.a);}
 function inferredAdvanceTeam(m,score){
@@ -1499,12 +1406,12 @@ function calcAdvancePts(pred,result,m){
 
   // Draw bonus: when both predicted and official 90-minute scores are draws,
   // the advancing-team pick is an extra knockout prediction.
-  if(scoreIsDraw(pred) && scoreIsDraw(result)) return 1;
+  if(scoreIsDraw(pred) && scoreIsDraw(result)) return isWorldCupFinal(m) ? 2 : 1;
 
   // Fallback point: if the 90-minute scenario is wrong, but the player still
   // picked the team that advances, award 1 point. Do not duplicate points when
   // the 90-minute winner/outcome was already correct.
-  return calcScorePts(pred,result,m)===0 ? 1 : 0;
+  return calcScorePts(pred,result,m)===0 ? (isWorldCupFinal(m) ? 2 : 1) : 0;
 }
 function calcPenaltyPts(pred,result,m){
   if(!isKnockoutMatch(m)||!completePrediction(pred)||!result) return 0;
@@ -1926,7 +1833,7 @@ function leaderboardStageConfig(stage){
     r32:{key:'r32',label:'Round of 32',title:'Round of 32 leaderboard',description:'Round of 32 matches only', empty:'No Round of 32 score predictions submitted yet.', joinedStatus:'No saved Round of 32 predictions'},
     r16:{key:'r16',label:'Round of 16',title:'Round of 16 leaderboard',description:'Round of 16 matches only', empty:'No Round of 16 score predictions submitted yet.', joinedStatus:'No saved Round of 16 predictions'},
     qf:{key:'qf',label:'Quarter-finals',title:'Quarter-final leaderboard',description:'Quarter-final matches only', empty:'No quarter-final score predictions submitted yet.', joinedStatus:'No saved quarter-final predictions'},
-    sf:{key:'sf',label:'Semi-finals',title:'Semi-final leaderboard',description:'Semi-final matches only', empty:'No semi-final score predictions submitted yet.', joinedStatus:'No saved semi-final predictions'}
+    sf:{key:'sf',label:'Final Weekend',title:'Final Weekend leaderboard',description:'Third Place and Final only', empty:'No Final Weekend score predictions submitted yet.', joinedStatus:'No saved Final Weekend predictions'}
   };
   return configs[stage] || configs.sf;
 }
@@ -1935,7 +1842,7 @@ function leaderboardMatches(stage){
   if(stage==='r32') return MATCHES.filter(m=>m.stage==='Round of 32');
   if(stage==='r16') return MATCHES.filter(m=>m.stage==='Round of 16');
   if(stage==='qf') return MATCHES.filter(m=>m.stage==='Quarter-final');
-  if(stage==='sf') return MATCHES.filter(m=>m.stage==='Semi-final');
+  if(stage==='sf') return MATCHES.filter(isFinalWeekend);
   return MATCHES;
 }
 function predictionCountForMatches(user,matches){
@@ -1958,7 +1865,7 @@ function renderLeaderboard(){
     const pts=played.reduce((a,m)=>a+calcPts(state.predictions[u]?.[m.id],state.results[m.id],m),0);
     const exact=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return p&&r&&Number(p.h)===Number(r.h)&&Number(p.a)===Number(r.a);}).length;
     const outcome=played.filter(m=>{const p=state.predictions[u]?.[m.id],r=state.results[m.id]; return completePrediction(p)&&r&&calcScorePts(p,r,m)>0 && calcScorePts(p,r,m)<3;}).length;
-    const advance=played.filter(m=>calcAdvancePts(state.predictions[u]?.[m.id],state.results[m.id],m)===1).length;
+    const advance=played.filter(m=>calcAdvancePts(state.predictions[u]?.[m.id],state.results[m.id],m)>0).length;
     const penalties=played.filter(m=>calcPenaltyPts(state.predictions[u]?.[m.id],state.results[m.id],m)===1).length;
     const predicted=predictionCountForMatches(u,stageMatches);
     const resultedPredicted=played.filter(m=>completePrediction(state.predictions[u]?.[m.id])).length;
@@ -1981,7 +1888,7 @@ function renderLeaderboard(){
     return `<button type="button" class="view-btn ${cfg.key===key?'active':''}" onclick="setLeaderboardStage('${key}')">${esc(c.label)}</button>`;
   }).join('');
 
-  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 1 pt for correct outcome. Round of 32, Round of 16, Quarter-final and Semi-final scoring use 90-minute score prediction: 3 pts exact score, 2 pts correct 90-minute outcome, or 1 pt if the 90-minute scenario is wrong but the advancing team is correct. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
+  let html=`<div class="section-title"><h3>${esc(cfg.title)}</h3><span class="tag">${esc(cfg.label)}</span></div><p class="help">Use the switch to compare the main tournament leaderboard with separate stage leaderboards. Group-stage scoring stays 3 pts for exact score and 1 pt for correct outcome. Knockout scoring uses the 90-minute score: 3 pts exact score, 2 pts correct 90-minute outcome, plus winner and penalty bonuses where applicable. The Third Place winner is worth 1 point, while the correct World Champion in Match 104 is worth 2 points. Penalties and draw-advance bonuses are counted only when the official 90-minute result is a draw. Outcome accuracy means correct 90-minute outcomes, including exact scores, divided by the player’s predicted matches with official results in the selected leaderboard.</p><div class="leaderboard-stage-toggle" role="group" aria-label="Leaderboard stage switch">${stageButtons}</div>`;
   const bestAccuracy = rows.length ? Math.max(...rows.map(r=>r.accuracy)) : 0;
   html += `<div class="leaderboard-shell"><div class="leader-summary"><span class="summary-pill">🏟 Results in: <b>${played.length}/${stageMatches.length}</b></span><span class="summary-pill">👥 Ranked players: <b>${rows.length}</b></span><span class="summary-pill">🎯 Exact predictions counted: <b>${rows.reduce((a,r)=>a+r.exact,0)}</b></span><span class="summary-pill">🧭 Advancing picks counted: <b>${rows.reduce((a,r)=>a+r.advance,0)}</b></span><span class="summary-pill">🥅 Penalty picks counted: <b>${rows.reduce((a,r)=>a+r.penalties,0)}</b></span><span class="summary-pill">📊 Best outcome accuracy: <b>${bestAccuracy}%</b></span></div>`;
   if(rows.length){
@@ -2009,7 +1916,7 @@ function renderLeaderboard(){
   el.innerHTML=html;
 }
 function calcPts(pred,result,m){return calcScorePts(pred,result,m)+calcPenaltyPts(pred,result,m)+calcAdvancePts(pred,result,m);}
-function predictionClass(pred,result,m){if(!result)return 'upcoming'; const scorePts=calcScorePts(pred,result,m); const penPts=calcPenaltyPts(pred,result,m); const advPts=calcAdvancePts(pred,result,m); if(scorePts===3)return 'exact'; if(scorePts>0 || penPts===1 || advPts===1)return 'outcome'; return 'miss';}
+function predictionClass(pred,result,m){if(!result)return 'upcoming'; const scorePts=calcScorePts(pred,result,m); const penPts=calcPenaltyPts(pred,result,m); const advPts=calcAdvancePts(pred,result,m); if(scorePts===3)return 'exact'; if(scorePts>0 || penPts===1 || advPts>0)return 'outcome'; return 'miss';}
 function predictionLabel(pred,result,m){
   if(!result)return 'locked';
   const scorePts=calcScorePts(pred,result,m), penPts=calcPenaltyPts(pred,result,m), advPts=calcAdvancePts(pred,result,m), total=scorePts+penPts+advPts;
@@ -2017,7 +1924,7 @@ function predictionLabel(pred,result,m){
   const parts=[];
   if(scorePts===3) parts.push('<span class="score-tag exact-tag">Exact · <span class="score-points">3 pts</span></span>');
   else if(scorePts>0) parts.push(`<span class="score-tag outcome-tag">Outcome · <span class="score-points">${scorePts} pt${scorePts===1?'':'s'}</span></span>`);
-  if(advPts===1) parts.push('<span class="score-tag advance-tag">Advancing team · <span class="score-points">+1</span></span>');
+  if(advPts>0) parts.push(`<span class="score-tag advance-tag">${isWorldCupFinal(m)?'World Champion':'Winner'} · <span class="score-points">+${advPts}</span></span>`);
   if(penPts===1) parts.push('<span class="score-tag penalty-tag">Penalty bonus · <span class="score-points">+1</span></span>');
   return parts.join(' ');
 }
@@ -2122,7 +2029,7 @@ function togglePreviousPlayoffs(){
 }
 function renderKnockoutMap(){
   const byId=Object.fromEntries(MATCHES.map(m=>[m.id,m]));
-  let html=`<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><button type="button" class="btn secondary ${showPreviousPlayoffSchedule?'active':''}" id="toggle-previous-playoffs">${showPreviousPlayoffSchedule?'Hide previous playoff schedule':'Show previous playoff schedule'}</button></div><p class="help">The full route to the final is kept here for reference. Semi-final cards are now populated with France–Spain and England–Argentina; the final updates automatically after admin enters each official winner. Scroll sideways on mobile.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">↳ Feeds to = next match</span><span class="tag">GEO = Georgia time</span><span class="tag">Previous playoff schedule hidden by default</span></div><div class="knockout-scroll"><div class="knockout-map">`;
+  let html=`<div class="card"><div class="section-title"><h3>Knockout fixture map</h3><button type="button" class="btn secondary ${showPreviousPlayoffSchedule?'active':''}" id="toggle-previous-playoffs">${showPreviousPlayoffSchedule?'Hide previous playoff schedule':'Show previous playoff schedule'}</button></div><p class="help">The full route to the final is kept here for reference. The historical route remains available for reference. The current Third Place and Final fixtures are shown above. Scroll sideways on mobile.</p><div class="bracket-legend"><span class="tag">🟡 Upper side</span><span class="tag">🟢 Lower side</span><span class="tag">↳ Feeds to = next match</span><span class="tag">GEO = Georgia time</span><span class="tag">Previous playoff schedule hidden by default</span></div><div class="knockout-scroll"><div class="knockout-map">`;
   html += renderBracketLinesSvg();
   html += `<div class="round-heading" style="grid-column:1;grid-row:1">Round of 32</div>`;
   html += '<div class="round-heading" style="grid-column:2;grid-row:1">Round of 16</div>';
@@ -2161,9 +2068,9 @@ function renderKnockoutMap(){
     }
   });
   if(byId[101]) html += knockoutCardFromMatch(byId[101],4,'2 / span 8','yellow',104);
-  else html += placeholderCard(101,sourceTeamLabel(97),sourceTeamLabel(98),'Semi-final',4,'2 / span 8','yellow',false,104);
+  else html += placeholderCard(101,sourceTeamLabel(97),sourceTeamLabel(98),'Final Weekend',4,'2 / span 8','yellow',false,104);
   if(byId[102]) html += knockoutCardFromMatch(byId[102],4,'10 / span 8','green',104);
-  else html += placeholderCard(102,sourceTeamLabel(99),sourceTeamLabel(100),'Semi-final',4,'10 / span 8','green',false,104);
+  else html += placeholderCard(102,sourceTeamLabel(99),sourceTeamLabel(100),'Final Weekend',4,'10 / span 8','green',false,104);
   html += placeholderCard(104,sourceTeamLabel(101),sourceTeamLabel(102),'Final',5,'6 / span 8','yellow',true,null);
   html += '</div></div></div>';
   return html;
@@ -2189,43 +2096,34 @@ function renderPlayoffScheduleFor(matches,title,help=''){
   });
   return html;
 }
-function renderSemiFinalSpotlight(){
-  const sf1=displayMatch(matchById(101));
-  const sf2=displayMatch(matchById(102));
-  const r1=state.results[101], r2=state.results[102];
-  const finalHome=sourceTeamLabel(101,'Winner M101');
-  const finalAway=sourceTeamLabel(102,'Winner M102');
-
-  const card=(m,r,side)=>{
-    const status=r
-      ? `Official 90 min ${r.h}-${r.a}${resultAdvanceNote(r,m)}`
-      : (matchStarted(m)?'Locked / awaiting official result':'Predictions open');
-    return `<div class="semi-final-card ${side}">
+function renderFinalWeekendSpotlight(){
+  const bronze=displayMatch(matchById(103));
+  const finalMatch=displayMatch(matchById(104));
+  const card=(m,kind)=>{
+    const r=state.results[m.id];
+    const status=r ? `Official 90 min ${r.h}-${r.a}${resultAdvanceNote(r,m)}` : (matchStarted(m)?'Locked / awaiting official result':'Predictions open');
+    return `<div class="semi-final-card ${kind}">
       <div class="sf-match">M${m.id} · ${esc(m.stage)}</div>
       <div class="sf-team"><span>${esc(flagForTeam(m.home))} ${esc(m.home)}</span>${r?`<span>${r.h}</span>`:''}</div>
       <div class="sf-team"><span>${esc(flagForTeam(m.away))} ${esc(m.away)}</span>${r?`<span>${r.a}</span>`:''}</div>
       <div class="sf-meta">${esc(geDateLong(m.utc))} · ${geTime(m.utc)} Georgia<br>${esc(m.venue)}<br>${status}</div>
     </div>`;
   };
-
   return `<div class="card">
-    <div class="section-title"><h3>Semi-final bracket</h3><span class="tag">Final four</span></div>
-    <p class="help">Two semi-finals. The winners feed directly into Match 104.</p>
+    <div class="section-title"><h3>Final Weekend</h3><span class="tag">Last two matches</span></div>
+    <p class="help">Predict France–England for third place and Spain–Argentina for the World Cup. A correct Final winner earns the special +2 World Champion bonus.</p>
     <div class="semi-final-spotlight">
-      ${card(sf1,r1,'yellow')}
-      <div class="semi-final-arrow">
-        TO THE FINAL
-        <span class="final-badge">M104<br>${esc(finalHome)}<br>vs<br>${esc(finalAway)}</span>
-      </div>
-      ${card(sf2,r2,'green')}
+      ${card(bronze,'yellow')}
+      <div class="semi-final-arrow">FINAL WEEKEND<span class="final-badge">🥉 M103<br>then<br>🏆 M104</span></div>
+      ${card(finalMatch,'green')}
     </div>
-    <p class="small mobile-stage-note" style="margin-top:10px">The full historical knockout map is available below, but the current semi-finals stay first on mobile.</p>
   </div>`;
 }
 
-function renderSemiFinalSchedule(){
-  let html=renderPlayoffScheduleFor(MATCHES.filter(isSemiFinal),'Semi-final schedule','Only the two current semi-final fixtures are shown by default. Predictions lock automatically at kick-off.');
+function renderFinalWeekendSchedule(){
+  let html=renderPlayoffScheduleFor(MATCHES.filter(isFinalWeekend),'Final Weekend schedule','Third Place and Final only. The Final winner is worth +2 points.');
   if(showPreviousPlayoffSchedule){
+    html+=renderPlayoffScheduleFor(MATCHES.filter(isSemiFinal),'Previous Semi-final schedule','Unhidden previous playoff round for review.');
     html+=renderPlayoffScheduleFor(MATCHES.filter(isQuarterFinal),'Previous Quarter-final schedule','Unhidden previous playoff round for review.');
     html+=renderPlayoffScheduleFor(MATCHES.filter(isRoundOf16),'Previous Round of 16 schedule','Unhidden previous playoff round for review.');
     html+=renderPlayoffScheduleFor(MATCHES.filter(isRoundOf32),'Previous Round of 32 schedule','Unhidden previous playoff round for review.');
@@ -2251,7 +2149,7 @@ function renderRound16Schedule(){
 function renderRound32Schedule(){return renderPlayoffScheduleFor(MATCHES.filter(isRoundOf32),'Round of 32 schedule','These 16 knockout fixtures are added to the Predict page and lock automatically at kick-off.');}
 function renderSchedule(){
   const el=document.getElementById('schedule-content');
-  el.innerHTML=renderSemiFinalSpotlight()+renderSemiFinalSchedule()+renderKnockoutMap();
+  el.innerHTML=renderFinalWeekendSpotlight()+renderFinalWeekendSchedule()+renderKnockoutMap();
   const toggle=document.getElementById('toggle-previous-playoffs');
   if(toggle) toggle.onclick=togglePreviousPlayoffs;
 }
